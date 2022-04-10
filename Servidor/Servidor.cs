@@ -14,10 +14,10 @@ namespace Servidor
 
         static void Main(string[] args)
         {
-             Usuario _usu1 = new Usuario("12345", "pepe");
-             Usuario _usu2 = new Usuario("54321", "jaja");
-             _usuarios.Add(_usu1);
-             _usuarios.Add(_usu2);
+             //Usuario _usu1 = new Usuario("12345", "pepe");
+             //Usuario _usu2 = new Usuario("54321", "jaja");
+             //_usuarios.Add(_usu1);
+             //_usuarios.Add(_usu2);
 
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketServer.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 20000));
