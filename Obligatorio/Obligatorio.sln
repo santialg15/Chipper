@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obligatorio", "Obligatorio.csproj", "{BA5DE0D7-7540-4C01-89FF-21E0DC47885B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obligatorio", "Obligatorio.csproj", "{BA5DE0D7-7540-4C01-89FF-21E0DC47885B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protocolo", "..\Protocolo\Protocolo.csproj", "{8F7D6CC8-08C9-4BEA-AED4-EEA3A0C3B319}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Protocolo", "..\Protocolo\Protocolo.csproj", "{8F7D6CC8-08C9-4BEA-AED4-EEA3A0C3B319}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cliente", "..\Cliente\Cliente.csproj", "{965270A0-2F55-44D6-88D4-56324A267E0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cliente", "..\Cliente\Cliente.csproj", "{965270A0-2F55-44D6-88D4-56324A267E0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Servidor", "..\Servidor\Servidor.csproj", "{A474C526-8827-4776-84F8-E38A8586EBA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Servidor", "..\Servidor\Servidor.csproj", "{A474C526-8827-4776-84F8-E38A8586EBA3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CD04A49C-4F93-4FA5-981F-6DCEF40C5C0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
