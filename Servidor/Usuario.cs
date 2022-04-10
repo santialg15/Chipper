@@ -6,18 +6,28 @@ namespace Servidor
 {
     public class Usuario
     {
-        private string pNom;
-        private string pCi;
+        private string pNomReal;
+        private string pNomUsu;
+        private string pass;
+        private string imgPerfil;
+        private bool habilitado;
+        private List<Usuario> colSeguidores;
+        private List<Usuario> colSeguidos;
+        private List<Publicacion> colPublicacion;
+        private List<Publicacion> colNotif;
 
-        public Usuario(string _Ci, string _nom)
+        public Usuario(string _NomReal, string _NomUsu, string _pass, string _imgPerfil)
         {
-            pNom = _nom;
-            pCi = _Ci;
+            pNomReal   = _NomReal;
+            pNomUsu    = _NomUsu    ;
+            pass       = _pass       ;
+            imgPerfil  = _imgPerfil ;
+            habilitado = true;
         }
 
         public override string ToString()
         {
-            return pNom +" "+pCi;
+            return pNomReal + " "+ pNomUsu;
         }
     }
 }
