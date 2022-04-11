@@ -14,10 +14,10 @@ namespace Servidor
 
         static void Main(string[] args)
         {
-             //Usuario _usu1 = new Usuario("12345", "pepe");
-             //Usuario _usu2 = new Usuario("54321", "jaja");
-             //_usuarios.Add(_usu1);
-             //_usuarios.Add(_usu2);
+            Usuario _usu1 = new Usuario("Denis", "12345","inicio","img");
+            Usuario _usu2 = new Usuario("Santiago", "67890", "inicio", "img");
+            _usuarios.Add(_usu1);
+            _usuarios.Add(_usu2);
 
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketServer.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 20000));
@@ -28,9 +28,7 @@ namespace Servidor
             threadServer.Start();
             
             Console.WriteLine("Bienvenido al Sistema Server");
-            Console.WriteLine("Opciones validas: ");
-            Console.WriteLine("exit -> abandonar el programa");
-            Console.WriteLine("Ingrese su opcion: ");
+            printMenu();
             while (!_exit)
             {
                 var userInput = Console.ReadLine();
@@ -39,7 +37,7 @@ namespace Servidor
                     // Cosas a hacer al cerrar el server
                     // 1 - Cerrar el socket que esta escuchando conexiones nuevas
                     // 2 - Cerrar todas las conexiones abiertas desde los clientes
-                    case "exit":
+                    case "1":
                         _exit = true;
                         socketServer.Close(0);
                         foreach (var client in _clients)
@@ -50,17 +48,58 @@ namespace Servidor
                         var fakeSocket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
                         fakeSocket.Connect("127.0.0.1",20000);
                         break;
-                    case "usu":
+                    case "2":
                         foreach (var usu3 in _usuarios)
                         {
                             Console.WriteLine(usu3.ToString());
                         }
+                        printMenu();
+                        break;
+                    case "3":
+                        Console.WriteLine("Ingrese su búsqueda: ");
+                        var buscar = Console.ReadLine();
+                        string ret = "";
+                        foreach (var usu4 in _usuarios)
+                        {
+                            foreach (var pub in usu4.GetPublicaciones())
+                            {
+                                if (pub.getContenido().Contains(buscar.Trim()))
+                                {
+                                    ret += usu4.getNomUsu() + pub.getContenido() +"\n";
+                                }
+                            }
+                        }
+
+                        if (ret.Equals(""))
+                        {
+                            Console.WriteLine("No se encontraron chips que contengan: "+buscar.Trim());
+                        }
+                        printMenu();
+                        break;
+                        case "4":
+                            _usuarios.OrderBy(cantSeg => cantSeg.GetCantSeg());
+                            int contador = 0;
+                            while(contador < 5 && contador < _usuarios.Count)
+                            {
+                                Console.WriteLine(_usuarios[contador].ToString());
+                                contador++;
+                            }
+                            printMenu();
                         break;
                     default:
                         Console.WriteLine("Opcion incorrecta ingresada");
                         break;
                 }
             }
+        }
+
+        private static void printMenu()
+        {
+            Console.WriteLine("1 -> abandonar el programa");
+            Console.WriteLine("2 -> listar usuarios");
+            Console.WriteLine("3 -> Buscar chips");
+            Console.WriteLine("4 -> top 5 con más seguidores");
+            Console.WriteLine("Ingrese el numero de la opción deseada: ");
         }
         
         private static void ListenForConnections(Socket socketServer)

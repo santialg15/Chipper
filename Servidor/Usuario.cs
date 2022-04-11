@@ -23,11 +23,31 @@ namespace Servidor
             pass       = _pass       ;
             imgPerfil  = _imgPerfil ;
             habilitado = true;
+            colSeguidores = new List<Usuario>();
+            colSeguidos = new List<Usuario>();
+            colPublicacion = new List<Publicacion>();
+            colNotif = new List<Publicacion>();
+
         }
 
         public override string ToString()
         {
-            return pNomReal + " "+ pNomUsu;
+            return pNomReal.Trim() + " Cantidad de Seguidores: "+ colSeguidores.Count.ToString().Trim() + " Sigue a: " + colSeguidos.Count.ToString().Trim() + " Cantidad de chips: " + colPublicacion.Count.ToString().Trim();
+        }
+
+        public List<Publicacion> GetPublicaciones()
+        {
+            return colPublicacion;
+        }
+
+        public string getNomUsu()
+        {
+            return pNomUsu;
+        }
+
+        public int GetCantSeg()
+        {
+            return colSeguidores.Count;
         }
     }
 }

@@ -16,3 +16,22 @@ C:\Users\denis\Desktop\Servidor\obj\Debug\net6.0\refint\Servidor.dll
 C:\Users\denis\Desktop\Servidor\obj\Debug\net6.0\Servidor.pdb
 C:\Users\denis\Desktop\Servidor\obj\Debug\net6.0\Servidor.genruntimeconfig.cache
 C:\Users\denis\Desktop\Servidor\obj\Debug\net6.0\ref\Servidor.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\bin\Debug\net6.0\Servidor.exe
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\bin\Debug\net6.0\Servidor.dll.config
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\bin\Debug\net6.0\Servidor.deps.json
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\bin\Debug\net6.0\Servidor.runtimeconfig.json
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\bin\Debug\net6.0\Servidor.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\bin\Debug\net6.0\Servidor.pdb
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\bin\Debug\net6.0\Protocolo.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\bin\Debug\net6.0\Protocolo.pdb
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\Servidor.csproj.AssemblyReference.cache
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\Servidor.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\Servidor.AssemblyInfoInputs.cache
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\Servidor.AssemblyInfo.cs
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\Servidor.csproj.CoreCompileInputs.cache
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\Servidor.csproj.CopyComplete
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\Servidor.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\refint\Servidor.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\Servidor.pdb
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\Servidor.genruntimeconfig.cache
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Servidor\obj\Debug\net6.0\ref\Servidor.dll

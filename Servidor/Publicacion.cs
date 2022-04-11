@@ -6,11 +6,24 @@ using System.Threading.Tasks;
 
 namespace Servidor
 {
-    internal class Publicacion
+    public class Publicacion
     {
         private DateTime pFch;
         private string pContenido;
         private List<Publicacion> ColRespuesta;
         private List<string> colFile;
+
+        public Publicacion(string _contenido)
+        {
+            pFch = DateTime.Now;
+            pContenido = _contenido.Trim();
+            ColRespuesta = new List<Publicacion>();
+            colFile = new List<string>();
+        }
+
+        public string getContenido()
+        {
+            return pContenido;
+        }
     }
 }
