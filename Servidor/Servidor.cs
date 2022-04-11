@@ -99,10 +99,8 @@ namespace Servidor
                     switch (header.ICommand)
                     {
                         case CommandConstants.Registro:
-                            Console.WriteLine("Se va a registrar un usuario en el sistema");
-                            var datosRegistroBuffer = new byte[header.IDataLength];
-                            ReceiveData(clientSocket, header.IDataLength, datosRegistroBuffer);
-                            var datosRegistro = Encoding.UTF8.GetString(datosRegistroBuffer);
+                            Console.WriteLine("Validando registro de un usuario en el sistema");
+                            var datosRegistro = ObtenerDatosDelCliente(header,clientSocket);
                             
                             var datosSeparados = datosRegistro.Split("?");
                             var nombreUsuario = datosSeparados[0];
@@ -113,6 +111,16 @@ namespace Servidor
                             Console.WriteLine($"Usuario {nombreUsuario} registrado con éxito");
                             break;
                         case CommandConstants.Login:
+                            Console.WriteLine("Validando ingreso de usuario en el sistema");
+                            var datosLogin = ObtenerDatosDelCliente(header, clientSocket);
+                            var datosLoginSeparados = datosLogin.Split("?");
+                            var nombreLogin = datosLoginSeparados[0];
+                            var contraseñaLogin = datosLoginSeparados[1];
+                            ValidarLoginUsuario(nombreLogin, contraseñaLogin);
+
+                            Console.WriteLine("El usuario se logueo correctamente al sistema.");
+                            //Enviar al cliente lista de posibles acciones luego de loguearse
+                            break;
                         case CommandConstants.ListUsers:
                             for (int i = 0; i < _usuarios.Count; i++)
                             {
@@ -134,7 +142,6 @@ namespace Servidor
                 }
             }
         }
-
         private static void ReceiveData(Socket clientSocket,  int Length, byte[] buffer)
         {
             var iRecv = 0;
@@ -162,6 +169,36 @@ namespace Servidor
                 {
                     Console.WriteLine(se.Message);
                     return;
+                }
+            }
+        }
+
+        private static string ObtenerDatosDelCliente(Header header, Socket clientSocket)
+        {
+            var datosRegistroBuffer = new byte[header.IDataLength];
+            ReceiveData(clientSocket, header.IDataLength, datosRegistroBuffer);
+            return Encoding.UTF8.GetString(datosRegistroBuffer);
+        }
+
+        private static void ValidarLoginUsuario(string nombreLogin, string contraseña)
+        {
+            if(!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
+            {
+                //ENVIAR MENSAJE AL CLIENTE QUE NO EXISTE EL USUARIO Y PERMITIRLE REPETIR PROCESO
+                Console.WriteLine("no existe usuario");
+            }
+            else if(!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
+            {
+                //ENVIAR MENSAJE AL CLIENTE QUE NO COINCIDE LA CONTRASEÑA Y PERMITIRLE REPETIR PROCESO
+                Console.WriteLine("contraseña incorrecta");
+            }
+            else
+            {
+                Usuario usuario = _usuarios.Find(u => u.PNomUsu == nombreLogin && u.Pass == contraseña);
+                if(!usuario.Habilitado)
+                {
+                    //ENVIAR MENSAJE AL CLIENTE QUE EL USUARIO NO ESTA HABILITADO A LOGUERSE
+                    Console.WriteLine("usuario no habilitado");
                 }
             }
         }

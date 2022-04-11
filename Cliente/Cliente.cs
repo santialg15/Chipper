@@ -16,6 +16,7 @@ namespace Cliente
             Console.WriteLine("Bienvenido al Sistema Client");
             Console.WriteLine("Opciones validas: ");
             Console.WriteLine("registro -> registrar un usuario");
+            Console.WriteLine("login -> ingresar al sistema");
             Console.WriteLine("message -> envia un mensaje al server");
             Console.WriteLine("exit -> abandonar el programa");
             Console.WriteLine("usu -> lista de usuario");
@@ -51,6 +52,16 @@ namespace Cliente
                         var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
 
                         EnviarDatos(infoUsuario, socket, CommandConstants.Registro);
+                        break;
+                    case "login":
+                        Console.WriteLine("Ingrese su nombre de usuario:");
+                        var nombreLogin = Console.ReadLine();
+
+                        Console.WriteLine("Ingrese su contraseña:");
+                        var contraseñaLogin = Console.ReadLine();
+
+                        var infoLogin = $"{nombreLogin}?{contraseñaLogin}";
+                        EnviarDatos(infoLogin, socket, CommandConstants.Login);
                         break;
                     default:
                         Console.WriteLine("Opcion invalida");
