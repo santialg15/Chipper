@@ -33,21 +33,7 @@ namespace Cliente
                     case "message":
                         Console.WriteLine("Ingrese el mensaje a enviar:");
                         var mensaje = Console.ReadLine();
-                        var header = new Header(HeaderConstants.Request, CommandConstants.Message, mensaje.Length);
-                        var data = header.GetRequest();
-                        var sentBytes = 0;
-                        while (sentBytes < data.Length)
-                        {
-                            sentBytes += socket.Send(data, sentBytes, data.Length - sentBytes, SocketFlags.None);
-                        }
-
-                        sentBytes = 0;
-                        var bytesMessage = Encoding.UTF8.GetBytes(mensaje);
-                        while (sentBytes < bytesMessage.Length)
-                        {
-                            sentBytes += socket.Send(bytesMessage, sentBytes, bytesMessage.Length - sentBytes,
-                                SocketFlags.None);
-                        }
+                        EnviarDatos(mensaje, socket, CommandConstants.Message);
 
                         break;
                     case "registro":
@@ -60,29 +46,11 @@ namespace Cliente
                         Console.WriteLine("Ingrese su contraseña:");
                         var contraseña = Console.ReadLine();
 
-                        //concatenar las 3 var para enviar 1 solo mensaje al servidor
-                        var infoUsuario = $"{nomUsuario}.{nombReal}.{contraseña}";
-
                         //Console.WriteLine("Ingrese su foto de perfil:"); FALTA IMPLEMENTAR!
-                        
-                        //envio de datos
-                        var headerRegistro = new Header(HeaderConstants.Request, CommandConstants.Registro, infoUsuario.Length);
-                        var datos = headerRegistro.GetRequest();
-                        var bytesEnviados = 0;
-                        while (bytesEnviados < datos.Length)
-                        {
-                            bytesEnviados += socket.Send(datos, bytesEnviados, datos.Length - bytesEnviados, SocketFlags.None);
-                        }
 
-                        sentBytes = 0;
-                        var bytesInfoUsuario = Encoding.UTF8.GetBytes(infoUsuario);
-                        while (sentBytes < bytesInfoUsuario.Length)
-                        {
-                            sentBytes += socket.Send(bytesInfoUsuario, sentBytes, bytesInfoUsuario.Length - sentBytes,
-                                SocketFlags.None);
-                        }
+                        var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
 
-
+                        EnviarDatos(infoUsuario, socket, CommandConstants.Registro);
                         break;
                     default:
                         Console.WriteLine("Opcion invalida");
@@ -91,6 +59,24 @@ namespace Cliente
             }
 
             Console.WriteLine("Exiting Application");
+        }
+        private static void EnviarDatos(string mensaje, Socket socket, int constante)
+        {
+            var header = new Header(HeaderConstants.Request, constante, mensaje.Length);
+            var data = header.GetRequest();
+            var sentBytes = 0;
+            while (sentBytes < data.Length)
+            {
+                sentBytes += socket.Send(data, sentBytes, data.Length - sentBytes, SocketFlags.None);
+            }
+
+            sentBytes = 0;
+            var bytesMessage = Encoding.UTF8.GetBytes(mensaje);
+            while (sentBytes < bytesMessage.Length)
+            {
+                sentBytes += socket.Send(bytesMessage, sentBytes, bytesMessage.Length - sentBytes,
+                    SocketFlags.None);
+            }
         }
     }
 }

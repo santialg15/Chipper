@@ -104,7 +104,7 @@ namespace Servidor
                             ReceiveData(clientSocket, header.IDataLength, datosRegistroBuffer);
                             var datosRegistro = Encoding.UTF8.GetString(datosRegistroBuffer);
                             
-                            var datosSeparados = datosRegistro.Split(".");
+                            var datosSeparados = datosRegistro.Split("?");
                             var nombreUsuario = datosSeparados[0];
                             var nombreReal = datosSeparados[1];
                             var contraseña = datosSeparados[2];
