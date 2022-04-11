@@ -10,3 +10,15 @@ C:\Users\denis\Desktop\Protocolo\obj\Debug\net6.0\Protocolo.dll
 C:\Users\denis\Desktop\Protocolo\obj\Debug\net6.0\refint\Protocolo.dll
 C:\Users\denis\Desktop\Protocolo\obj\Debug\net6.0\Protocolo.pdb
 C:\Users\denis\Desktop\Protocolo\obj\Debug\net6.0\ref\Protocolo.dll
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\bin\Debug\net6.0\Protocolo.deps.json
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\bin\Debug\net6.0\Protocolo.dll
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\bin\Debug\net6.0\Protocolo.pdb
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\obj\Debug\net6.0\Protocolo.csproj.AssemblyReference.cache
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\obj\Debug\net6.0\Protocolo.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\obj\Debug\net6.0\Protocolo.AssemblyInfoInputs.cache
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\obj\Debug\net6.0\Protocolo.AssemblyInfo.cs
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\obj\Debug\net6.0\Protocolo.csproj.CoreCompileInputs.cache
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\obj\Debug\net6.0\Protocolo.dll
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\obj\Debug\net6.0\refint\Protocolo.dll
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\obj\Debug\net6.0\Protocolo.pdb
+C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Protocolo\obj\Debug\net6.0\ref\Protocolo.dll

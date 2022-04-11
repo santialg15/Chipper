@@ -98,9 +98,27 @@ namespace Servidor
                     header.DecodeData(buffer);
                     switch (header.ICommand)
                     {
+                        case CommandConstants.Registro:
+                            Console.WriteLine("Se va a registrar un usuario en el sistema");
+                            var datosRegistroBuffer = new byte[header.IDataLength];
+                            ReceiveData(clientSocket, header.IDataLength, datosRegistroBuffer);
+                            var datosRegistro = Encoding.UTF8.GetString(datosRegistroBuffer);
+                            
+                            var datosSeparados = datosRegistro.Split(".");
+                            var nombreUsuario = datosSeparados[0];
+                            var nombreReal = datosSeparados[1];
+                            var contraseña = datosSeparados[2];
+                            Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
+                            _usuarios.Add(nuevoUsuario);
+                            Console.WriteLine($"Usuario {nombreUsuario} registrado con éxito");
+                            break;
                         case CommandConstants.Login:
                         case CommandConstants.ListUsers:
-                            Console.WriteLine("Not Implemented yet...");
+                            for (int i = 0; i < _usuarios.Count; i++)
+                            {
+                                Console.WriteLine(_usuarios[i].ToString());
+
+                            }
                             break;
                         case CommandConstants.Message:
                             Console.WriteLine("Will receive message to display...");
