@@ -30,6 +30,8 @@ namespace Servidor
             Console.WriteLine("Bienvenido al Sistema Server");
             Console.WriteLine("Opciones validas: ");
             Console.WriteLine("exit -> abandonar el programa");
+            Console.WriteLine("5 - Negar acceso a usuario");
+            Console.WriteLine("6 - Permitir acceso a usuario");
             Console.WriteLine("Ingrese su opcion: ");
             while (!_exit)
             {
@@ -55,6 +57,56 @@ namespace Servidor
                         {
                             Console.WriteLine(usu3.ToString());
                         }
+                        break;
+                    case "5":
+                        Console.WriteLine("Lista de usuarios con permiso de acceso:");
+                        foreach (var u in _usuarios)
+                        {
+                            if (u.Habilitado == true)
+                                Console.WriteLine(u.ToString());
+                        }
+                        Console.WriteLine("Ingresar nombre de usuario al que se le quiere negar acceso");
+                        var nombreANegar = Console.ReadLine();
+                        if(nombreANegar == null || nombreANegar == "")
+                        {
+                            //imprimir menu
+                            break;
+                        }
+                        var indiceNegar = _usuarios.FindIndex(u => u.PNomUsu == nombreANegar);
+                        if(indiceNegar == -1)
+                        {
+                            //imprimir menu
+                            break;
+                        }
+                        _usuarios[indiceNegar].Habilitado = false;
+                        Console.WriteLine($"Se le nego el acceso al usuario {nombreANegar}.");
+                        //imprimir menu
+                        break;
+                    case "6":
+                        Console.WriteLine("Lista de usuarios con acceso denegado:");
+                        foreach (var u in _usuarios)
+                        {
+                            if(u.Habilitado == false)
+                                Console.WriteLine(u.ToString());
+                        }
+                        Console.WriteLine("Ingresar nombre de usuario al que se le quiere permitir el acceso");
+                        var nombreAPermitir = Console.ReadLine();
+                        if (nombreAPermitir == null || nombreAPermitir == "")
+                        {
+                            Console.WriteLine("El usuario ingresado no existe.");
+                            //imprimir menu
+                            break;
+                        }
+                        var indicePermitir = _usuarios.FindIndex(u => u.PNomUsu == nombreAPermitir);
+                        if (indicePermitir == -1)
+                        {
+                            Console.WriteLine("El usuario ingresado no existe.");
+                            //imprimir menu
+                            break;
+                        }
+                        _usuarios[indicePermitir].Habilitado = true;
+                        Console.WriteLine($"Se le permitio el acceso al usuario {nombreAPermitir}.");
+                        //imprimir menu
                         break;
                     default:
                         Console.WriteLine("Opcion incorrecta ingresada");

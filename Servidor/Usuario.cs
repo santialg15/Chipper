@@ -10,7 +10,7 @@ namespace Servidor
         private string pNomUsu;
         private string pass;
         private string imgPerfil;
-        private bool habilitado;
+        public bool habilitado;
         private List<Usuario> colSeguidores;
         private List<Usuario> colSeguidos;
         private List<Publicacion> colPublicacion;
@@ -18,7 +18,8 @@ namespace Servidor
 
         public string PNomUsu { get => pNomUsu; }
         public string Pass { get => pass; }
-        public bool Habilitado { get => habilitado; }
+
+        public bool Habilitado { get => habilitado; set => habilitado = value; }
 
 
         public Usuario(string _NomReal, string _NomUsu, string _pass, string _imgPerfil)
