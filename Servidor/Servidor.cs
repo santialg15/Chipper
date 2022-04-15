@@ -59,6 +59,18 @@ namespace Servidor
                         }
                         break;
                     case "5":
+                        if(_usuarios.Count == 0)
+                        {
+                            Console.WriteLine("No hay usuarios registrados en el sistema.");
+                            //imprimir menu
+                            break;
+                        }
+                        if (!ExistenUsuariosHabilitados())
+                        {
+                            Console.WriteLine("No hay usuarios con premiso de acceso al sistema.");
+                            //imprimir menu
+                            break;
+                        }
                         Console.WriteLine("Lista de usuarios con permiso de acceso:");
                         foreach (var u in _usuarios)
                         {
@@ -69,6 +81,7 @@ namespace Servidor
                         var nombreANegar = Console.ReadLine();
                         if(nombreANegar == null || nombreANegar == "")
                         {
+                            Console.WriteLine("El usuario ingresado no existe.");
                             //imprimir menu
                             break;
                         }
@@ -83,6 +96,16 @@ namespace Servidor
                         //imprimir menu
                         break;
                     case "6":
+                        if (_usuarios.Count == 0)
+                        {
+                            Console.WriteLine("No hay usuarios registrados en el sistema.");
+                            break;
+                        }
+                        if (!ExistenUsuariosNoHabilitados())
+                        {
+                            Console.WriteLine("No hay usuarios con acceso denegado al sistema.");
+                            break;
+                        }
                         Console.WriteLine("Lista de usuarios con acceso denegado:");
                         foreach (var u in _usuarios)
                         {
@@ -253,6 +276,16 @@ namespace Servidor
                     Console.WriteLine("usuario no habilitado");
                 }
             }
+        }
+
+        private static bool ExistenUsuariosHabilitados()
+        {
+            return _usuarios.Any(us => us.Habilitado == true);
+        }
+
+        private static bool ExistenUsuariosNoHabilitados()
+        {
+            return _usuarios.Any(us => us.Habilitado == false);
         }
     }
 }
