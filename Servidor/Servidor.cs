@@ -59,13 +59,13 @@ namespace Servidor
                         if(_usuarios.Count == 0)
                         {
                             Console.WriteLine("No hay usuarios registrados en el sistema.");
-                            //imprimir menu
+                            printMenu();
                             break;
                         }
                         if (!ExistenUsuariosHabilitados())
                         {
                             Console.WriteLine("No hay usuarios con premiso de acceso al sistema.");
-                            //imprimir menu
+                            printMenu();
                             break;
                         }
                         Console.WriteLine("Lista de usuarios con permiso de acceso:");
@@ -79,28 +79,31 @@ namespace Servidor
                         if(nombreANegar == null || nombreANegar == "")
                         {
                             Console.WriteLine("El usuario ingresado no existe.");
-                            //imprimir menu
+                            printMenu();
                             break;
                         }
-                        var indiceNegar = _usuarios.FindIndex(u => u.PNomUsu == nombreANegar);
+                        var indiceNegar = _usuarios.FindIndex(u => u.PNomReal == nombreANegar);
                         if(indiceNegar == -1)
                         {
-                            //imprimir menu
+                            Console.WriteLine($"No existe el usuario {nombreANegar} en el sistema.");
+                            printMenu();
                             break;
                         }
                         _usuarios[indiceNegar].Habilitado = false;
                         Console.WriteLine($"Se le nego el acceso al usuario {nombreANegar}.");
-                        //imprimir menu
+                        printMenu();
                         break;
                     case "6":
                         if (_usuarios.Count == 0)
                         {
                             Console.WriteLine("No hay usuarios registrados en el sistema.");
+                            printMenu();
                             break;
                         }
                         if (!ExistenUsuariosNoHabilitados())
                         {
                             Console.WriteLine("No hay usuarios con acceso denegado al sistema.");
+                            printMenu();
                             break;
                         }
                         Console.WriteLine("Lista de usuarios con acceso denegado:");
@@ -114,19 +117,19 @@ namespace Servidor
                         if (nombreAPermitir == null || nombreAPermitir == "")
                         {
                             Console.WriteLine("El usuario ingresado no existe.");
-                            //imprimir menu
+                            printMenu();
                             break;
                         }
-                        var indicePermitir = _usuarios.FindIndex(u => u.PNomUsu == nombreAPermitir);
+                        var indicePermitir = _usuarios.FindIndex(u => u.PNomReal == nombreAPermitir);
                         if (indicePermitir == -1)
                         {
                             Console.WriteLine("El usuario ingresado no existe.");
-                            //imprimir menu
+                            printMenu();
                             break;
                         }
                         _usuarios[indicePermitir].Habilitado = true;
                         Console.WriteLine($"Se le permitio el acceso al usuario {nombreAPermitir}.");
-                        //imprimir menu
+                        printMenu();
                         break;
                     case "3":
                         Console.WriteLine("Ingrese su búsqueda: ");
@@ -172,8 +175,8 @@ namespace Servidor
             Console.WriteLine("2 -> listar usuarios");
             Console.WriteLine("3 -> Buscar chips");
             Console.WriteLine("4 -> top 5 con más seguidores");
-            Console.WriteLine("5 - Negar acceso a usuario");
-            Console.WriteLine("6 - Permitir acceso a usuario");
+            Console.WriteLine("5 -> Negar acceso a usuario");
+            Console.WriteLine("6 -> Permitir acceso a usuario");
             Console.WriteLine("Ingrese el numero de la opción deseada: ");
         }
         
@@ -296,19 +299,19 @@ namespace Servidor
 
         private static void ValidarLoginUsuario(string nombreLogin, string contraseña)
         {
-            if(!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
+            if(!_usuarios.Exists(u => u.PNomReal == nombreLogin))
             {
                 //ENVIAR MENSAJE AL CLIENTE QUE NO EXISTE EL USUARIO Y PERMITIRLE REPETIR PROCESO
                 Console.WriteLine("no existe usuario");
             }
-            else if(!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
+            else if(!_usuarios.Exists(u => u.Pass == contraseña && u.PNomReal == nombreLogin))
             {
                 //ENVIAR MENSAJE AL CLIENTE QUE NO COINCIDE LA CONTRASEÑA Y PERMITIRLE REPETIR PROCESO
                 Console.WriteLine("contraseña incorrecta");
             }
             else
             {
-                Usuario usuario = _usuarios.Find(u => u.PNomUsu == nombreLogin && u.Pass == contraseña);
+                Usuario usuario = _usuarios.Find(u => u.PNomReal == nombreLogin && u.Pass == contraseña);
                 if(!usuario.Habilitado)
                 {
                     //ENVIAR MENSAJE AL CLIENTE QUE EL USUARIO NO ESTA HABILITADO A LOGUERSE

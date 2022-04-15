@@ -16,7 +16,7 @@ namespace Servidor
         private List<Publicacion> colPublicacion;
         private List<Publicacion> colNotif;
 
-        public string PNomUsu { get => pNomUsu; }
+        public string PNomReal { get => pNomReal; }
         public string Pass { get => pass; }
 
         public bool Habilitado { get => habilitado; set => habilitado = value; }
