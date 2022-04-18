@@ -2,11 +2,14 @@
 using System.Net.Sockets;
 using System.Text;
 using Protocolo;
+using Protocolo.Interfaces;
+
 
 namespace Servidor
 {
     internal static class Servidor
     {
+        static readonly ISettingsManager SettingsMgr = new SettingsManager();
         static bool _exit = false;
         static List<Socket> _clients = new List<Socket>();
         private static List<Usuario> _usuarios = new List<Usuario>();
@@ -48,14 +51,16 @@ namespace Servidor
                         var fakeSocket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
                         fakeSocket.Connect("127.0.0.1",20000);
                         break;
-                    case "2":
+
+                    case "2": // SRF2
                         foreach (var usu3 in _usuarios)
                         {
                             Console.WriteLine(usu3.ToString());
                         }
                         printMenu();
                         break;
-                    case "3":
+
+                    case "3": // SRF5
                         Console.WriteLine("Ingrese su búsqueda: ");
                         var buscar = Console.ReadLine();
                         string ret = "";
@@ -76,13 +81,25 @@ namespace Servidor
                         }
                         printMenu();
                         break;
-                        case "4":
+
+                        case "4": // SRF6
                             _usuarios.OrderBy(cantSeg => cantSeg.GetCantSeg());
                             int contador = 0;
-                            while(contador < 5 && contador < _usuarios.Count)
+                            while(contador < Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTopSeguidoresConfigKey)) && contador < _usuarios.Count)
                             {
                                 Console.WriteLine(_usuarios[contador].ToString());
                                 contador++;
+                            }
+                            printMenu();
+                        break;
+
+                        case "5": // SRF7
+                            _usuarios.OrderBy(usuario => usuario.GetCantPubEnTmpConf());
+                            int cont = 0;
+                            while (cont < Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey)) && cont < _usuarios.Count)
+                            { 
+                                Console.WriteLine(_usuarios[cont].ToString());
+                                cont++;
                             }
                             printMenu();
                         break;
@@ -98,7 +115,8 @@ namespace Servidor
             Console.WriteLine("1 -> abandonar el programa");
             Console.WriteLine("2 -> listar usuarios");
             Console.WriteLine("3 -> Buscar chips");
-            Console.WriteLine("4 -> top 5 con más seguidores");
+            Console.WriteLine("4 -> top "+ SettingsMgr.ReadSetting(ServerConfig.SeverTopSeguidoresConfigKey) +" con más seguidores");
+            Console.WriteLine("5 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey) + " que más usaron el sistema en los ultimos " + SettingsMgr.ReadSetting(ServerConfig.SeverTmpMostrarPubConfigKey) +" minutos");
             Console.WriteLine("Ingrese el numero de la opción deseada: ");
         }
         

@@ -25,5 +25,10 @@ namespace Servidor
         {
             return pContenido;
         }
+
+        public DateTime getFch()
+        {
+            return pFch;
+        }
     }
 }
