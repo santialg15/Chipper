@@ -1,16 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xJ6SbMgs4Ur8slemC+MhcJ+4s1v8v9yrHu0AdBSZ+L5YJgEQgNFwy9Gy/8z57e69fRBZ7zuFtAHW+R2TFDJJ9Q==",
+  "dgSpecHash": "wFhOf6+z30yNwENJAPeJsdND8oE6TJ4FcyGfU00lB/40zYVEfRKWxL3q4ycRrhfB/TAGr7lw6qPbboEhuAg8Aw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\denis\\Desktop\\Programación de redes\\ObligatorioGit\\Cliente\\Cliente.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\denis\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
-    "C:\\Users\\denis\\.nuget\\packages\\system.configuration.configurationmanager\\6.0.0\\system.configuration.configurationmanager.6.0.0.nupkg.sha512",
-    "C:\\Users\\denis\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
-    "C:\\Users\\denis\\.nuget\\packages\\system.security.accesscontrol\\6.0.0\\system.security.accesscontrol.6.0.0.nupkg.sha512",
-    "C:\\Users\\denis\\.nuget\\packages\\system.security.cryptography.protecteddata\\6.0.0\\system.security.cryptography.protecteddata.6.0.0.nupkg.sha512",
-    "C:\\Users\\denis\\.nuget\\packages\\system.security.permissions\\6.0.0\\system.security.permissions.6.0.0.nupkg.sha512",
-    "C:\\Users\\denis\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\santi\\Desktop\\Facultad\\Semestre 6\\Programacion de Redes\\Obligatorio1\\Chipper\\Cliente\\Cliente.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }
