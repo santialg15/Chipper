@@ -59,6 +59,40 @@ namespace Servidor
                         }
                         printMenu();
                         break;
+
+                    case "3":
+                        Console.WriteLine("Ingrese su búsqueda: ");
+                        var buscar = Console.ReadLine();
+                        string ret = "";
+                        foreach (var usu4 in _usuarios)
+                        {
+                            foreach (var pub in usu4.GetPublicaciones())
+                            {
+                                if (pub.getContenido().Contains(buscar.Trim()))
+                                {
+                                    ret += usu4.getNomUsu() + pub.getContenido() + "\n";
+                                }
+                            }
+                        }
+
+                        if (ret.Equals(""))
+                        {
+                            Console.WriteLine("No se encontraron chips que contengan: " + buscar.Trim());
+                        }
+                        printMenu();
+                        break;
+
+                    case "4": // SRF6
+                        _usuarios.OrderBy(cantSeg => cantSeg.GetCantSeg());
+                        int contador = 0;
+                        while (contador < Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTopSeguidoresConfigKey)) && contador < _usuarios.Count)
+                        {
+                            Console.WriteLine(_usuarios[contador].ToString());
+                            contador++;
+                        }
+                        printMenu();
+                        break;
+
                     case "5":
                         if(_usuarios.Count == 0)
                         {
@@ -97,6 +131,7 @@ namespace Servidor
                         Console.WriteLine($"Se le nego el acceso al usuario {nombreANegar}.");
                         printMenu();
                         break;
+
                     case "6":
                         if (_usuarios.Count == 0)
                         {
@@ -135,40 +170,8 @@ namespace Servidor
                         Console.WriteLine($"Se le permitio el acceso al usuario {nombreAPermitir}.");
                         printMenu();
                         break;
-                    case "3":
-                        Console.WriteLine("Ingrese su búsqueda: ");
-                        var buscar = Console.ReadLine();
-                        string ret = "";
-                        foreach (var usu4 in _usuarios)
-                        {
-                            foreach (var pub in usu4.GetPublicaciones())
-                            {
-                                if (pub.getContenido().Contains(buscar.Trim()))
-                                {
-                                    ret += usu4.getNomUsu() + pub.getContenido() +"\n";
-                                }
-                            }
-                        }
-
-                        if (ret.Equals(""))
-                        {
-                            Console.WriteLine("No se encontraron chips que contengan: "+buscar.Trim());
-                        }
-                        printMenu();
-                        break;
-
-                        case "4": // SRF6
-                            _usuarios.OrderBy(cantSeg => cantSeg.GetCantSeg());
-                            int contador = 0;
-                            while(contador < Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTopSeguidoresConfigKey)) && contador < _usuarios.Count)
-                            {
-                                Console.WriteLine(_usuarios[contador].ToString());
-                                contador++;
-                            }
-                            printMenu();
-                        break;
-
-                        case "5": // SRF7
+                   
+                        case "7": // SRF7
                             _usuarios.OrderBy(usuario => usuario.GetCantPubEnTmpConf());
                             int cont = 0;
                             while (cont < Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey)) && cont < _usuarios.Count)
@@ -190,11 +193,10 @@ namespace Servidor
             Console.WriteLine("1 -> abandonar el programa");
             Console.WriteLine("2 -> listar usuarios");
             Console.WriteLine("3 -> Buscar chips");
-            Console.WriteLine("4 -> top 5 con más seguidores");
+            Console.WriteLine("4 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopSeguidoresConfigKey) + " con más seguidores");
             Console.WriteLine("5 -> Negar acceso a usuario");
             Console.WriteLine("6 -> Permitir acceso a usuario");
-            Console.WriteLine("4 -> top "+ SettingsMgr.ReadSetting(ServerConfig.SeverTopSeguidoresConfigKey) +" con más seguidores");
-            Console.WriteLine("5 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey) + " que más usaron el sistema en los ultimos " + SettingsMgr.ReadSetting(ServerConfig.SeverTmpMostrarPubConfigKey) +" minutos");
+            Console.WriteLine("7 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey) + " que más usaron el sistema en los ultimos " + SettingsMgr.ReadSetting(ServerConfig.SeverTmpMostrarPubConfigKey) +" minutos");
             Console.WriteLine("Ingrese el numero de la opción deseada: ");
         }
         
