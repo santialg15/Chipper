@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Servidor
 {
-    internal class Respuesta
+    public class Respuesta
     {
         public string pNomUsu;
         public DateTime pFch;
@@ -14,7 +14,7 @@ namespace Servidor
 
 
         public string PNomUsu { get => pNomUsu; set => pNomUsu = value;}
-        public string PFch { get => pFch; set => pFch = value; }
+        public DateTime PFch { get => pFch; set => pFch = value; }
         public string PContenido { get => pContenido; set => pContenido = value; }
     }
 }

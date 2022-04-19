@@ -10,14 +10,14 @@ namespace Servidor
     {
         public DateTime pFch;
         public string pContenido;
-        public List<Respuesta> ColRespuesta;
+        public List<Respuesta> colRespuesta;
         public List<string> colFile;
 
         public Publicacion(string _contenido)
         {
             pFch = DateTime.Now;
             pContenido = _contenido.Trim();
-            ColRespuesta = new List<Respuesta>();
+            colRespuesta = new List<Respuesta>();
             colFile = new List<string>();
         }
 
