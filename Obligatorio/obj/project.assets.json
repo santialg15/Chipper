@@ -8,25 +8,20 @@
     "net6.0": []
   },
   "packageFolders": {
-    "C:\\Users\\santi\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\": {}
+    "C:\\Users\\denis\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\santi\\Desktop\\Facultad\\Semestre 6\\Programacion de Redes\\Obligatorio1\\Chipper\\Obligatorio\\Obligatorio.csproj",
+      "projectUniqueName": "C:\\Users\\denis\\Desktop\\Programación de redes\\ObligatorioGit\\Obligatorio\\Obligatorio.csproj",
       "projectName": "Obligatorio",
-      "projectPath": "C:\\Users\\santi\\Desktop\\Facultad\\Semestre 6\\Programacion de Redes\\Obligatorio1\\Chipper\\Obligatorio\\Obligatorio.csproj",
-      "packagesPath": "C:\\Users\\santi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\santi\\Desktop\\Facultad\\Semestre 6\\Programacion de Redes\\Obligatorio1\\Chipper\\Obligatorio\\obj\\",
+      "projectPath": "C:\\Users\\denis\\Desktop\\Programación de redes\\ObligatorioGit\\Obligatorio\\Obligatorio.csproj",
+      "packagesPath": "C:\\Users\\denis\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\denis\\Desktop\\Programación de redes\\ObligatorioGit\\Obligatorio\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-      ],
       "configFilePaths": [
-        "C:\\Users\\santi\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        "C:\\Users\\denis\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net6.0"

@@ -8,22 +8,27 @@ namespace Servidor
 {
     public class Publicacion
     {
-        private DateTime pFch;
-        private string pContenido;
-        private List<Publicacion> ColRespuesta;
-        private List<string> colFile;
+        public DateTime pFch;
+        public string pContenido;
+        public List<Respuesta> colRespuesta;
+        public List<string> colFile;
 
         public Publicacion(string _contenido)
         {
             pFch = DateTime.Now;
             pContenido = _contenido.Trim();
-            ColRespuesta = new List<Publicacion>();
+            colRespuesta = new List<Respuesta>();
             colFile = new List<string>();
         }
 
         public string getContenido()
         {
             return pContenido;
+        }
+
+        public DateTime getFch()
+        {
+            return pFch;
         }
     }
 }

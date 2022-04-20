@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Protocolo;
+using Protocolo.Interfaces;
 
 namespace Servidor
 {
@@ -15,6 +17,7 @@ namespace Servidor
         private List<Usuario> colSeguidos;
         private List<Publicacion> colPublicacion;
         private List<Publicacion> colNotif;
+        static readonly ISettingsManager SettingsMgr = new SettingsManager();
 
         public string PNomUsu { get => pNomUsu; }
 
@@ -57,5 +60,19 @@ namespace Servidor
         {
             return colSeguidores.Count;
         }
+
+        public int GetCantPubEnTmpConf()
+        {
+            int contador = 0;
+            for (int i = 0; i < colPublicacion.Count; i++)
+            {
+                if ((DateTime.Now - colPublicacion[i].getFch()).TotalMinutes <= Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTmpMostrarPubConfigKey)))
+                {
+                    contador++;
+                }
+            }
+            return contador;
+        }
+
     }
 }

@@ -52,3 +52,14 @@ C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Ch
 C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Cliente\obj\Debug\net6.0\Cliente.pdb
 C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Cliente\obj\Debug\net6.0\Cliente.genruntimeconfig.cache
 C:\Users\santi\Desktop\Facultad\Semestre 6\Programacion de Redes\Obligatorio1\Chipper\Cliente\obj\Debug\net6.0\ref\Cliente.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\System.Configuration.ConfigurationManager.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\System.Drawing.Common.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\System.Security.Permissions.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\System.Windows.Extensions.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\denis\Desktop\Programación de redes\ObligatorioGit\Cliente\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
