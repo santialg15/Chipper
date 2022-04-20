@@ -234,7 +234,7 @@ namespace Servidor
                 var buffer = new byte[headerLength];
                 try
                 {
-                    ReceiveData(clientSocket, headerLength, buffer);
+                    networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, _exit);
                     var header = new Header();
                     header.DecodeData(buffer);
                     switch (header.ICommand)
@@ -265,9 +265,6 @@ namespace Servidor
                             var nombreLogin = datosLoginSeparados[0];
                             var contraseñaLogin = datosLoginSeparados[1];
                             ValidarLoginUsuario(nombreLogin, contraseñaLogin);
-
-                            Console.WriteLine("El usuario se logueo correctamente al sistema.");
-                            //Enviar al cliente lista de posibles acciones luego de loguearse
                             break;
                         case CommandConstants.ListUsers:
                             for (int i = 0; i < _usuarios.Count; i++)
@@ -290,41 +287,11 @@ namespace Servidor
                 }
             }
         }
-        private static void ReceiveData(Socket clientSocket,  int Length, byte[] buffer)
-        {
-            var iRecv = 0;
-            while (iRecv < Length)
-            {
-                try
-                {
-                    var localRecv = clientSocket.Receive(buffer, iRecv, Length - iRecv, SocketFlags.None);
-                    if (localRecv == 0) // Si recieve retorna 0 -> la conexion se cerro desde el endpoint remoto
-                    {
-                        if (!_exit)
-                        {
-                            clientSocket.Shutdown(SocketShutdown.Both);
-                            clientSocket.Close();
-                        }
-                        else
-                        {
-                            throw new Exception("Server is closing");
-                        }
-                    }
-
-                    iRecv += localRecv;
-                }
-                catch (SocketException se)
-                {
-                    Console.WriteLine(se.Message);
-                    return;
-                }
-            }
-        }
 
         private static string ObtenerDatosDelCliente(Header header, Socket clientSocket)
         {
             var datosRegistroBuffer = new byte[header.IDataLength];
-            ReceiveData(clientSocket, header.IDataLength, datosRegistroBuffer);
+            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosRegistroBuffer,_exit);
             return Encoding.UTF8.GetString(datosRegistroBuffer);
         }
 
@@ -340,14 +307,14 @@ namespace Servidor
                 //ENVIAR MENSAJE AL CLIENTE QUE NO COINCIDE LA CONTRASEÑA Y PERMITIRLE REPETIR PROCESO
                 Console.WriteLine("contraseña incorrecta");
             }
-            else
+            else if(_usuarios.Exists(u => u.PNomUsu == nombreLogin && u.Pass == contraseña && u.Habilitado == false))
             {
-                Usuario usuario = _usuarios.Find(u => u.PNomUsu == nombreLogin && u.Pass == contraseña);
-                if(!usuario.Habilitado)
-                {
                     //ENVIAR MENSAJE AL CLIENTE QUE EL USUARIO NO ESTA HABILITADO A LOGUERSE
                     Console.WriteLine("usuario no habilitado");
-                }
+            }
+            else
+            {
+                Console.WriteLine($"El usuario {nombreLogin} se logueo correctamente.");
             }
         }
 
