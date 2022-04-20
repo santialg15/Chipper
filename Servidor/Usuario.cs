@@ -16,6 +16,8 @@ namespace Servidor
         private List<Publicacion> colPublicacion;
         private List<Publicacion> colNotif;
 
+        public string PNomUsu { get => pNomUsu; }
+
         public string PNomReal { get => pNomReal; }
         public string Pass { get => pass; }
 
@@ -38,7 +40,7 @@ namespace Servidor
 
         public override string ToString()
         {
-            return pNomReal.Trim() + " Cantidad de Seguidores: "+ colSeguidores.Count.ToString().Trim() + " Sigue a: " + colSeguidos.Count.ToString().Trim() + " Cantidad de chips: " + colPublicacion.Count.ToString().Trim();
+            return pNomUsu.Trim() + " Cantidad de Seguidores: "+ colSeguidores.Count.ToString().Trim() + " Sigue a: " + colSeguidos.Count.ToString().Trim() + " Cantidad de chips: " + colPublicacion.Count.ToString().Trim();
         }
 
         public List<Publicacion> GetPublicaciones()

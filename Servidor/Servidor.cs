@@ -10,6 +10,7 @@ namespace Servidor
         static bool _exit = false;
         static List<Socket> _clients = new List<Socket>();
         private static List<Usuario> _usuarios = new List<Usuario>();
+        private static NetworkDataHelper networkDataHelper;
 
 
         static void Main(string[] args)
@@ -22,11 +23,11 @@ namespace Servidor
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketServer.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 20000));
             socketServer.Listen(100);
-            
+
             //Lanzar un thread para manejar las conexiones
             var threadServer = new Thread(()=> ListenForConnections(socketServer));
             threadServer.Start();
-            
+
             Console.WriteLine("Bienvenido al Sistema Server");
             printMenu();
             while (!_exit)
@@ -188,7 +189,10 @@ namespace Servidor
                 {
                     var clientConnected = socketServer.Accept();
                     _clients.Add(clientConnected);
-                    Console.WriteLine("Accepted new connection...");
+
+                    networkDataHelper = new NetworkDataHelper(clientConnected);
+
+                    Console.WriteLine("Nueva conexion aceptada...");
                     var threadcClient = new Thread(() => HandleClient(clientConnected));
                     threadcClient.Start();
                 }
@@ -223,6 +227,13 @@ namespace Servidor
                             var nombreUsuario = datosSeparados[0];
                             var nombreReal = datosSeparados[1];
                             var contraseña = datosSeparados[2];
+                            if(_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
+                            {
+                                networkDataHelper.EnviarDatos("Ya existe ese usuario", clientSocket, CommandConstants.Registro);
+                                //Enviar al cliente que ya existe un usuario con ese nombre de usuario.
+                                Console.WriteLine("Ya existe ese usuario");
+                                break;
+                            }
                             Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
                             _usuarios.Add(nuevoUsuario);
                             Console.WriteLine($"Usuario {nombreUsuario} registrado con éxito");
@@ -247,8 +258,8 @@ namespace Servidor
                             break;
                         case CommandConstants.Message:
                             Console.WriteLine("Will receive message to display...");
-                            var bufferData = new byte[header.IDataLength];  
-                            ReceiveData(clientSocket,header.IDataLength,bufferData);
+                            var bufferData = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(clientSocket,header.IDataLength,bufferData, _exit);
                             Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
                             break;
                     }
@@ -299,19 +310,19 @@ namespace Servidor
 
         private static void ValidarLoginUsuario(string nombreLogin, string contraseña)
         {
-            if(!_usuarios.Exists(u => u.PNomReal == nombreLogin))
+            if(!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
             {
                 //ENVIAR MENSAJE AL CLIENTE QUE NO EXISTE EL USUARIO Y PERMITIRLE REPETIR PROCESO
                 Console.WriteLine("no existe usuario");
             }
-            else if(!_usuarios.Exists(u => u.Pass == contraseña && u.PNomReal == nombreLogin))
+            else if(!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
             {
                 //ENVIAR MENSAJE AL CLIENTE QUE NO COINCIDE LA CONTRASEÑA Y PERMITIRLE REPETIR PROCESO
                 Console.WriteLine("contraseña incorrecta");
             }
             else
             {
-                Usuario usuario = _usuarios.Find(u => u.PNomReal == nombreLogin && u.Pass == contraseña);
+                Usuario usuario = _usuarios.Find(u => u.PNomUsu == nombreLogin && u.Pass == contraseña);
                 if(!usuario.Habilitado)
                 {
                     //ENVIAR MENSAJE AL CLIENTE QUE EL USUARIO NO ESTA HABILITADO A LOGUERSE
