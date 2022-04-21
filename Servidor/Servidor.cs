@@ -41,7 +41,7 @@ namespace Servidor
                     // Cosas a hacer al cerrar el server
                     // 1 - Cerrar el socket que esta escuchando conexiones nuevas
                     // 2 - Cerrar todas las conexiones abiertas desde los clientes
-                    case "1":
+                    case "1": // SRF1
                         _exit = true;
                         socketServer.Close(0);
                         foreach (var client in _clients)
@@ -54,14 +54,23 @@ namespace Servidor
                         break;
 
                     case "2": // SRF2
+
+                        if (_usuarios.Count == 0)
+                        {
+                            Console.WriteLine("No hay usuarios registrados en el sistema.");
+                            printMenu();
+                            break;
+                        }
+
                         foreach (var usu3 in _usuarios)
                         {
                             Console.WriteLine(usu3.ToString());
                         }
+                       
                         printMenu();
                         break;
 
-                    case "3":
+                    case "3": // SRF5
                         Console.WriteLine("Ingrese su búsqueda: ");
                         var buscar = Console.ReadLine();
                         string ret = "";
@@ -237,6 +246,7 @@ namespace Servidor
                     networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, _exit);
                     var header = new Header();
                     header.DecodeData(buffer);
+
                     switch (header.ICommand)
                     {
                         case CommandConstants.Registro:
@@ -258,6 +268,7 @@ namespace Servidor
                             _usuarios.Add(nuevoUsuario);
                             Console.WriteLine($"Usuario {nombreUsuario} registrado con éxito");
                             break;
+
                         case CommandConstants.Login:
                             Console.WriteLine("Validando ingreso de usuario en el sistema");
                             var datosLogin = ObtenerDatosDelCliente(header, clientSocket);
@@ -266,6 +277,7 @@ namespace Servidor
                             var contraseñaLogin = datosLoginSeparados[1];
                             ValidarLoginUsuario(nombreLogin, contraseñaLogin);
                             break;
+
                         case CommandConstants.ListUsers:
                             for (int i = 0; i < _usuarios.Count; i++)
                             {
@@ -273,11 +285,21 @@ namespace Servidor
 
                             }
                             break;
+
                         case CommandConstants.Message:
                             Console.WriteLine("Will receive message to display...");
                             var bufferData = new byte[header.IDataLength];
                             networkDataHelper.ReceiveData(clientSocket,header.IDataLength,bufferData, _exit);
                             Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                            break;
+
+                        case CommandConstants.chip:
+                            var dLogin = ObtenerDatosDelCliente(header, clientSocket);
+                            var dSeparados = dLogin.Split("?");
+                            var nomUsu = dSeparados[0];
+                            var chip = dSeparados[1];
+                            Usuario usuChip = buscarUsuarioLogin(nomUsu);
+                            usuChip.nuevoChip(chip);
                             break;
                     }
                 }
@@ -287,6 +309,21 @@ namespace Servidor
                 }
             }
         }
+
+        //Devuelve el usuario logueado a partir de su nombre de usuario
+        private static Usuario buscarUsuarioLogin(string usuLogin)
+        {
+            foreach (var usu in _usuarios)
+            {
+                if (usu.getNomUsu().Equals(usuLogin))
+                {
+                    return usu;
+                }
+            }
+
+            return null;
+        }
+
 
         private static string ObtenerDatosDelCliente(Header header, Socket clientSocket)
         {

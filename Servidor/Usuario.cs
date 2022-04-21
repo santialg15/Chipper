@@ -30,9 +30,9 @@ namespace Servidor
         public Usuario(string _NomReal, string _NomUsu, string _pass, string _imgPerfil)
         {
             pNomReal   = _NomReal;
-            pNomUsu    = _NomUsu    ;
-            pass       = _pass       ;
-            imgPerfil  = _imgPerfil ;
+            pNomUsu    = _NomUsu;
+            pass       = _pass;
+            imgPerfil  = _imgPerfil;
             habilitado = true;
             colSeguidores = new List<Usuario>();
             colSeguidos = new List<Usuario>();
@@ -43,7 +43,7 @@ namespace Servidor
 
         public override string ToString()
         {
-            return pNomUsu.Trim() + " Cantidad de Seguidores: "+ colSeguidores.Count.ToString().Trim() + " Sigue a: " + colSeguidos.Count.ToString().Trim() + " Cantidad de chips: " + colPublicacion.Count.ToString().Trim();
+            return "Usuario: " +pNomUsu.Trim()+ " Nombre: "+ pNomReal.Trim()+ " Cantidad de Seguidores: "+ colSeguidores.Count.ToString().Trim() + " Sigue a: " + colSeguidos.Count.ToString().Trim() + " Cantidad de chips: " + colPublicacion.Count.ToString().Trim();
         }
 
         public List<Publicacion> GetPublicaciones()
@@ -72,6 +72,32 @@ namespace Servidor
                 }
             }
             return contador;
+        }
+
+        public string Seguir(Usuario aSeguir)
+        {
+            string msg = "";
+            foreach (var usu in colSeguidos)
+            {
+                if (aSeguir.getNomUsu().Equals(usu.getNomUsu()))
+                {
+                    msg = "Ya sigue al usuario: " + aSeguir.getNomUsu().Trim();
+                }
+            }
+
+            if (msg != string.Empty)
+            {
+                colSeguidos.Add(aSeguir);
+                msg = "Ahora sigue a: "+ aSeguir.getNomUsu().Trim();
+            }
+
+            return msg;
+        }
+
+        public void nuevoChip(string chip)
+        {
+            Publicacion nuevaPub = new Publicacion(chip);
+            colPublicacion.Add(nuevaPub);
         }
 
     }
