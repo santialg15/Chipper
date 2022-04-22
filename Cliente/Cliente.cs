@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 using Protocolo;
+using Protocolo.Interfaces;
 
 namespace Cliente
 {
@@ -10,6 +11,7 @@ namespace Cliente
         static bool connected = false;
         static NetworkDataHelper networkDataHelper;
 
+        static readonly ISettingsManager SettingsMgr = new SettingsManager();
         static void Main(string[] args)
         {
             var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -18,6 +20,7 @@ namespace Cliente
             connected = true;
             NetworkDataHelper networkDataHelper = new NetworkDataHelper(clientSocket);
             Console.WriteLine("Bienvenido al Sistema Client");
+            string UsuLogin = "12345"; //pNomUsu
             PrintMenu();
 
             new Thread(() => HandleServer(clientSocket,networkDataHelper)).Start();
@@ -87,8 +90,48 @@ namespace Cliente
                             break;
                         }
                         break;
+                    case "6":
+                        Console.WriteLine("Chip:");
+                        var chip = Console.ReadLine();
+
+                        if (chip.Length == 0)
+                        {
+                            Console.WriteLine("Un chip no puede ser vacío");
+                            PrintMenu();
+                            break;
+                        }
+                        if (chip.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey)))
+                        {
+                            Console.WriteLine("Un chip puede tener un máximo de "+ SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey) +" caracteres");
+                            PrintMenu();
+                            break;
+                        }
+
+                        Console.WriteLine("Ingresa imagenes?:");
+                        Console.WriteLine("1 -> Si");
+                        Console.WriteLine("2 -> No");
+
+                        var op = Console.ReadLine();
+                        switch (op)
+                        {
+                            case "1":
+                                Console.WriteLine("Ingrese las rutas de acceso de las imagenes separadas por ?");
+                                var rutasImg = Console.ReadLine();
+                                // enviar img
+                                break;
+                            case "2":
+
+                                networkDataHelper.EnviarDatos(UsuLogin+ "?"+chip, socket, CommandConstants.chip);
+                                break;
+                            default:
+                            Console.WriteLine("Opcion invalida");
+                            PrintMenu();
+                            break;
+                        }
+                        break;
                     default:
                         Console.WriteLine("Opcion invalida");
+                        PrintMenu();
                         break;
                 }
             }
@@ -99,11 +142,13 @@ namespace Cliente
         private static void PrintMenu()
         {
             Console.WriteLine("Opciones validas: ");
-            Console.WriteLine("1 -> registrar un usuario");
-            Console.WriteLine("2 -> ingresar al sistema");
-            Console.WriteLine("3 -> envia un mensaje al server");
-            Console.WriteLine("4 -> lista de usuario");
-            Console.WriteLine("exit -> abandonar el programa");
+            Console.WriteLine("1 -> Registrar un usuario");
+            Console.WriteLine("2 -> Ingresar al sistema");
+            Console.WriteLine("3 -> Envia un mensaje al server");
+            Console.WriteLine("4 -> Lista de usuario");
+            Console.WriteLine("5 -> Seguir usuario");
+            Console.WriteLine("6 -> Nuevo chip");
+            Console.WriteLine("exit -> Abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
         }
 
