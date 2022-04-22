@@ -8,5 +8,8 @@ namespace Protocolo
         public const int Registro = 4;
         public const int chip = 5;
         public const int chipImg = 6;
+        public const int BusquedaIncluyente = 7;
+        public const int BusquedaExcluyente = 8;
+
     }
 }

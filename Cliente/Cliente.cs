@@ -90,6 +90,45 @@ namespace Cliente
                             break;
                         }
                         break;
+
+                    case "4": //BUSQUEDA DE USUARIOS
+                        Console.WriteLine("Ingresar caracteres del usuario a buscar:");
+                        var caracteres = Console.ReadLine();
+                        Console.WriteLine("Elija el tipo de busqueda:");
+                        Console.WriteLine("1 -> Busqueda incluyente");
+                        Console.WriteLine("2 -> Busqueda excluyente");
+                        var tipoDeBusqueda = Console.ReadLine();
+                        switch (tipoDeBusqueda)
+                        {
+                            case "1": //busqueda incluyente
+                                try
+                                {
+                                    networkDataHelper.SendMessage(clientSocket, caracteres, CommandConstants.BusquedaIncluyente);
+                                }
+                                catch (SocketException)
+                                {
+                                    Console.WriteLine("Connection with the server has been interrupted");
+                                    break;
+                                }
+                                break;
+                            case "2": //busqueda excluyente
+                                try
+                                {
+                                    networkDataHelper.SendMessage(clientSocket, caracteres, CommandConstants.BusquedaExcluyente);
+                                }
+                                catch (SocketException)
+                                {
+                                    Console.WriteLine("Connection with the server has been interrupted");
+                                    break;
+                                }
+                                break;
+                            default:
+                                Console.WriteLine("Opcion invalida");
+                                PrintLoggedMenu();
+                                break;
+                        }
+
+                        break;
                     case "6":
                         Console.WriteLine("Chip:");
                         var chip = Console.ReadLine();
@@ -144,7 +183,6 @@ namespace Cliente
             Console.WriteLine("1 -> Registrar un usuario");
             Console.WriteLine("2 -> Ingresar al sistema");
             Console.WriteLine("3 -> Envia un mensaje al server");
-            Console.WriteLine("4 -> Lista de usuario");
             Console.WriteLine("exit -> Abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
         }
@@ -152,13 +190,13 @@ namespace Cliente
         private static void PrintLoggedMenu()
         {
             Console.WriteLine("Menu:");
-            Console.WriteLine("5 -> Buscar usuarios");
+            Console.WriteLine("4 -> Buscar usuarios");
+            Console.WriteLine("5 -> Seguir usuario");
             Console.WriteLine("6 -> Nuevo Chip");
-            Console.WriteLine("7 -> Seguir usuario");
-            Console.WriteLine("8 -> Ver mi perfil"); 
-            Console.WriteLine("9 -> Ver mis notificaciones");
-            Console.WriteLine("10 -> Ver mis chips");
-            Console.WriteLine("11 -> Responder un chip");
+            Console.WriteLine("7 -> Ver mi perfil"); 
+            Console.WriteLine("8 -> Ver mis notificaciones");
+            Console.WriteLine("9  -> Ver mis chips");
+            Console.WriteLine("10 -> Responder un chip");
             Console.WriteLine("exit -> abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
         }
@@ -204,6 +242,46 @@ namespace Cliente
                             networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferData, connected);
                             Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
                             PrintMenu();
+                            break;
+                        case CommandConstants.BusquedaIncluyente:
+                            Console.WriteLine("El servidor esta validando la busqueda...");
+                            var bufferBusquedaIncluyentes = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferBusquedaIncluyentes, connected);
+                            var totalUsuarios = Encoding.UTF8.GetString(bufferBusquedaIncluyentes);
+                            if(totalUsuarios == "")
+                            {
+                                Console.WriteLine("No se encontraron usuarios");
+                            }
+                            else
+                            {
+                                var listaUsuarios = totalUsuarios.Split("?");
+                                Console.WriteLine("Lista de usuarios solicitada:");
+                                for (int i = 0; i < listaUsuarios.Length; i++)
+                                {
+                                    Console.WriteLine($"{listaUsuarios[i]}");
+                                }
+                            }
+                            PrintLoggedMenu();
+                            break;
+                        case CommandConstants.BusquedaExcluyente:
+                            Console.WriteLine("El servidor esta validando la busqueda...");
+                            var bufferBusquedaExcluyente = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferBusquedaExcluyente, connected);
+                            var totalUsuariosExcluyentes = Encoding.UTF8.GetString(bufferBusquedaExcluyente);
+                            if (totalUsuariosExcluyentes == "")
+                            {
+                                Console.WriteLine("No se encontraron usuarios");
+                            }
+                            else
+                            {
+                                var listaUsuarios = totalUsuariosExcluyentes.Split("?");
+                                Console.WriteLine("Lista de usuarios solicitada:");
+                                for (int i = 0; i < listaUsuarios.Length; i++)
+                                {
+                                    Console.WriteLine($"{listaUsuarios[i]}");
+                                }
+                            }
+                            PrintLoggedMenu();
                             break;
                     }
                 }

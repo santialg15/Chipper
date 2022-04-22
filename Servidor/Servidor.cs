@@ -260,7 +260,7 @@ namespace Servidor
                             var contraseña = datosSeparados[2];
                             if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
                             {
-                                networkDataHelper.SendMessage(clientSocket, "El usuario ya existe.",CommandConstants.Registro);
+                                networkDataHelper.SendMessage(clientSocket, "El usuario ya existe.", CommandConstants.Registro);
                                 Console.WriteLine("Ya existe ese usuario");
                                 break;
                             }
@@ -279,14 +279,16 @@ namespace Servidor
                             ValidarLoginUsuario(networkDataHelper, clientSocket, nombreLogin, contraseñaLogin);
                             break;
 
-                        case CommandConstants.ListUsers:
-                            for (int i = 0; i < _usuarios.Count; i++)
-                            {
-                                Console.WriteLine(_usuarios[i].ToString());
-
-                            }
+                        case CommandConstants.BusquedaIncluyente:
+                            Console.WriteLine("El usuario inicio una busqueda de usuarios...");
+                            var datosBusquedaIncluyente = ObtenerDatosDelCliente(header, clientSocket);
+                            BusquedaUsuarios(clientSocket, datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
                             break;
-
+                        case CommandConstants.BusquedaExcluyente:
+                            Console.WriteLine("El usuario inicio una busqueda de usuarios...");
+                            var datosBusquedaExcluyente = ObtenerDatosDelCliente(header, clientSocket);
+                            BusquedaUsuarios(clientSocket, datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
+                            break;
                         case CommandConstants.Message:
                             Console.WriteLine("Will receive message to display...");
                             var bufferData = new byte[header.IDataLength];
@@ -366,6 +368,63 @@ namespace Servidor
         private static bool ExistenUsuariosNoHabilitados()
         {
             return _usuarios.Any(us => us.Habilitado == false);
+        }
+
+        private static void BusquedaUsuarios(Socket clientSocket, string caracteres, int constante)
+        {
+            caracteres = caracteres.ToLower();
+            var totalUsuarios = "";
+            if(_usuarios.Count == 0)
+            {
+                networkDataHelper.SendMessage(clientSocket, $"{totalUsuarios}", constante);
+                return;
+            }
+            else if (caracteres == "" && constante == CommandConstants.BusquedaIncluyente)
+            {
+                networkDataHelper.SendMessage(clientSocket, $"{totalUsuarios}", constante);
+                Console.WriteLine("Busqueda Finalizada");
+                return;
+            }
+            else
+            {
+                for (int i = 0; i < _usuarios.Count; i++)
+                {
+                    var nombreDeUsuario = _usuarios[i].PNomUsu.ToLower();
+                    var nombreDeUsuarioReal = _usuarios[i].PNomReal.ToLower();
+                    if(constante == CommandConstants.BusquedaIncluyente)
+                    {
+                        if (nombreDeUsuario.Contains(caracteres) || nombreDeUsuarioReal.Contains(caracteres))
+                        {
+                            if (totalUsuarios == "")
+                                totalUsuarios += $"{_usuarios[i]}";
+                            else
+                                totalUsuarios += $"?{_usuarios[i]}";
+                        }
+                    }
+                    if(constante == CommandConstants.BusquedaExcluyente)
+                    {
+                        if(caracteres == "")
+                        {
+                            if (totalUsuarios == "")
+                                totalUsuarios += $"{_usuarios[i]}";
+                            else
+                                totalUsuarios += $"?{_usuarios[i]}";
+                        }
+                        else
+                        {
+                            if (!nombreDeUsuario.Contains(caracteres) && !nombreDeUsuarioReal.Contains(caracteres))
+                            {
+                                if (totalUsuarios == "")
+                                    totalUsuarios += $"{_usuarios[i]}";
+                                else
+                                    totalUsuarios += $"?{_usuarios[i]}";
+                            }
+                        }
+                    }
+                }
+            }
+            networkDataHelper.SendMessage(clientSocket, $"{totalUsuarios}", constante);
+            Console.WriteLine("Busqueda Finalizada");
         }
     }
 }
