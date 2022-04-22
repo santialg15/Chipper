@@ -120,8 +120,7 @@ namespace Cliente
                                 // enviar img
                                 break;
                             case "2":
-
-                                networkDataHelper.EnviarDatos(UsuLogin+ "?"+chip, socket, CommandConstants.chip);
+                                networkDataHelper.SendMessage(clientSocket, UsuLogin + "?" + chip, CommandConstants.chip);
                                 break;
                             default:
                             Console.WriteLine("Opcion invalida");
