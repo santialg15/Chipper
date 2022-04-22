@@ -145,8 +145,6 @@ namespace Cliente
             Console.WriteLine("2 -> Ingresar al sistema");
             Console.WriteLine("3 -> Envia un mensaje al server");
             Console.WriteLine("4 -> Lista de usuario");
-            Console.WriteLine("5 -> Seguir usuario");
-            Console.WriteLine("6 -> Nuevo chip");
             Console.WriteLine("exit -> Abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
         }
@@ -154,12 +152,13 @@ namespace Cliente
         private static void PrintLoggedMenu()
         {
             Console.WriteLine("Menu:");
-            Console.WriteLine("1 -> Buscar usuarios");
-            Console.WriteLine("2 -> Seguir usuario");
-            Console.WriteLine("3 -> Crear una publicacion");
-            Console.WriteLine("4 -> Ver perfil");
-            Console.WriteLine("4 -> Ver mi perfil");
-            Console.WriteLine("5 -> Ver mis publicaciones");
+            Console.WriteLine("5 -> Buscar usuarios");
+            Console.WriteLine("6 -> Nuevo Chip");
+            Console.WriteLine("7 -> Seguir usuario");
+            Console.WriteLine("8 -> Ver mi perfil"); 
+            Console.WriteLine("9 -> Ver mis notificaciones");
+            Console.WriteLine("10 -> Ver mis chips");
+            Console.WriteLine("11 -> Responder un chip");
             Console.WriteLine("exit -> abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
         }
@@ -199,13 +198,6 @@ namespace Cliente
                             }
                             PrintMenu();
                             break;
-                        //case CommandConstants.ListUsers:
-                        //    for (int i = 0; i < _usuarios.Count; i++)
-                        //    {
-                        //        Console.WriteLine(_usuarios[i].ToString());
-
-                        //    }
-                        //    break;
                         case CommandConstants.Message:
                             Console.WriteLine("El servidor esta contestando...");
                             var bufferData = new byte[header.IDataLength];
