@@ -16,51 +16,14 @@ namespace Protocolo
             _socket = socket;
         }
 
-        /*public void Enviar(byte[] data)
+        public void SendMessage(Socket socket, string mensaje, int constant)
         {
-            int offset = 0;
-            int size = data.Length;
-            while (offset < size)
-            {
-                int sent = _socket.Send(data, offset, size - offset, SocketFlags.None);
-                if (sent == 0)
-                {
-                    throw new SocketException();
-                }
-
-                offset += sent;
-            }
-        }
-
-        public byte[] Recibir(int length)
-        {
-            byte[] response = new byte[length];
-            int offset = 0;
-            while (offset < length)
-            {
-                int received = _socket.Receive(response, offset, length - offset, SocketFlags.None);
-                if (received == 0)
-                {
-                    throw new SocketException();
-                }
-
-                offset += received;
-            }
-
-            return response;
-        }*/
-
-
-
-
-        public void EnviarDatos(string mensaje, Socket socket, int constante)
-        {
-            var header = new Header(HeaderConstants.Request, constante, mensaje.Length);
-            var data = header.GetRequest();
+            var header = new Header(HeaderConstants.Request, constant, mensaje.Length);
+            var dataMessage = header.GetRequest();
             var sentBytes = 0;
-            while (sentBytes < data.Length)
+            while (sentBytes < dataMessage.Length)
             {
-                sentBytes += socket.Send(data, sentBytes, data.Length - sentBytes, SocketFlags.None);
+                sentBytes += socket.Send(dataMessage, sentBytes, dataMessage.Length - sentBytes, SocketFlags.None);
             }
 
             sentBytes = 0;
@@ -72,7 +35,7 @@ namespace Protocolo
             }
         }
 
-        public void ReceiveData(Socket clientSocket, int Length, byte[] buffer, bool exit)
+        public void ReceiveData(Socket clientSocket, int Length, byte[] buffer, bool _exit)
         {
             var iRecv = 0;
             while (iRecv < Length)
@@ -82,7 +45,7 @@ namespace Protocolo
                     var localRecv = clientSocket.Receive(buffer, iRecv, Length - iRecv, SocketFlags.None);
                     if (localRecv == 0) // Si recieve retorna 0 -> la conexion se cerro desde el endpoint remoto
                     {
-                        if (!exit)
+                        if (!_exit)
                         {
                             clientSocket.Shutdown(SocketShutdown.Both);
                             clientSocket.Close();

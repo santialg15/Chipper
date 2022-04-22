@@ -7,23 +7,29 @@ namespace Cliente
 {
     class Cliente
     {
+        static bool connected = false;
+        static NetworkDataHelper networkDataHelper;
+
         static void Main(string[] args)
         {
-            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0));
-            socket.Connect("127.0.0.1", 20000);
-            var connected = true;
-            NetworkDataHelper networkDataHelper = new NetworkDataHelper(socket);
+            var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            clientSocket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0));
+            clientSocket.Connect("127.0.0.1", 20000);
+            connected = true;
+            NetworkDataHelper networkDataHelper = new NetworkDataHelper(clientSocket);
             Console.WriteLine("Bienvenido al Sistema Client");
             PrintMenu();
+
+            new Thread(() => HandleServer(clientSocket,networkDataHelper)).Start();
+
             while (connected)
             {
                 var opcion = Console.ReadLine();
                 switch (opcion)
                 {
                     case "exit":
-                        socket.Shutdown(SocketShutdown.Both);
-                        socket.Close();
+                        clientSocket.Shutdown(SocketShutdown.Both);
+                        clientSocket.Close();
                         connected = false;
                         break;
                     case "1":
@@ -40,7 +46,15 @@ namespace Cliente
 
                         var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
 
-                        networkDataHelper.EnviarDatos(infoUsuario, socket, CommandConstants.Registro);
+                        try
+                        {
+                            networkDataHelper.SendMessage(clientSocket, infoUsuario,CommandConstants.Registro);
+                        }
+                        catch (SocketException)
+                        {
+                            Console.WriteLine("Connection with the server has been interrupted");
+                            break;
+                        }
                         break;
                     case "2":
                         Console.WriteLine("Ingrese su nombre de usuario:");
@@ -50,12 +64,28 @@ namespace Cliente
                         var contraseñaLogin = Console.ReadLine();
 
                         var infoLogin = $"{nombreLogin}?{contraseñaLogin}";
-                        networkDataHelper.EnviarDatos(infoLogin, socket, CommandConstants.Login);
+                        try
+                        {
+                            networkDataHelper.SendMessage(clientSocket, infoLogin, CommandConstants.Login);
+                        }
+                        catch (SocketException)
+                        {
+                            Console.WriteLine("Connection with the server has been interrupted");
+                            break;
+                        }
                         break;
                     case "3":
                         Console.WriteLine("Ingrese el mensaje a enviar:");
                         var mensaje = Console.ReadLine();
-                        networkDataHelper.EnviarDatos(mensaje, socket, CommandConstants.Message);
+                        try
+                        {
+                            networkDataHelper.SendMessage(clientSocket, mensaje, CommandConstants.Message);
+                        }
+                        catch (SocketException)
+                        {
+                            Console.WriteLine("Connection with the server has been interrupted");
+                            break;
+                        }
                         break;
                     default:
                         Console.WriteLine("Opcion invalida");
@@ -75,6 +105,77 @@ namespace Cliente
             Console.WriteLine("4 -> lista de usuario");
             Console.WriteLine("exit -> abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
+        }
+
+        private static void PrintLoggedMenu()
+        {
+            Console.WriteLine("Menu:");
+            Console.WriteLine("1 -> Buscar usuarios");
+            Console.WriteLine("2 -> Seguir usuario");
+            Console.WriteLine("3 -> Crear una publicacion");
+            Console.WriteLine("4 -> Ver perfil");
+            Console.WriteLine("4 -> Ver mi perfil");
+            Console.WriteLine("5 -> Ver mis publicaciones");
+            Console.WriteLine("exit -> abandonar el programa");
+            Console.WriteLine("Ingrese su opcion: ");
+        }
+
+        private static void HandleServer(Socket clientSocket, NetworkDataHelper networkDataHelper)
+        {
+            while (connected)
+            {
+                var headerLength = HeaderConstants.Request.Length + HeaderConstants.CommandLength +
+                                   HeaderConstants.DataLength;
+                var buffer = new byte[headerLength];
+                try
+                {
+                    networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, connected);
+                    var header = new Header();
+                    header.DecodeData(buffer);
+                    switch (header.ICommand)
+                    {
+                        case CommandConstants.Registro:
+                            Console.WriteLine("El servidor esta validando el registro del usuario en el sistema...");
+                            var datosRegistro = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosRegistro, connected);
+                            var respuestaRegistro = Encoding.UTF8.GetString(datosRegistro);
+                            Console.WriteLine($"{respuestaRegistro}");
+                            PrintMenu();
+                            break;
+                        case CommandConstants.Login:
+                            Console.WriteLine("El servidor esta validando el ingreso del usuario al sistema...");
+                            var datosLogin = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosLogin, connected);
+                            var respuestaLogin = Encoding.UTF8.GetString(datosLogin);
+                            Console.WriteLine($"{respuestaLogin}");
+                            if(respuestaLogin == "El usuario se logueo correctamente.") 
+                            {
+                                PrintLoggedMenu();
+                                break;
+                            }
+                            PrintMenu();
+                            break;
+                        //case CommandConstants.ListUsers:
+                        //    for (int i = 0; i < _usuarios.Count; i++)
+                        //    {
+                        //        Console.WriteLine(_usuarios[i].ToString());
+
+                        //    }
+                        //    break;
+                        case CommandConstants.Message:
+                            Console.WriteLine("El servidor esta contestando...");
+                            var bufferData = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferData, connected);
+                            Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                            PrintMenu();
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");
+                }
+            }
         }
     }
 }

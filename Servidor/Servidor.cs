@@ -215,6 +215,8 @@ namespace Servidor
                     Console.WriteLine("Nueva conexion aceptada...");
                     var threadcClient = new Thread(() => HandleClient(clientConnected));
                     threadcClient.Start();
+
+                    //SendMessage(networkDataHelper);
                 }
                 catch (Exception e)
                 {
@@ -241,22 +243,21 @@ namespace Servidor
                     {
                         case CommandConstants.Registro:
                             Console.WriteLine("Validando registro de un usuario en el sistema");
-                            var datosRegistro = ObtenerDatosDelCliente(header,clientSocket);
-                            
+                            var datosRegistro = ObtenerDatosDelCliente(header, clientSocket);
                             var datosSeparados = datosRegistro.Split("?");
                             var nombreUsuario = datosSeparados[0];
                             var nombreReal = datosSeparados[1];
                             var contraseña = datosSeparados[2];
-                            if(_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
+                            if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
                             {
-                                networkDataHelper.EnviarDatos("Ya existe ese usuario", clientSocket, CommandConstants.Registro);
-                                //Enviar al cliente que ya existe un usuario con ese nombre de usuario.
+                                networkDataHelper.SendMessage(clientSocket, "El usuario ya existe.",CommandConstants.Registro);
                                 Console.WriteLine("Ya existe ese usuario");
                                 break;
                             }
                             Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
                             _usuarios.Add(nuevoUsuario);
-                            Console.WriteLine($"Usuario {nombreUsuario} registrado con éxito");
+                            Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
+                            networkDataHelper.SendMessage(clientSocket, "El usuario fue registrado con exito.", CommandConstants.Registro);
                             break;
                         case CommandConstants.Login:
                             Console.WriteLine("Validando ingreso de usuario en el sistema");
@@ -264,7 +265,7 @@ namespace Servidor
                             var datosLoginSeparados = datosLogin.Split("?");
                             var nombreLogin = datosLoginSeparados[0];
                             var contraseñaLogin = datosLoginSeparados[1];
-                            ValidarLoginUsuario(nombreLogin, contraseñaLogin);
+                            ValidarLoginUsuario(networkDataHelper, clientSocket, nombreLogin, contraseñaLogin);
                             break;
                         case CommandConstants.ListUsers:
                             for (int i = 0; i < _usuarios.Count; i++)
@@ -276,31 +277,32 @@ namespace Servidor
                         case CommandConstants.Message:
                             Console.WriteLine("Will receive message to display...");
                             var bufferData = new byte[header.IDataLength];
-                            networkDataHelper.ReceiveData(clientSocket,header.IDataLength,bufferData, _exit);
+                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferData, _exit);
                             Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                            networkDataHelper.SendMessage(clientSocket, "El mensaje fue recibido correctamente!.",CommandConstants.Message);
                             break;
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");    
+                    Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");
                 }
             }
         }
 
         private static string ObtenerDatosDelCliente(Header header, Socket clientSocket)
         {
-            var datosRegistroBuffer = new byte[header.IDataLength];
-            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosRegistroBuffer,_exit);
-            return Encoding.UTF8.GetString(datosRegistroBuffer);
+            var datosBuffer = new byte[header.IDataLength];
+            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosBuffer, _exit);
+            return Encoding.UTF8.GetString(datosBuffer);
         }
 
-        private static void ValidarLoginUsuario(string nombreLogin, string contraseña)
+        private static void ValidarLoginUsuario(NetworkDataHelper networkDataHelper, Socket clientSocket, string nombreLogin, string contraseña)
         {
-            if(!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
+            if (!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
             {
-                //ENVIAR MENSAJE AL CLIENTE QUE NO EXISTE EL USUARIO Y PERMITIRLE REPETIR PROCESO
-                Console.WriteLine("no existe usuario");
+                networkDataHelper.SendMessage(clientSocket, "No existe el usuario con el que se quiere loguear.", CommandConstants.Login);
+                Console.WriteLine("No existe el usuario con el que se quiere loguear.");
             }
             else if(!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
             {
@@ -314,7 +316,8 @@ namespace Servidor
             }
             else
             {
-                Console.WriteLine($"El usuario {nombreLogin} se logueo correctamente.");
+                networkDataHelper.SendMessage(clientSocket, "El usuario se logueo correctamente.", CommandConstants.Login);
+                Console.WriteLine("El usuario se logueo correctamente.");
             }
         }
 
