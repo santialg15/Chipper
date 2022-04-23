@@ -220,12 +220,12 @@ namespace Servidor
 
 
             //Notificaciones
-            Publicacion p1 = new Publicacion("Publicación 1");
-            Publicacion p2 = new Publicacion("Publicación 2");
-            Publicacion p3 = new Publicacion("Publicación 3");
-            Publicacion p4 = new Publicacion("Publicación 4");
-            Publicacion p5 = new Publicacion("Publicación 5");
-            Publicacion p6 = new Publicacion("Publicación 6");
+            Publicacion p1 = new Publicacion("Publicación 1", _usu2.ColPublicacion.Count);
+            Publicacion p2 = new Publicacion("Publicación 2", _usu2.ColPublicacion.Count);
+            Publicacion p3 = new Publicacion("Publicación 3", _usu2.ColPublicacion.Count);
+            Publicacion p4 = new Publicacion("Publicación 4", _usu2.ColPublicacion.Count);
+            Publicacion p5 = new Publicacion("Publicación 5", _usu2.ColPublicacion.Count);
+            Publicacion p6 = new Publicacion("Publicación 6", _usu2.ColPublicacion.Count);
 
             _usu2.nuevoChip("Publicación 1");
             _usu2.nuevoChip("Publicación 2");
