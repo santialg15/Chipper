@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Text;
 using ConsoleArchiveSender;
 using Protocolo;
+using Protocolo.FileTransfer;
+//using Protocolo.FileTransfer;
 using Protocolo.Interfaces;
 
 
@@ -250,7 +252,8 @@ namespace Servidor
                 try
                 {
                     networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, _exit);
-                    var header = new FileHeader1();
+                    var fileheader = new FileHeader();
+                    var header = new Header();
                     header.DecodeData(buffer);
 
                     switch (header.ICommand)

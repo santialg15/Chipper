@@ -7,6 +7,7 @@ using Protocolo.FileHandler.Interfaces;
 using Protocolo.NetworkUtils;
 using Protocolo.NetworkUtils.Interfaces;
 using Protocolo;
+using Protocolo.FileTransfer;
 
 namespace ConsoleArchiveSender
 {
