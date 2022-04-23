@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using ConsoleArchiveSender;
 using Protocolo;
 using Protocolo.Interfaces;
 
@@ -198,6 +199,7 @@ namespace Servidor
             }
         }
 
+
         private static void printMenu()
         {
             Console.WriteLine("1 -> abandonar el programa");
@@ -209,6 +211,7 @@ namespace Servidor
             Console.WriteLine("7 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey) + " que más usaron el sistema en los ultimos " + SettingsMgr.ReadSetting(ServerConfig.SeverTmpMostrarPubConfigKey) +" minutos");
             Console.WriteLine("Ingrese el numero de la opción deseada: ");
         }
+
         
         private static void ListenForConnections(Socket socketServer)
         {
@@ -234,6 +237,7 @@ namespace Servidor
             Console.WriteLine("Exiting....");
         }
 
+
         private static void HandleClient(Socket clientSocket)
         {
             while (!_exit)
@@ -244,7 +248,7 @@ namespace Servidor
                 try
                 {
                     networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, _exit);
-                    var header = new Header();
+                    var header = new FileHeader1();
                     header.DecodeData(buffer);
 
                     switch (header.ICommand)
@@ -297,9 +301,22 @@ namespace Servidor
                             var dLogin = ObtenerDatosDelCliente(header, clientSocket);
                             var dSeparados = dLogin.Split("?");
                             var nomUsu = dSeparados[0];
-                            var chip = dSeparados[1];
+                            var hayImg = dSeparados[1];
+                            var chip = dSeparados[2];
+
+                            if (hayImg.Equals("1"))
+                            {
+                                var serverHandler = new ServerHandler();
+                                serverHandler.StartClient();
+                                serverHandler.ReceiveFile();
+                            }
+
                             Usuario usuChip = buscarUsuarioLogin(nomUsu);
                             usuChip.nuevoChip(chip);
+
+
+                            //networkDataHelper.ReceiveFile();
+
                             break;
                     }
                 }
@@ -309,6 +326,7 @@ namespace Servidor
                 }
             }
         }
+
 
         //Devuelve el usuario logueado a partir de su nombre de usuario
         private static Usuario buscarUsuarioLogin(string usuLogin)
@@ -325,12 +343,13 @@ namespace Servidor
         }
 
 
-        private static string ObtenerDatosDelCliente(Header header, Socket clientSocket)
+        private static string ObtenerDatosDelCliente(FileHeader1 header, Socket clientSocket)
         {
             var datosRegistroBuffer = new byte[header.IDataLength];
             networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosRegistroBuffer,_exit);
             return Encoding.UTF8.GetString(datosRegistroBuffer);
         }
+
 
         private static void ValidarLoginUsuario(string nombreLogin, string contraseña)
         {
@@ -355,10 +374,12 @@ namespace Servidor
             }
         }
 
+
         private static bool ExistenUsuariosHabilitados()
         {
             return _usuarios.Any(us => us.Habilitado == true);
         }
+
 
         private static bool ExistenUsuariosNoHabilitados()
         {

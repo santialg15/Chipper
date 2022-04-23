@@ -1,7 +1,11 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using ConsoleArchiveSender;
+using Microsoft.VisualBasic;
 using Protocolo;
+using Protocolo.FileHandler;
+using Protocolo.FileHandler.Interfaces;
 using Protocolo.Interfaces;
 
 namespace Cliente
@@ -82,16 +86,39 @@ namespace Cliente
                         Console.WriteLine("2 -> No");
 
                         var op = Console.ReadLine();
+
+                        networkDataHelper.EnviarDatos(UsuLogin + "?"+ op + "?" + chip, socket, CommandConstants.chip);
                         switch (op)
                         {
-                            case "1":
+                            case "1": //ingresa img 
+                                var ClientHandler = new ClientFileHandler();
+                                ClientHandler.StartServer();
                                 Console.WriteLine("Ingrese las rutas de acceso de las imagenes separadas por ?");
                                 var rutasImg = Console.ReadLine();
-                                // enviar img
-                                break;
-                            case "2":
+                                rutasImg += '?';
+                                var dSeparados = rutasImg.Split("?");
 
-                                networkDataHelper.EnviarDatos(UsuLogin+ "?"+chip, socket, CommandConstants.chip);
+                                if (dSeparados.Length > 0)
+                                {
+                                    int index = 0;
+                                    while (index < dSeparados.Length)
+                                    {
+                                        string path = dSeparados[index];
+                                        IFileHandler fileHandler = new FileHandler();
+                                        if (fileHandler.FileExists(path))
+                                        {
+                                            ClientHandler.SendFile(path);
+                                        }
+                                        index++;
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Error debe ingresar la ruta de los archivos");
+                                    PrintMenu();
+                                }
+                                PrintMenu();
+
                                 break;
                             default:
                             Console.WriteLine("Opcion invalida");
@@ -121,5 +148,6 @@ namespace Cliente
             Console.WriteLine("exit -> Abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
         }
+
     }
 }

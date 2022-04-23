@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Protocolo.FileHandler.Interfaces;
+using Protocolo.FileHandler;
+using Protocolo.Interfaces;
+using Protocolo.NetworkUtils;
+using Protocolo.NetworkUtils.Interfaces;
 
 namespace Protocolo
 {
@@ -11,51 +17,17 @@ namespace Protocolo
     {
         private readonly Socket _socket;
 
+
         public NetworkDataHelper(Socket socket)
         {
             _socket = socket;
         }
 
-        /*public void Enviar(byte[] data)
-        {
-            int offset = 0;
-            int size = data.Length;
-            while (offset < size)
-            {
-                int sent = _socket.Send(data, offset, size - offset, SocketFlags.None);
-                if (sent == 0)
-                {
-                    throw new SocketException();
-                }
 
-                offset += sent;
-            }
-        }
-
-        public byte[] Recibir(int length)
-        {
-            byte[] response = new byte[length];
-            int offset = 0;
-            while (offset < length)
-            {
-                int received = _socket.Receive(response, offset, length - offset, SocketFlags.None);
-                if (received == 0)
-                {
-                    throw new SocketException();
-                }
-
-                offset += received;
-            }
-
-            return response;
-        }*/
-
-
-
-
+   
         public void EnviarDatos(string mensaje, Socket socket, int constante)
         {
-            var header = new Header(HeaderConstants.Request, constante, mensaje.Length);
+            var header = new FileHeader1(HeaderConstants.Request, constante, mensaje.Length);
             var data = header.GetRequest();
             var sentBytes = 0;
             while (sentBytes < data.Length)
@@ -102,5 +74,6 @@ namespace Protocolo
                 }
             }
         }
+
     }
 }

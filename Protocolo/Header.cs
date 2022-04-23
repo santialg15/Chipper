@@ -14,7 +14,7 @@ namespace Protocolo
     
     // RES040015XXXXXXXXXXXXXXX
     
-    public class Header
+    public class FileHeader1
     {
         private byte[] _direction;
         private byte[] _command;
@@ -42,11 +42,11 @@ namespace Protocolo
             set => _iDataLength = value;
         }
 
-        public Header()
+        public FileHeader1()
         {
         }
 
-        public Header(string direction, int command, int datalength)
+        public FileHeader1(string direction, int command, int datalength)
         {
 
             _direction = Encoding.UTF8.GetBytes(direction);
