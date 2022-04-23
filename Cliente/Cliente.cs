@@ -170,7 +170,7 @@ namespace Cliente
                             var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
                             networkDataHelper.SendMessage(clientSocket, datosParaSeguirUsuario, CommandConstants.SeguirUsuario);
                             break;
-                        case "6":
+                        case "6": //NUEVO CHIP
                             Console.WriteLine("Chip:");
                             var chip = Console.ReadLine();
 
@@ -196,11 +196,10 @@ namespace Cliente
 
                             var op = Console.ReadLine();
 
-                            networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + op + "?" + chip,
-                                CommandConstants.chip);
                             switch (op)
                             {
                                 case "1": //ingresa img 
+                                    networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + op + "?" + chip, CommandConstants.chip);
                                     var ClientHandler = new ClientFileHandler();
                                     ClientHandler.StartServer();
                                     Console.WriteLine("Ingrese las rutas de acceso de las imagenes separadas por ?");
@@ -226,19 +225,20 @@ namespace Cliente
                                     else
                                     {
                                         Console.WriteLine("Error debe ingresar la ruta de los archivos");
-                                        PrintLoggedMenu();
                                     }
+                                    break;
 
-                                    PrintLoggedMenu();
-
+                                case "2":
+                                    networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + op + "?" + chip, CommandConstants.chip);
                                     break;
                                 default:
                                     Console.WriteLine("Opcion invalida");
-                                    PrintLoggedMenu();
                                     break;
-                            }
 
+                            }
+                            PrintLoggedMenu();
                             break;
+
                         case "7": //VER Noficaciones
                             Console.WriteLine("Notificaciones:");
                             networkDataHelper.SendMessage(clientSocket, usuLogin, CommandConstants.verNotif);
@@ -415,12 +415,38 @@ namespace Cliente
                             {
                                 Console.WriteLine("Lista de chips:");
                                 var listaChips = totalChips.Split("?");
-                                for (int i = 0; i < listaChips.Length; i++)
+                                string usuarioDelChip = "";
+                                for (int i = 0; i < listaChips.Length-1; i++)
                                 {
-                                    Console.WriteLine(listaChips[i].ToString());
+                                    if(i == 0) 
+                                    {
+                                        usuarioDelChip = listaChips[i];
+                                        Console.WriteLine(listaChips[i]);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"{listaChips[i]}");
+                                    }
+                                }
+                                //EMPIEZA FUNCIONALIDAD CRF9 RESPONDER CHIP
+                                Console.WriteLine("Ingrese el numero de chip al que quiere responder, de lo contrario escriba: NO.");
+                                var decision = Console.ReadLine();
+                                if(decision == "NO" || decision == "no")
+                                {
+                                    PrintLoggedMenu();
+                                }
+                                else
+                                {
+                                    if(int.TryParse(decision, out int num))
+                                    {
+                                        ResponderUnChip(clientSocket, header, usuLogin, usuarioDelChip, decision);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Debe ingresar un numero correcto.");
+                                    }
                                 }
                             }
-
                             PrintLoggedMenu();
                             break;
                     }
@@ -430,6 +456,14 @@ namespace Cliente
                     Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");
                 }
             }
+        }
+
+        private static void ResponderUnChip(Socket clientSocket, Header header, string usuarioLogueado, string usuarioDelChip, string numeroChip)
+        {
+            Console.WriteLine("Escriba la respuesta:");
+
+            var datosRespuestaChip = $"{usuarioLogueado}?{usuarioDelChip}?{numeroChip}";
+            networkDataHelper.SendMessage(clientSocket, datosRespuestaChip, CommandConstants.ResponderChip);
         }
     }
 }

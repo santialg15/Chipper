@@ -214,22 +214,22 @@ namespace Servidor
             _usu2.Seguir(_usu1);
 
             //Notificaciones
-            Publicacion p1 = new Publicacion("Publicación 1");
-            Publicacion p2 = new Publicacion("Publicación 2");
-            Publicacion p3 = new Publicacion("Publicación 3");
-            Publicacion p4 = new Publicacion("Publicación 4");
-            Publicacion p5 = new Publicacion("Publicación 5");
+            Publicacion p1 = new Publicacion("Publicacion 1",_usu2.ColPublicacion.Count);
+            Publicacion p2 = new Publicacion("Publicacion 2",_usu2.ColPublicacion.Count);
+            Publicacion p3 = new Publicacion("Publicacion 3",_usu2.ColPublicacion.Count);
+            Publicacion p4 = new Publicacion("Publicacion 4",_usu2.ColPublicacion.Count);
+            Publicacion p5 = new Publicacion("Publicacion 5",_usu2.ColPublicacion.Count);
             _usu1.AddNotif(p1);
             _usu1.AddNotif(p2);
             _usu1.AddNotif(p3);
             _usu1.AddNotif(p4);
             _usu1.AddNotif(p5);
 
-            _usu2.nuevoChip("Publicación 1");
-            _usu2.nuevoChip("Publicación 2");
-            _usu2.nuevoChip("Publicación 3");
-            _usu2.nuevoChip("Publicación 4");
-            _usu2.nuevoChip("Publicación 5");
+            _usu2.nuevoChip("Publicacion 1");
+            _usu2.nuevoChip("Publicacion 2");
+            _usu2.nuevoChip("Publicacion 3");
+            _usu2.nuevoChip("Publicacion 4");
+            _usu2.nuevoChip("Publicacion 5");
         }
 
 
@@ -238,10 +238,10 @@ namespace Servidor
             Console.WriteLine("1 -> abandonar el programa");
             Console.WriteLine("2 -> listar usuarios");
             Console.WriteLine("3 -> Buscar chips");
-            Console.WriteLine("4 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopSeguidoresConfigKey) + " con más seguidores");
+            Console.WriteLine("4 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopSeguidoresConfigKey) + " con mas seguidores");
             Console.WriteLine("5 -> Negar acceso a usuario");
             Console.WriteLine("6 -> Permitir acceso a usuario");
-            Console.WriteLine("7 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey) + " que más usaron el sistema en los ultimos " + SettingsMgr.ReadSetting(ServerConfig.SeverTmpMostrarPubConfigKey) + " minutos");
+            Console.WriteLine("7 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey) + " que mas usaron el sistema en los ultimos " + SettingsMgr.ReadSetting(ServerConfig.SeverTmpMostrarPubConfigKey) + " minutos");
             Console.WriteLine("Ingrese el numero de la opción deseada: ");
         }
 
@@ -369,9 +369,17 @@ namespace Servidor
                             else
                             {
                                 var chips = usuarioElegido.ColPublicacion;
-                                for (int i = 0; i < chips.Count; i++)
+                                if(chips.Count > 0)
                                 {
-                                    totalChips += chips[i].ToString() + "?";
+                                    totalChips += $"{usuarioElegido.PNomUsu} :?";
+                                    for (int i = 0; i < chips.Count; i++)
+                                    {
+                                        totalChips += chips[i].ToString() + "?";
+                                        for (int r = 0; r < chips[i].colRespuesta.Count; r++)
+                                        {
+                                            totalChips += $"Respuesta {r}: {chips[i].colRespuesta[r]}?";
+                                        }
+                                    }
                                 }
                                 networkDataHelper.SendMessage(clientSocket, totalChips, CommandConstants.VerChips);
                             }
@@ -394,6 +402,12 @@ namespace Servidor
                             networkDataHelper.SendMessage(clientSocket, totalNotif, CommandConstants.VerChips);
                             
                             Console.WriteLine("Funcionalidad ver notificaciones finalizada.");
+                            break;
+
+                        case CommandConstants.ResponderChip:
+                            Console.WriteLine("Procesando solicitud de respuesta de chip...");
+                            var datosRespuestaChip = ObtenerDatosDelCliente(header, clientSocket);
+                            ResponderChip(clientSocket, datosRespuestaChip);
                             break;
                     }
                 }
@@ -598,6 +612,15 @@ namespace Servidor
                 }
             }
             Console.WriteLine("Funcionalidad seguir usuario finalizada.");
+        }
+
+        private static void ResponderChip(Socket clientSocket, string datosRespuestaChip)
+        {
+            var datosRespuesta = datosRespuestaChip.Split("?");
+            var usuarioLogueado = datosRespuesta[0];
+            var usuarioDeChip = datosRespuesta[1];
+            var numeroChip = datosRespuesta[2];
+
         }
     }
 }

@@ -105,7 +105,7 @@ namespace Servidor
 
         public Publicacion nuevoChip(string chip)
         {
-            Publicacion nuevaPub = new Publicacion(chip);
+            Publicacion nuevaPub = new Publicacion(chip, colPublicacion.Count);
             colPublicacion.Add(nuevaPub);
             return nuevaPub;
         }
