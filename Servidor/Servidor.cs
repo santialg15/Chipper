@@ -258,16 +258,7 @@ namespace Servidor
                             var nombreUsuario = datosSeparados[0];
                             var nombreReal = datosSeparados[1];
                             var contraseña = datosSeparados[2];
-                            if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
-                            {
-                                networkDataHelper.SendMessage(clientSocket, "El usuario ya existe.", CommandConstants.Registro);
-                                Console.WriteLine("Ya existe ese usuario");
-                                break;
-                            }
-                            Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
-                            _usuarios.Add(nuevoUsuario);
-                            Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
-                            networkDataHelper.SendMessage(clientSocket, "El usuario fue registrado con exito.", CommandConstants.Registro);
+                            ValidarRegistroUsuario(clientSocket, nombreUsuario, nombreReal, contraseña);
                             break;
 
                         case CommandConstants.Login:
@@ -284,11 +275,13 @@ namespace Servidor
                             var datosBusquedaIncluyente = ObtenerDatosDelCliente(header, clientSocket);
                             BusquedaUsuarios(clientSocket, datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
                             break;
+
                         case CommandConstants.BusquedaExcluyente:
                             Console.WriteLine("El usuario inicio una busqueda de usuarios...");
                             var datosBusquedaExcluyente = ObtenerDatosDelCliente(header, clientSocket);
                             BusquedaUsuarios(clientSocket, datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
                             break;
+
                         case CommandConstants.Message:
                             Console.WriteLine("Will receive message to display...");
                             var bufferData = new byte[header.IDataLength];
@@ -336,22 +329,48 @@ namespace Servidor
             return Encoding.UTF8.GetString(datosBuffer);
         }
 
+        private static void ValidarRegistroUsuario(Socket clientSocket, string nombreUsuario, string nombreReal, string contraseña)
+        {
+            if (nombreUsuario == "" || nombreReal == "" || contraseña == "")
+            {
+                networkDataHelper.SendMessage(clientSocket, "Ningun campo puede estar vacio.", CommandConstants.Registro);
+                Console.WriteLine("No se realizo el registro de usuario.");
+            }
+            else if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
+            {
+                networkDataHelper.SendMessage(clientSocket, "El usuario ya existe.", CommandConstants.Registro);
+                Console.WriteLine("No se realizo el registro de usuario.");
+            }
+            else
+            {
+                Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
+                _usuarios.Add(nuevoUsuario);
+                Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
+                networkDataHelper.SendMessage(clientSocket, "El usuario fue registrado con exito.", CommandConstants.Registro);
+            }
+        }
+
         private static void ValidarLoginUsuario(NetworkDataHelper networkDataHelper, Socket clientSocket, string nombreLogin, string contraseña)
         {
-            if (!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
+            if(nombreLogin == "" || contraseña == "")
+            {
+                networkDataHelper.SendMessage(clientSocket, "Ningun campo puede ser vacio.", CommandConstants.Login);
+                Console.WriteLine("Logueo incorrecto por campos vacios.");
+            }
+            else if (!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
             {
                 networkDataHelper.SendMessage(clientSocket, "No existe el usuario con el que se quiere loguear.", CommandConstants.Login);
-                Console.WriteLine("No existe el usuario con el que se quiere loguear.");
+                Console.WriteLine("Logueo incorrecto por usuario inexistente.");
             }
             else if(!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
             {
-                //ENVIAR MENSAJE AL CLIENTE QUE NO COINCIDE LA CONTRASEÑA Y PERMITIRLE REPETIR PROCESO
-                Console.WriteLine("contraseña incorrecta");
+                networkDataHelper.SendMessage(clientSocket, "Contraseña incorrecta", CommandConstants.Login);
+                Console.WriteLine("Logueo incorrecto por contraseña incorrecta");
             }
             else if(_usuarios.Exists(u => u.PNomUsu == nombreLogin && u.Pass == contraseña && u.Habilitado == false))
             {
-                    //ENVIAR MENSAJE AL CLIENTE QUE EL USUARIO NO ESTA HABILITADO A LOGUERSE
-                    Console.WriteLine("usuario no habilitado");
+                networkDataHelper.SendMessage(clientSocket, "El usuario se encuentra inhabilitado.", CommandConstants.Login);
+                Console.WriteLine("Logueo denegado por usuario no habilitado");
             }
             else
             {
