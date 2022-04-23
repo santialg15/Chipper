@@ -90,20 +90,6 @@ namespace Cliente
                             }
 
                             break;
-                        case "3":
-                            Console.WriteLine("Ingrese el mensaje a enviar:");
-                            var mensaje = Console.ReadLine();
-                            try
-                            {
-                                networkDataHelper.SendMessage(clientSocket, mensaje, CommandConstants.Message);
-                            }
-                            catch (SocketException)
-                            {
-                                Console.WriteLine("Connection with the server has been interrupted");
-                                break;
-                            }
-
-                            break;
                         default:
                             Console.WriteLine("Opcion invalida");
                             PrintMenu();
@@ -324,14 +310,6 @@ namespace Cliente
 
                             break;
 
-                        case CommandConstants.Message:
-                            Console.WriteLine("El servidor esta contestando...");
-                            var bufferData = new byte[header.IDataLength];
-                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferData, connected);
-                            Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
-                            PrintMenu();
-                            break;
-
                         case CommandConstants.BusquedaIncluyente:
                             Console.WriteLine("El servidor esta validando la busqueda...");
                             var bufferBusquedaIncluyentes = new byte[header.IDataLength];
@@ -446,6 +424,25 @@ namespace Cliente
                                         Console.WriteLine("Debe ingresar un numero correcto.");
                                     }
                                 }
+                            }
+                            PrintLoggedMenu();
+                            break;
+
+                        case CommandConstants.verNotif:
+                            var bufferVerNotif = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferVerNotif, connected);
+                            var totalNotif = Encoding.UTF8.GetString(bufferVerNotif);
+                            Console.WriteLine("Lista de Notificaciones:");
+                            if (totalNotif.Length > 0)
+                            {
+                                var listaNotif = totalNotif.Split("?");
+                                for (int i = 0; i < listaNotif.Length; i++)
+                                {
+                                    Console.WriteLine(listaNotif[i].ToString());
+                                }
+                            }else
+                            {
+                                Console.WriteLine("No tiene notificaciones");
                             }
                             PrintLoggedMenu();
                             break;

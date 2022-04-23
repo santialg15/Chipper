@@ -183,12 +183,16 @@ namespace Servidor
                         break;
 
                     case "7": // SRF7
-                        _usuarios.OrderBy(usuario => usuario.GetCantPubEnTmpConf());
+                        IEnumerable<Usuario> colUsuarios = _usuarios.OrderByDescending(usuario => usuario.GetCantPubEnTmpConf());
                         int cont = 0;
-                        while (cont < Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey)) && cont < _usuarios.Count)
+                        foreach (var usu in colUsuarios)  
                         {
-                            Console.WriteLine(_usuarios[cont].ToString());
+                            Console.WriteLine(usu.ToString());
                             cont++;
+                           if (cont == Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey)))
+                           {
+                               break;
+                           }
                         }
                         printMenu();
                         break;
@@ -210,20 +214,33 @@ namespace Servidor
             _usuarios.Add(_usu2);
             _usuarios.Add(_usu3);
 
-            _usu1.Seguir(_usu2);
-            _usu2.Seguir(_usu1);
+            SeguirUnUsuarioParaTest("dpena", "salvarez");
+            SeguirUnUsuarioParaTest("dpena", "pprueba");
+            SeguirUnUsuarioParaTest("salvarez", "dpena");
+
 
             //Notificaciones
-            Publicacion p1 = new Publicacion("Publicacion 1",_usu2.ColPublicacion.Count);
-            Publicacion p2 = new Publicacion("Publicacion 2",_usu2.ColPublicacion.Count);
-            Publicacion p3 = new Publicacion("Publicacion 3",_usu2.ColPublicacion.Count);
-            Publicacion p4 = new Publicacion("Publicacion 4",_usu2.ColPublicacion.Count);
-            Publicacion p5 = new Publicacion("Publicacion 5",_usu2.ColPublicacion.Count);
+            Publicacion p1 = new Publicacion("Publicación 1");
+            Publicacion p2 = new Publicacion("Publicación 2");
+            Publicacion p3 = new Publicacion("Publicación 3");
+            Publicacion p4 = new Publicacion("Publicación 4");
+            Publicacion p5 = new Publicacion("Publicación 5");
+            Publicacion p6 = new Publicacion("Publicación 6");
+
+            _usu2.nuevoChip("Publicación 1");
+            _usu2.nuevoChip("Publicación 2");
+            _usu2.nuevoChip("Publicación 3");
+            _usu2.nuevoChip("Publicación 4");
+            _usu2.nuevoChip("Publicación 5");
+            _usu1.nuevoChip("Publicación 6");
+
             _usu1.AddNotif(p1);
             _usu1.AddNotif(p2);
             _usu1.AddNotif(p3);
             _usu1.AddNotif(p4);
             _usu1.AddNotif(p5);
+            _usu2.AddNotif(p6);
+
 
             _usu2.nuevoChip("Publicacion 1");
             _usu2.nuevoChip("Publicacion 2");
@@ -261,7 +278,6 @@ namespace Servidor
                     var threadcClient = new Thread(() => HandleClient(clientConnected));
                     threadcClient.Start();
 
-                    //SendMessage(networkDataHelper);
                 }
                 catch (Exception e)
                 {
@@ -326,14 +342,6 @@ namespace Servidor
                             var seguidorYaSeguir = datosSeguirUsuario.Split("?");
                             SeguirUnUsuario(clientSocket, seguidorYaSeguir[0], seguidorYaSeguir[1]);
                             break;
-                        case CommandConstants.Message:
-                            Console.WriteLine("Will receive message to display...");
-                            var bufferData = new byte[header.IDataLength];
-                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferData, _exit);
-                            Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
-                            networkDataHelper.SendMessage(clientSocket, "El mensaje fue recibido correctamente!.", CommandConstants.Message);
-                            break;
-
                         case CommandConstants.chip:
                             var dLogin = ObtenerDatosDelCliente(header, clientSocket);
                             var dSeparados = dLogin.Split("?");
@@ -398,9 +406,17 @@ namespace Servidor
                                 totalNotif += notif[i].ToString() + "?";
                             }
 
+                            if (totalNotif.Equals(""))
+                            {
+                                networkDataHelper.SendMessage(clientSocket, "No hay notificaciones", CommandConstants.verNotif);
+                            }
+                            else
+                            {
+                                networkDataHelper.SendMessage(clientSocket, totalNotif, CommandConstants.verNotif);
+                            }
+
                             usu.clearNotif();
-                            networkDataHelper.SendMessage(clientSocket, totalNotif, CommandConstants.VerChips);
-                            
+
                             Console.WriteLine("Funcionalidad ver notificaciones finalizada.");
                             break;
 
@@ -613,6 +629,27 @@ namespace Servidor
             }
             Console.WriteLine("Funcionalidad seguir usuario finalizada.");
         }
+
+
+        private static void SeguirUnUsuarioParaTest(string nombreUsuario, string aSeguir)
+        {
+            foreach (var usu in _usuarios)
+            {
+                if (usu.PNomUsu == nombreUsuario)
+                {
+                    var usuASeguir = usu.ColSeguidos.Find(u => u.PNomUsu == aSeguir);
+                    if (usuASeguir == null)
+                    {
+                        var seguido = _usuarios.Find(u => u.PNomUsu == aSeguir);
+                        usu.ColSeguidos.Add(seguido);
+                        seguido.ColSeguidores.Add(usu);
+                    }
+                }
+            }
+        }
+
+
+
 
         private static void ResponderChip(Socket clientSocket, string datosRespuestaChip)
         {
