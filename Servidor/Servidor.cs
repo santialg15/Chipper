@@ -4,7 +4,6 @@ using System.Text;
 using ConsoleArchiveSender;
 using Protocolo;
 using Protocolo.FileTransfer;
-//using Protocolo.FileTransfer;
 using Protocolo.Interfaces;
 
 
@@ -21,10 +20,7 @@ namespace Servidor
 
         static void Main(string[] args)
         {
-            Usuario _usu1 = new Usuario("Denis", "12345","inicio","img");
-            Usuario _usu2 = new Usuario("Santiago", "67890", "inicio", "img");
-            _usuarios.Add(_usu1);
-            _usuarios.Add(_usu2);
+            agregarDatos();
 
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketServer.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 20000));
@@ -83,7 +79,7 @@ namespace Servidor
                             {
                                 if (pub.getContenido().Contains(buscar.Trim()))
                                 {
-                                    ret += usu4.getNomUsu() + pub.getContenido() + "\n";
+                                    ret += usu4.getNomUsu() +":3 "+pub.getContenido() + "\n";
                                 }
                             }
                         }
@@ -92,6 +88,8 @@ namespace Servidor
                         {
                             Console.WriteLine("No se encontraron chips que contengan: " + buscar.Trim());
                         }
+
+                        Console.WriteLine(ret);
                         printMenu();
                         break;
 
@@ -199,6 +197,39 @@ namespace Servidor
                         break;
                 }
             }
+        }
+
+        private static void agregarDatos()
+        {
+            //Usuarios
+            Usuario _usu1 = new Usuario("Denis", "dpena", "inicio", "img");
+            Usuario _usu2 = new Usuario("Santiago", "salvarez", "inicio", "img");
+            Usuario _usu3 = new Usuario("Prueba", "pprueba", "inicio", "img");
+
+            _usuarios.Add(_usu1);
+            _usuarios.Add(_usu2);
+            _usuarios.Add(_usu3);
+
+            _usu1.Seguir(_usu2);
+            _usu2.Seguir(_usu1);
+
+            //Notificaciones
+            Publicacion p1 = new Publicacion("Publicación 1");
+            Publicacion p2 = new Publicacion("Publicación 2");
+            Publicacion p3 = new Publicacion("Publicación 3");
+            Publicacion p4 = new Publicacion("Publicación 4");
+            Publicacion p5 = new Publicacion("Publicación 5");
+            _usu1.AddNotif(p1);
+            _usu1.AddNotif(p2);
+            _usu1.AddNotif(p3);
+            _usu1.AddNotif(p4);
+            _usu1.AddNotif(p5);
+
+            _usu2.nuevoChip("Publicación 1");
+            _usu2.nuevoChip("Publicación 2");
+            _usu2.nuevoChip("Publicación 3");
+            _usu2.nuevoChip("Publicación 4");
+            _usu2.nuevoChip("Publicación 5");
         }
 
 
@@ -312,8 +343,9 @@ namespace Servidor
                             }
 
                             Usuario usuChip = buscarUsuarioLogin(nomUsu);
-                            usuChip.nuevoChip(chip);
+                            Publicacion nuevaPub = usuChip.nuevoChip(chip);
 
+                            Notificar(usuChip, nuevaPub);
 
                             //networkDataHelper.ReceiveFile();
 
@@ -339,6 +371,24 @@ namespace Servidor
                             }
                             Console.WriteLine("Funcionalidad ver chips finalizada.");
                             break;
+
+                        case CommandConstants.verNotif:
+                            Console.WriteLine("Procesando solicitud de notificaciones...");
+                            nomUsu = ObtenerDatosDelCliente(header, clientSocket);
+                            var usu = _usuarios.Find(u => u.PNomUsu == nomUsu);
+                            var totalNotif = "";
+                           
+                            var notif = usu.getColNotif;
+                            for (int i = 0; i < notif.Count; i++)
+                            {
+                                totalNotif += notif[i].ToString() + "?";
+                            }
+
+                            usu.clearNotif();
+                            networkDataHelper.SendMessage(clientSocket, totalNotif, CommandConstants.VerChips);
+                            
+                            Console.WriteLine("Funcionalidad ver notificaciones finalizada.");
+                            break;
                     }
                 }
                 catch (Exception e)
@@ -363,12 +413,14 @@ namespace Servidor
             return null;
         }
 
+
         private static string ObtenerDatosDelCliente(Header header, Socket clientSocket)
         {
             var datosBuffer = new byte[header.IDataLength];
             networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosBuffer, _exit);
             return Encoding.UTF8.GetString(datosBuffer);
         }
+
 
         private static void ValidarRegistroUsuario(Socket clientSocket, string nombreUsuario, string nombreReal, string contraseña)
         {
@@ -390,6 +442,7 @@ namespace Servidor
                 networkDataHelper.SendMessage(clientSocket, "El usuario fue registrado con exito.", CommandConstants.Registro);
             }
         }
+
 
         private static void ValidarLoginUsuario(NetworkDataHelper networkDataHelper, Socket clientSocket, string nombreLogin, string contraseña)
         {
@@ -431,6 +484,7 @@ namespace Servidor
         {
             return _usuarios.Any(us => us.Habilitado == false);
         }
+
 
         private static void BusquedaUsuarios(Socket clientSocket, string caracteres, int constante)
         {
@@ -487,6 +541,23 @@ namespace Servidor
             }
             networkDataHelper.SendMessage(clientSocket, $"{totalUsuarios}", constante);
             Console.WriteLine("Busqueda Finalizada");
+        }
+
+
+        private static void Notificar(Usuario usuChip, Publicacion chip) 
+        {
+            // Busco en usuarios seguidos del usuario que crea chip (usuChip)
+            foreach (var usuSeguidos in usuChip.getColSeguidores)
+            {
+                // Actualizo lista de usuarios agregando norificación a los que siguen al usuario creador del chip
+                foreach (var usu in _usuarios)
+                {
+                    if (!usu.Equals(usuSeguidos))
+                    {
+                        usu.AddNotif(chip);
+                    }
+                }
+            }
         }
     }
 }

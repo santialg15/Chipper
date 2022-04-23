@@ -232,7 +232,10 @@ namespace Cliente
                             }
 
                             break;
-
+                        case "7": //VER Noficaciones
+                            Console.WriteLine("Notificaciones:");
+                            networkDataHelper.SendMessage(clientSocket, usuLogin, CommandConstants.verNotif);
+                            break;
                         case "8": //VER CHIPS DE UN USUARIO
                             Console.WriteLine("Ingrese el nombre de usuario:");
                             var nombreUsuario = Console.ReadLine();

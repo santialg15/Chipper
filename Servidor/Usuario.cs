@@ -26,6 +26,10 @@ namespace Servidor
 
         public bool Habilitado { get => habilitado; set => habilitado = value; }
 
+        public List<Usuario> getColSeguidores { get => colSeguidores; }
+
+        public List<Publicacion> getColNotif { get => colNotif; }
+
         public List<Publicacion> ColPublicacion { get => colPublicacion; }
 
 
@@ -40,7 +44,6 @@ namespace Servidor
             colSeguidos = new List<Usuario>();
             colPublicacion = new List<Publicacion>();
             colNotif = new List<Publicacion>();
-
         }
 
         public override string ToString()
@@ -96,11 +99,22 @@ namespace Servidor
             return msg;
         }
 
-        public void nuevoChip(string chip)
+        public Publicacion nuevoChip(string chip)
         {
             Publicacion nuevaPub = new Publicacion(chip);
             colPublicacion.Add(nuevaPub);
+            return nuevaPub;
         }
 
+        public void AddNotif(Publicacion notif)
+        {
+            colNotif.Add(notif);
+        }
+
+
+        public void clearNotif()
+        {
+            colNotif.Clear();
+        }
     }
 }
