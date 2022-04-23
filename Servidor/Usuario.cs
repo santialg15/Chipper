@@ -83,25 +83,6 @@ namespace Servidor
             return contador;
         }
 
-        public string Seguir(Usuario aSeguir)
-        {
-            string msg = "";
-            foreach (var usu in colSeguidos)
-            {
-                if (aSeguir.getNomUsu().Equals(usu.getNomUsu()))
-                {
-                    msg = "Ya sigue al usuario: " + aSeguir.getNomUsu().Trim();
-                }
-            }
-
-            if (msg != string.Empty)
-            {
-                colSeguidos.Add(aSeguir);
-                msg = "Ahora sigue a: "+ aSeguir.getNomUsu().Trim();
-            }
-
-            return msg;
-        }
 
         public Publicacion nuevoChip(string chip)
         {
