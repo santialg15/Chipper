@@ -163,6 +163,13 @@ namespace Cliente
                             }
 
                             break;
+
+                        case "5": //SEGUIR A UN USUARIO
+                            Console.WriteLine("Ingrese el nombre del usuario a seguir:");
+                            var nombreASeguir = Console.ReadLine();
+                            var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
+                            networkDataHelper.SendMessage(clientSocket, datosParaSeguirUsuario, CommandConstants.SeguirUsuario);
+                            break;
                         case "6":
                             Console.WriteLine("Chip:");
                             var chip = Console.ReadLine();
@@ -294,6 +301,7 @@ namespace Cliente
                             Console.WriteLine($"{respuestaRegistro}");
                             PrintMenu();
                             break;
+
                         case CommandConstants.Login:
                             Console.WriteLine("El servidor esta validando el ingreso del usuario al sistema...");
                             var datosLogin = new byte[header.IDataLength];
@@ -312,6 +320,7 @@ namespace Cliente
                             }
 
                             break;
+
                         case CommandConstants.Message:
                             Console.WriteLine("El servidor esta contestando...");
                             var bufferData = new byte[header.IDataLength];
@@ -319,6 +328,7 @@ namespace Cliente
                             Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
                             PrintMenu();
                             break;
+
                         case CommandConstants.BusquedaIncluyente:
                             Console.WriteLine("El servidor esta validando la busqueda...");
                             var bufferBusquedaIncluyentes = new byte[header.IDataLength];
@@ -341,6 +351,7 @@ namespace Cliente
 
                             PrintLoggedMenu();
                             break;
+
                         case CommandConstants.BusquedaExcluyente:
                             Console.WriteLine("El servidor esta validando la busqueda...");
                             var bufferBusquedaExcluyente = new byte[header.IDataLength];
@@ -363,6 +374,27 @@ namespace Cliente
 
                             PrintLoggedMenu();
                             break;
+
+                        case CommandConstants.SeguirUsuario:
+                            Console.WriteLine("El servidor esta validando el seguimiento de usuario...");
+                            var bufferSeguirUsuario = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferSeguirUsuario, connected);
+                            var respuestaSeguirUsuario = Encoding.UTF8.GetString(bufferSeguirUsuario);
+                            if (respuestaSeguirUsuario == "")
+                            {
+                                Console.WriteLine("El usuario no existe.");
+                            }
+                            else if(respuestaSeguirUsuario == "Ya sigue a este usuario.")
+                            {
+                                Console.WriteLine("Ya sigue a este usuario.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("El usuario fue seguido correctamente.");
+                            }
+                            PrintLoggedMenu();
+                            break;
+
                         case CommandConstants.VerChips:
                             Console.WriteLine("El servidor esta validando los chips del usuario ingresado...");
                             var bufferVerChips = new byte[header.IDataLength];
