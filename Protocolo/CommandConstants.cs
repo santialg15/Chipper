@@ -12,7 +12,7 @@ namespace Protocolo
         public const int BusquedaExcluyente = 8;
         public const int VerChips = 9;
         public const int SeguirUsuario = 10;
-        public const int verNotif = 10;
+        public const int verNotif = 11;
 
     }
 }
