@@ -21,6 +21,11 @@ namespace Servidor
             colFile = new List<string>();
         }
 
+        public override string ToString()
+        {
+            return $"Fecha: {pFch} | Contenido: {pContenido.Trim()}";
+        }
+
         public string getContenido()
         {
             return pContenido;

@@ -227,6 +227,8 @@ namespace Servidor
                     Console.WriteLine("Nueva conexion aceptada...");
                     var threadcClient = new Thread(() => HandleClient(clientConnected));
                     threadcClient.Start();
+
+                    //SendMessage(networkDataHelper);
                 }
                 catch (Exception e)
                 {
@@ -255,22 +257,12 @@ namespace Servidor
                     {
                         case CommandConstants.Registro:
                             Console.WriteLine("Validando registro de un usuario en el sistema");
-                            var datosRegistro = ObtenerDatosDelCliente(header,clientSocket);
-                            
+                            var datosRegistro = ObtenerDatosDelCliente(header, clientSocket);
                             var datosSeparados = datosRegistro.Split("?");
                             var nombreUsuario = datosSeparados[0];
                             var nombreReal = datosSeparados[1];
                             var contraseña = datosSeparados[2];
-                            if(_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
-                            {
-                                networkDataHelper.EnviarDatos("Ya existe ese usuario", clientSocket, CommandConstants.Registro);
-                                //Enviar al cliente que ya existe un usuario con ese nombre de usuario.
-                                Console.WriteLine("Ya existe ese usuario");
-                                break;
-                            }
-                            Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
-                            _usuarios.Add(nuevoUsuario);
-                            Console.WriteLine($"Usuario {nombreUsuario} registrado con éxito");
+                            ValidarRegistroUsuario(clientSocket, nombreUsuario, nombreReal, contraseña);
                             break;
 
                         case CommandConstants.Login:
@@ -279,22 +271,27 @@ namespace Servidor
                             var datosLoginSeparados = datosLogin.Split("?");
                             var nombreLogin = datosLoginSeparados[0];
                             var contraseñaLogin = datosLoginSeparados[1];
-                            ValidarLoginUsuario(nombreLogin, contraseñaLogin);
+                            ValidarLoginUsuario(networkDataHelper, clientSocket, nombreLogin, contraseñaLogin);
                             break;
 
-                        case CommandConstants.ListUsers:
-                            for (int i = 0; i < _usuarios.Count; i++)
-                            {
-                                Console.WriteLine(_usuarios[i].ToString());
+                        case CommandConstants.BusquedaIncluyente:
+                            Console.WriteLine("El usuario inicio una busqueda de usuarios...");
+                            var datosBusquedaIncluyente = ObtenerDatosDelCliente(header, clientSocket);
+                            BusquedaUsuarios(clientSocket, datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
+                            break;
 
-                            }
+                        case CommandConstants.BusquedaExcluyente:
+                            Console.WriteLine("El usuario inicio una busqueda de usuarios...");
+                            var datosBusquedaExcluyente = ObtenerDatosDelCliente(header, clientSocket);
+                            BusquedaUsuarios(clientSocket, datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
                             break;
 
                         case CommandConstants.Message:
                             Console.WriteLine("Will receive message to display...");
                             var bufferData = new byte[header.IDataLength];
-                            networkDataHelper.ReceiveData(clientSocket,header.IDataLength,bufferData, _exit);
+                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferData, _exit);
                             Console.WriteLine("Message received: " + Encoding.UTF8.GetString(bufferData));
+                            networkDataHelper.SendMessage(clientSocket, "El mensaje fue recibido correctamente!.",CommandConstants.Message);
                             break;
 
                         case CommandConstants.chip:
@@ -318,11 +315,32 @@ namespace Servidor
                             //networkDataHelper.ReceiveFile();
 
                             break;
+
+                        case CommandConstants.VerChips:
+                            Console.WriteLine("Procesando solicitud de visualizacion de chips...");
+                            var nombreDeUsuario = ObtenerDatosDelCliente(header, clientSocket);
+                            var usuarioElegido = _usuarios.Find(u => u.PNomUsu == nombreDeUsuario);
+                            var totalChips = "";
+                            if (usuarioElegido == null)
+                            {
+                                networkDataHelper.SendMessage(clientSocket, "El usuario no existe", CommandConstants.VerChips);
+                            }
+                            else
+                            {
+                                var chips = usuarioElegido.ColPublicacion;
+                                for (int i = 0; i < chips.Count; i++)
+                                {
+                                    totalChips += chips[i].ToString()+"?";
+                                }
+                                networkDataHelper.SendMessage(clientSocket, totalChips, CommandConstants.VerChips);
+                            }
+                            Console.WriteLine("Funcionalidad ver chips finalizada.");
+                            break;
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");    
+                    Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");
                 }
             }
         }
@@ -342,35 +360,60 @@ namespace Servidor
             return null;
         }
 
-
-        private static string ObtenerDatosDelCliente(FileHeader1 header, Socket clientSocket)
+        private static string ObtenerDatosDelCliente(Header header, Socket clientSocket)
         {
-            var datosRegistroBuffer = new byte[header.IDataLength];
-            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosRegistroBuffer,_exit);
-            return Encoding.UTF8.GetString(datosRegistroBuffer);
+            var datosBuffer = new byte[header.IDataLength];
+            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosBuffer, _exit);
+            return Encoding.UTF8.GetString(datosBuffer);
         }
 
-
-        private static void ValidarLoginUsuario(string nombreLogin, string contraseña)
+        private static void ValidarRegistroUsuario(Socket clientSocket, string nombreUsuario, string nombreReal, string contraseña)
         {
-            if(!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
+            if (nombreUsuario == "" || nombreReal == "" || contraseña == "")
             {
-                //ENVIAR MENSAJE AL CLIENTE QUE NO EXISTE EL USUARIO Y PERMITIRLE REPETIR PROCESO
-                Console.WriteLine("no existe usuario");
+                networkDataHelper.SendMessage(clientSocket, "Ningun campo puede estar vacio.", CommandConstants.Registro);
+                Console.WriteLine("No se realizo el registro de usuario.");
             }
-            else if(!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
+            else if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
             {
-                //ENVIAR MENSAJE AL CLIENTE QUE NO COINCIDE LA CONTRASEÑA Y PERMITIRLE REPETIR PROCESO
-                Console.WriteLine("contraseña incorrecta");
-            }
-            else if(_usuarios.Exists(u => u.PNomUsu == nombreLogin && u.Pass == contraseña && u.Habilitado == false))
-            {
-                    //ENVIAR MENSAJE AL CLIENTE QUE EL USUARIO NO ESTA HABILITADO A LOGUERSE
-                    Console.WriteLine("usuario no habilitado");
+                networkDataHelper.SendMessage(clientSocket, "El usuario ya existe.", CommandConstants.Registro);
+                Console.WriteLine("No se realizo el registro de usuario.");
             }
             else
             {
-                Console.WriteLine($"El usuario {nombreLogin} se logueo correctamente.");
+                Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
+                _usuarios.Add(nuevoUsuario);
+                Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
+                networkDataHelper.SendMessage(clientSocket, "El usuario fue registrado con exito.", CommandConstants.Registro);
+            }
+        }
+
+        private static void ValidarLoginUsuario(NetworkDataHelper networkDataHelper, Socket clientSocket, string nombreLogin, string contraseña)
+        {
+            if(nombreLogin == "" || contraseña == "")
+            {
+                networkDataHelper.SendMessage(clientSocket, "Ningun campo puede ser vacio.", CommandConstants.Login);
+                Console.WriteLine("Logueo incorrecto por campos vacios.");
+            }
+            else if (!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
+            {
+                networkDataHelper.SendMessage(clientSocket, "No existe el usuario con el que se quiere loguear.", CommandConstants.Login);
+                Console.WriteLine("Logueo incorrecto por usuario inexistente.");
+            }
+            else if(!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
+            {
+                networkDataHelper.SendMessage(clientSocket, "Contraseña incorrecta", CommandConstants.Login);
+                Console.WriteLine("Logueo incorrecto por contraseña incorrecta");
+            }
+            else if(_usuarios.Exists(u => u.PNomUsu == nombreLogin && u.Pass == contraseña && u.Habilitado == false))
+            {
+                networkDataHelper.SendMessage(clientSocket, "El usuario se encuentra inhabilitado.", CommandConstants.Login);
+                Console.WriteLine("Logueo denegado por usuario no habilitado");
+            }
+            else
+            {
+                networkDataHelper.SendMessage(clientSocket, "El usuario se logueo correctamente.", CommandConstants.Login);
+                Console.WriteLine("El usuario se logueo correctamente.");
             }
         }
 
@@ -384,6 +427,63 @@ namespace Servidor
         private static bool ExistenUsuariosNoHabilitados()
         {
             return _usuarios.Any(us => us.Habilitado == false);
+        }
+
+        private static void BusquedaUsuarios(Socket clientSocket, string caracteres, int constante)
+        {
+            caracteres = caracteres.ToLower();
+            var totalUsuarios = "";
+            if(_usuarios.Count == 0)
+            {
+                networkDataHelper.SendMessage(clientSocket, $"{totalUsuarios}", constante);
+                return;
+            }
+            else if (caracteres == "" && constante == CommandConstants.BusquedaIncluyente)
+            {
+                networkDataHelper.SendMessage(clientSocket, $"{totalUsuarios}", constante);
+                Console.WriteLine("Busqueda Finalizada");
+                return;
+            }
+            else
+            {
+                for (int i = 0; i < _usuarios.Count; i++)
+                {
+                    var nombreDeUsuario = _usuarios[i].PNomUsu.ToLower();
+                    var nombreDeUsuarioReal = _usuarios[i].PNomReal.ToLower();
+                    if(constante == CommandConstants.BusquedaIncluyente)
+                    {
+                        if (nombreDeUsuario.Contains(caracteres) || nombreDeUsuarioReal.Contains(caracteres))
+                        {
+                            if (totalUsuarios == "")
+                                totalUsuarios += $"{_usuarios[i]}";
+                            else
+                                totalUsuarios += $"?{_usuarios[i]}";
+                        }
+                    }
+                    if(constante == CommandConstants.BusquedaExcluyente)
+                    {
+                        if(caracteres == "")
+                        {
+                            if (totalUsuarios == "")
+                                totalUsuarios += $"{_usuarios[i]}";
+                            else
+                                totalUsuarios += $"?{_usuarios[i]}";
+                        }
+                        else
+                        {
+                            if (!nombreDeUsuario.Contains(caracteres) && !nombreDeUsuarioReal.Contains(caracteres))
+                            {
+                                if (totalUsuarios == "")
+                                    totalUsuarios += $"{_usuarios[i]}";
+                                else
+                                    totalUsuarios += $"?{_usuarios[i]}";
+                            }
+                        }
+                    }
+                }
+            }
+            networkDataHelper.SendMessage(clientSocket, $"{totalUsuarios}", constante);
+            Console.WriteLine("Busqueda Finalizada");
         }
     }
 }
