@@ -297,6 +297,10 @@ namespace Cliente
                             {
                                 Console.WriteLine("El usuario ingresado no existe");
                             }
+                            else if(totalChips == "")
+                            {
+                                Console.WriteLine("El usuario ingresado no tiene chips aun.");
+                            }
                             else 
                             {
                                 Console.WriteLine("Lista de chips:");
