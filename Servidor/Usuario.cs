@@ -32,6 +32,10 @@ namespace Servidor
 
         public List<Publicacion> ColPublicacion { get => colPublicacion; }
 
+        public List<Usuario> ColSeguidores { get => colSeguidores; }
+
+        public List<Usuario> ColSeguidos { get => colSeguidos; }
+
 
         public Usuario(string _NomReal, string _NomUsu, string _pass, string _imgPerfil)
         {
