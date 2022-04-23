@@ -26,6 +26,8 @@ namespace Servidor
 
         public bool Habilitado { get => habilitado; set => habilitado = value; }
 
+        public List<Publicacion> ColPublicacion { get => colPublicacion; }
+
 
         public Usuario(string _NomReal, string _NomUsu, string _pass, string _imgPerfil)
         {

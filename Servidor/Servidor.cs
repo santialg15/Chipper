@@ -298,6 +298,27 @@ namespace Servidor
                             Usuario usuChip = buscarUsuarioLogin(nomUsu);
                             usuChip.nuevoChip(chip);
                             break;
+
+                        case CommandConstants.VerChips:
+                            Console.WriteLine("Procesando solicitud de visualizacion de chips...");
+                            var nombreDeUsuario = ObtenerDatosDelCliente(header, clientSocket);
+                            var usuarioElegido = _usuarios.Find(u => u.PNomUsu == nombreDeUsuario);
+                            var totalChips = "";
+                            if (usuarioElegido == null)
+                            {
+                                networkDataHelper.SendMessage(clientSocket, "El usuario no existe", CommandConstants.VerChips);
+                            }
+                            else
+                            {
+                                var chips = usuarioElegido.ColPublicacion;
+                                for (int i = 0; i < chips.Count; i++)
+                                {
+                                    totalChips += chips[i].ToString()+"?";
+                                }
+                                networkDataHelper.SendMessage(clientSocket, totalChips, CommandConstants.VerChips);
+                            }
+                            Console.WriteLine("Funcionalidad ver chips finalizada.");
+                            break;
                     }
                 }
                 catch (Exception e)
@@ -320,7 +341,6 @@ namespace Servidor
 
             return null;
         }
-
 
         private static string ObtenerDatosDelCliente(Header header, Socket clientSocket)
         {

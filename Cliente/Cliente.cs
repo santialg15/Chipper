@@ -167,6 +167,12 @@ namespace Cliente
                             break;
                         }
                         break;
+
+                    case "8": //VER CHIPS DE UN USUARIO
+                        Console.WriteLine("Ingrese el nombre de usuario:");
+                        var nombreUsuario = Console.ReadLine();
+                        networkDataHelper.SendMessage(clientSocket, nombreUsuario, CommandConstants.VerChips);
+                        break;
                     default:
                         Console.WriteLine("Opcion invalida");
                         PrintMenu();
@@ -193,10 +199,9 @@ namespace Cliente
             Console.WriteLine("4 -> Buscar usuarios");
             Console.WriteLine("5 -> Seguir usuario");
             Console.WriteLine("6 -> Nuevo Chip");
-            Console.WriteLine("7 -> Ver mi perfil"); 
-            Console.WriteLine("8 -> Ver mis notificaciones");
-            Console.WriteLine("9  -> Ver mis chips");
-            Console.WriteLine("10 -> Responder un chip");
+            Console.WriteLine("7 -> Ver mis notificaciones");
+            Console.WriteLine("8  -> Ver chips de un usuario");
+            Console.WriteLine("9 -> Responder un chip");
             Console.WriteLine("exit -> abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
         }
@@ -279,6 +284,26 @@ namespace Cliente
                                 for (int i = 0; i < listaUsuarios.Length; i++)
                                 {
                                     Console.WriteLine($"{listaUsuarios[i]}");
+                                }
+                            }
+                            PrintLoggedMenu();
+                            break;
+                        case CommandConstants.VerChips:
+                            Console.WriteLine("El servidor esta validando los chips del usuario ingresado...");
+                            var bufferVerChips = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(clientSocket,header.IDataLength, bufferVerChips, connected);
+                            var totalChips = Encoding.UTF8.GetString(bufferVerChips);
+                            if(totalChips == "El usuario no existe")
+                            {
+                                Console.WriteLine("El usuario ingresado no existe");
+                            }
+                            else 
+                            {
+                                Console.WriteLine("Lista de chips:");
+                                var listaChips = totalChips.Split("?");
+                                for (int i = 0; i < listaChips.Length; i++)
+                                {
+                                    Console.WriteLine(listaChips[i].ToString());
                                 }
                             }
                             PrintLoggedMenu();
