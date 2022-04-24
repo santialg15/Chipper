@@ -23,8 +23,10 @@ namespace Cliente
         static void Main(string[] args)
         {
             var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            clientSocket.Bind(new IPEndPoint(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)), 0));
-            clientSocket.Connect(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ClientConf.SeverPortConfigKey)));
+            clientSocket.Bind(new IPEndPoint(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)),
+                0));
+            clientSocket.Connect(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)),
+                Int32.Parse(SettingsMgr.ReadSetting(ClientConf.SeverPortConfigKey)));
             connected = true;
             networkDataHelper = new NetworkDataHelper(clientSocket);
             Console.WriteLine("Bienvenido al Sistema Client");
@@ -157,7 +159,8 @@ namespace Cliente
                                 Console.WriteLine("Ingrese el nombre del usuario a seguir:");
                                 var nombreASeguir = Console.ReadLine();
                                 var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
-                                networkDataHelper.SendMessage(clientSocket, datosParaSeguirUsuario, CommandConstants.SeguirUsuario);
+                                networkDataHelper.SendMessage(clientSocket, datosParaSeguirUsuario,
+                                    CommandConstants.SeguirUsuario);
                                 break;
                             case "6": //NUEVO CHIP
                                 Console.WriteLine("Chip:");
@@ -170,7 +173,8 @@ namespace Cliente
                                     break;
                                 }
 
-                                if (chip.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey)))
+                                if (chip.Length >
+                                    Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey)))
                                 {
                                     Console.WriteLine("Un chip puede tener un máximo de " +
                                                       SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey) +
@@ -188,13 +192,16 @@ namespace Cliente
                                 switch (op)
                                 {
                                     case "1": //ingresa img 
-                                        networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + op + "?" + chip, CommandConstants.chip);
-                                        var ClientHandler = new ClientFileHandler();
-                                        ClientHandler.StartServer();
-                                        Console.WriteLine("Ingrese las rutas de acceso de las imagenes separadas por ?");
+
+                                        Console.WriteLine(
+                                            "Ingrese las rutas de acceso de las imagenes separadas por ?");
                                         var rutasImg = Console.ReadLine();
                                         rutasImg += '?';
                                         var dSeparados = rutasImg.Split("?");
+                                        networkDataHelper.SendMessage(clientSocket,
+                                            usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
+                                        var ClientHandler = new ClientFileHandler();
+                                        ClientHandler.StartServer();
 
                                         if (dSeparados.Length > 0)
                                         {
@@ -210,21 +217,25 @@ namespace Cliente
 
                                                 index++;
                                             }
+
+                                            ClientHandler.stop();
                                         }
                                         else
                                         {
                                             Console.WriteLine("Error debe ingresar la ruta de los archivos");
                                         }
+
                                         break;
 
                                     case "2":
-                                        networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + op + "?" + chip, CommandConstants.chip);
+                                        networkDataHelper.SendMessage(clientSocket, usuLogin + "?0?" + chip,
+                                            CommandConstants.chip);
                                         break;
                                     default:
                                         Console.WriteLine("Opcion invalida");
                                         break;
-
                                 }
+
                                 PrintLoggedMenu();
                                 break;
 
@@ -239,7 +250,8 @@ namespace Cliente
                                 //estaRespondiendoChip = true;
                                 break;
 
-                            case string s when s.StartsWith("R"): //RECIBE R + NUMERO DE CHIP A CONTESTAR A usuAResponder
+                            case string s
+                                when s.StartsWith("R"): //RECIBE R + NUMERO DE CHIP A CONTESTAR A usuAResponder
                                 var numeroChip = opcion.Substring(1);
                                 if (!int.TryParse(numeroChip, out int num))
                                 {
@@ -247,11 +259,13 @@ namespace Cliente
                                     PrintLoggedMenu();
                                     break;
                                 }
+
                                 Console.WriteLine("Ingrese su respuesta:");
                                 var respuesta = Console.ReadLine();
                                 var datosResponder = $"{usuLogin}?{usuAResponder}?{respuesta}?{numeroChip}";
                                 usuAResponder = "";
-                                networkDataHelper.SendMessage(clientSocket, datosResponder, CommandConstants.ResponderChip);
+                                networkDataHelper.SendMessage(clientSocket, datosResponder,
+                                    CommandConstants.ResponderChip);
                                 break;
                             case "NO":
                                 PrintLoggedMenu();
@@ -264,10 +278,12 @@ namespace Cliente
                         }
                     }
                 }
-                Console.WriteLine("Exiting Application");
             }
 
-            static void PrintMenu()
+            Console.WriteLine("Exiting Application");
+        }
+
+        static void PrintMenu()
             {
                 Console.WriteLine("Opciones validas: ");
                 Console.WriteLine("1 -> Registrar un usuario");
@@ -471,4 +487,3 @@ namespace Cliente
             }
         }
     }
-}
