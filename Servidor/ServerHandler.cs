@@ -13,7 +13,7 @@ namespace servidor
 {
     class ServerHandler
     {
-        
+
         private readonly TcpClient _tcpClient;
         private readonly IFileStreamHandler _fileStreamHandler;
         private INetworkStreamHandler _networkStreamHandler;
@@ -26,8 +26,18 @@ namespace servidor
 
         public void StartClient()
         {
-            _tcpClient.Connect(IPAddress.Parse("127.0.0.1"), 6000);
-            _networkStreamHandler = new NetworkStreamHandler(_tcpClient.GetStream());
+            if (!_tcpClient.Connected)
+            {
+                _tcpClient.Connect(IPAddress.Parse("127.0.0.1"), 6000);
+                _networkStreamHandler = new NetworkStreamHandler(_tcpClient.GetStream());
+            }
+        }
+        
+
+        public void stop()
+        {
+            _tcpClient.Close();
+            _tcpClient.Dispose();
         }
 
         public string ReceiveFile()

@@ -301,7 +301,7 @@ namespace Servidor
                     networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, _exit);
                     var fileheader = new FileHeader();
                     var header = new Header();
-                    header.DecodeData(buffer);
+                    _exit = !header.DecodeData(buffer);
 
                     switch (header.ICommand)
                     {
@@ -362,7 +362,7 @@ namespace Servidor
                                     colFileName += fileName + "?";
                                     contadorImg++;
                                 }
-
+                                serverHandler.stop();
                                 colFileName = colFileName.Remove(colFileName.Length - 1);
                                 nuevaPub = usuChip.nuevoChipConImg(chip, colFileName);
 

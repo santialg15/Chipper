@@ -147,7 +147,6 @@ namespace Cliente
                                     PrintLoggedMenu();
                                     break;
                             }
-
                             break;
 
                         case "5": //SEGUIR A UN USUARIO
@@ -156,6 +155,7 @@ namespace Cliente
                             var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
                             networkDataHelper.SendMessage(clientSocket, datosParaSeguirUsuario, CommandConstants.SeguirUsuario);
                             break;
+                        
                         case "6": //NUEVO CHIP
                             Console.WriteLine("Chip:");
                             var chip = Console.ReadLine();
@@ -186,14 +186,6 @@ namespace Cliente
                             {
                                 case "1": //ingresa img 
 
-                                    //networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + op + "?" + chip, CommandConstants.chip);
-                                    //var ClientHandler = new ClientFileHandler();
-                                    //ClientHandler.StartServer();
-                                    //Console.WriteLine("Ingrese las rutas de acceso de las imagenes separadas por ?");
-                                    //var rutasImg = Console.ReadLine();
-                                    //rutasImg += '?';
-                                    //var dSeparados = rutasImg.Split("?");
-
                                     Console.WriteLine("Ingrese las rutas de acceso de las imagenes separadas por ?");
                                     var rutasImg = Console.ReadLine();
                                     rutasImg += '?';
@@ -216,6 +208,7 @@ namespace Cliente
 
                                             index++;
                                         }
+                                        ClientHandler.stop();
                                     }
                                     else
                                     {
@@ -224,7 +217,7 @@ namespace Cliente
                                     break;
 
                                 case "2":
-                                    networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + op + "?" + chip, CommandConstants.chip);
+                                    networkDataHelper.SendMessage(clientSocket, usuLogin + "?0?" + chip, CommandConstants.chip);
                                     break;
                                 default:
                                     Console.WriteLine("Opcion invalida");

@@ -34,6 +34,13 @@ namespace cliente
             _networkStreamHandler = new NetworkStreamHandler(_tcpClient.GetStream());
         }
 
+        public void stop()
+        {
+            _tcpClient.Close();
+            _tcpClient.Dispose();
+            _tcpListener.Stop();
+        }
+
         public void SendFile(string path)
         {
             //1) Obtiene el tamaño del archivo
