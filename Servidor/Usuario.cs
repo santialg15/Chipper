@@ -91,6 +91,18 @@ namespace Servidor
             return nuevaPub;
         }
 
+        public Publicacion nuevoChipConImg(string chip,string img)
+        {
+            Publicacion nuevaPub = new Publicacion(chip, colPublicacion.Count);
+            var archivos = img.Split("?");
+            foreach (var a in archivos)
+            {
+                nuevaPub.addFile(a);
+            }
+            colPublicacion.Add(nuevaPub);
+            return nuevaPub;
+        }
+
         public void AddNotif(Publicacion notif)
         {
             colNotif.Add(notif);

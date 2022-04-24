@@ -8,29 +8,41 @@ using Protocolo.NetworkUtils;
 using Protocolo.NetworkUtils.Interfaces;
 using Protocolo;
 using Protocolo.FileTransfer;
+using Protocolo.Interfaces;
+using Servidor;
 
-namespace ConsoleArchiveSender
+namespace servidor
 {
     class ServerHandler
     {
-        
+        static readonly ISettingsManager SettingsMgr = new SettingsManager();
         private readonly TcpClient _tcpClient;
         private readonly IFileStreamHandler _fileStreamHandler;
         private INetworkStreamHandler _networkStreamHandler;
 
         public ServerHandler()
         {
-            _tcpClient = new TcpClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6001));
+            _tcpClient = new TcpClient(new IPEndPoint(IPAddress.Parse(SettingsMgr.ReadSetting(ServerConfig.ServerIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverPortTCPClifigKey))));
             _fileStreamHandler = new FileStreamHandler();
         }
 
         public void StartClient()
         {
-            _tcpClient.Connect(IPAddress.Parse("127.0.0.1"), 6000);
-            _networkStreamHandler = new NetworkStreamHandler(_tcpClient.GetStream());
+            if (!_tcpClient.Connected)
+            {
+                _tcpClient.Connect(IPAddress.Parse(SettingsMgr.ReadSetting(ServerConfig.ServerIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverPortTCPConnfigKey)));
+                _networkStreamHandler = new NetworkStreamHandler(_tcpClient.GetStream());
+            }
+        }
+        
+
+        public void stop()
+        {
+            _tcpClient.Close();
+            _tcpClient.Dispose();
         }
 
-        public void ReceiveFile()
+        public string ReceiveFile()
         {
             //1 - Recibo el header
             var header = _networkStreamHandler.Read(FileHeader.GetLength());
@@ -69,6 +81,8 @@ namespace ConsoleArchiveSender
                 _fileStreamHandler.Write(fileName, data);
                 currentPart++;
             }
+
+            return fileName;
         }
     }
 }

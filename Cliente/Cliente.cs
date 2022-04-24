@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using ConsoleArchiveSender;
+using cliente;
 using Microsoft.VisualBasic;
 using Protocolo;
 using Protocolo.FileHandler;
@@ -23,8 +23,8 @@ namespace Cliente
         static void Main(string[] args)
         {
             var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            clientSocket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0));
-            clientSocket.Connect("127.0.0.1", 20000);
+            clientSocket.Bind(new IPEndPoint(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)), 0));
+            clientSocket.Connect(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ClientConf.SeverPortConfigKey)));
             connected = true;
             networkDataHelper = new NetworkDataHelper(clientSocket);
             Console.WriteLine("Bienvenido al Sistema Client");
@@ -35,8 +35,8 @@ namespace Cliente
 
             while (connected)
             {
-                    var opcion = Console.ReadLine();
-
+                var opcion = Console.ReadLine();
+                if (connected){
                     if (usuLogin.Equals(""))
                     {
                         switch (opcion)
@@ -152,15 +152,15 @@ namespace Cliente
 
                                 break;
 
-                            case "5": //SEGUIR A UN USUARIO
-                                Console.WriteLine("Ingrese el nombre del usuario a seguir:");
-                                var nombreASeguir = Console.ReadLine();
-                                var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
-                                networkDataHelper.SendMessage(clientSocket, datosParaSeguirUsuario, CommandConstants.SeguirUsuario);
-                                break;
-                            case "6": //NUEVO CHIP
-                                Console.WriteLine("Chip:");
-                                var chip = Console.ReadLine();
+                        case "5": //SEGUIR A UN USUARIO
+                            Console.WriteLine("Ingrese el nombre del usuario a seguir:");
+                            var nombreASeguir = Console.ReadLine();
+                            var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
+                            networkDataHelper.SendMessage(clientSocket, datosParaSeguirUsuario, CommandConstants.SeguirUsuario);
+                            break;
+                        case "6": //NUEVO CHIP
+                            Console.WriteLine("Chip:");
+                            var chip = Console.ReadLine();
 
                                 if (chip.Length == 0)
                                 {
@@ -299,7 +299,7 @@ namespace Cliente
                 {
                     networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, connected);
                     var header = new Header();
-                    header.DecodeData(buffer);
+                    connected = header.DecodeData(buffer);
                     switch (header.ICommand)
                     {
                         case CommandConstants.Registro:
@@ -464,6 +464,7 @@ namespace Cliente
                 catch (Exception e)
                 {
                     Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");
+                    connected = false;
                 }
             }
         }

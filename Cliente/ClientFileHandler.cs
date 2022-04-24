@@ -2,14 +2,16 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Cliente;
 using Protocolo.FileHandler;
 using Protocolo.FileHandler.Interfaces;
 using Protocolo.NetworkUtils;
 using Protocolo.NetworkUtils.Interfaces;
 using Protocolo;
 using Protocolo.FileTransfer;
+using Protocolo.Interfaces;
 
-namespace ConsoleArchiveSender
+namespace cliente
 {
     class ClientFileHandler
     {
@@ -18,10 +20,11 @@ namespace ConsoleArchiveSender
         private readonly IFileStreamHandler _fileStreamHandler;
         private TcpClient _tcpClient;
         private INetworkStreamHandler _networkStreamHandler;
+        static readonly ISettingsManager SettingsMgr = new SettingsManager();
 
         public ClientFileHandler()
         {
-            _tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 6000);
+            _tcpListener = new TcpListener(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ClientConf.SeverPortTCPLiCofigKey)));
             _fileHandler = new FileHandler();
             _fileStreamHandler = new FileStreamHandler();
         }
@@ -32,6 +35,13 @@ namespace ConsoleArchiveSender
             _tcpClient = _tcpListener.AcceptTcpClient();
             _tcpListener.Stop();
             _networkStreamHandler = new NetworkStreamHandler(_tcpClient.GetStream());
+        }
+
+        public void stop()
+        {
+            _tcpClient.Close();
+            _tcpClient.Dispose();
+            _tcpListener.Stop();
         }
 
         public void SendFile(string path)

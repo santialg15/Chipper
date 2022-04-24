@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using ConsoleArchiveSender;
 using Protocolo;
 using Protocolo.FileTransfer;
 using Protocolo.Interfaces;
+using servidor;
 
 
 namespace Servidor
@@ -23,7 +23,9 @@ namespace Servidor
             agregarDatos();
 
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socketServer.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 20000));
+            
+            socketServer.Bind(new IPEndPoint(IPAddress.Parse(SettingsMgr.ReadSetting(ServerConfig.ServerIpConfigKey)),
+                Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverPortConfigKey))));
             socketServer.Listen(100);
 
             //Lanzar un thread para manejar las conexiones
@@ -48,8 +50,8 @@ namespace Servidor
                             client.Shutdown(SocketShutdown.Both);
                             client.Close();
                         }
-                        var fakeSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        fakeSocket.Connect("127.0.0.1", 20000);
+                        //var fakeSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        //fakeSocket.Connect("127.0.0.1", 20000);
                         break;
 
                     case "2": // SRF2
@@ -301,7 +303,7 @@ namespace Servidor
                     networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, _exit);
                     var fileheader = new FileHeader();
                     var header = new Header();
-                    header.DecodeData(buffer);
+                    _exit = !header.DecodeData(buffer);
 
                     switch (header.ICommand)
                     {
@@ -348,20 +350,31 @@ namespace Servidor
                             var nomUsu = dSeparados[0];
                             var hayImg = dSeparados[1];
                             var chip = dSeparados[2];
-
-                            if (hayImg.Equals("1"))
+                            Publicacion nuevaPub;
+                            Usuario usuChip = buscarUsuarioLogin(nomUsu);
+                            if (int.Parse(hayImg) > 0)
                             {
                                 var serverHandler = new ServerHandler();
                                 serverHandler.StartClient();
-                                serverHandler.ReceiveFile();
+                                int contadorImg = 1;
+                                var colFileName = "";
+                                while (contadorImg < int.Parse(hayImg))
+                                {
+                                    var fileName = serverHandler.ReceiveFile();
+                                    colFileName += fileName + "?";
+                                    contadorImg++;
+                                }
+                                serverHandler.stop();
+                                colFileName = colFileName.Remove(colFileName.Length - 1);
+                                nuevaPub = usuChip.nuevoChipConImg(chip, colFileName);
+
+                            }
+                            else
+                            {
+                                nuevaPub = usuChip.nuevoChip(chip);
                             }
 
-                            Usuario usuChip = buscarUsuarioLogin(nomUsu);
-                            Publicacion nuevaPub = usuChip.nuevoChip(chip);
-
                             Notificar(usuChip, nuevaPub);
-
-                            //networkDataHelper.ReceiveFile();
 
                             break;
 
@@ -409,6 +422,8 @@ namespace Servidor
                     Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");
                 }
             }
+
+            _exit = false;
         }
 
 

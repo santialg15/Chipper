@@ -37,5 +37,10 @@ namespace Servidor
         {
             return pFch;
         }
+
+        public void addFile(string img)
+        {
+            colFile.Add(img);
+        }
     }
 }
