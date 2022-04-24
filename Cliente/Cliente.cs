@@ -250,7 +250,6 @@ namespace Cliente
             Console.WriteLine("Opciones validas: ");
             Console.WriteLine("1 -> Registrar un usuario");
             Console.WriteLine("2 -> Ingresar al sistema");
-            Console.WriteLine("3 -> Envia un mensaje al server");
             Console.WriteLine("exit -> Abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
         }
@@ -415,7 +414,7 @@ namespace Cliente
                                 }
                                 else
                                 {
-                                    if(int.TryParse(decision, out int num))
+                                    if (int.TryParse(decision, out int num))
                                     {
                                         ResponderUnChip(clientSocket, header, usuLogin, usuarioDelChip, decision);
                                     }
@@ -425,6 +424,14 @@ namespace Cliente
                                     }
                                 }
                             }
+                            PrintLoggedMenu();
+                            break;
+
+                        case CommandConstants.ResponderChip:
+                            var bufferResponderChip = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferResponderChip, connected);
+                            var respuestaServidor = Encoding.UTF8.GetString(bufferResponderChip);
+                            Console.WriteLine(respuestaServidor);
                             PrintLoggedMenu();
                             break;
 
@@ -458,9 +465,17 @@ namespace Cliente
         private static void ResponderUnChip(Socket clientSocket, Header header, string usuarioLogueado, string usuarioDelChip, string numeroChip)
         {
             Console.WriteLine("Escriba la respuesta:");
-
-            var datosRespuestaChip = $"{usuarioLogueado}?{usuarioDelChip}?{numeroChip}";
-            networkDataHelper.SendMessage(clientSocket, datosRespuestaChip, CommandConstants.ResponderChip);
+            var respuesta = Console.ReadLine();
+            if(respuesta == "")
+            {
+                Console.WriteLine("La respuesta no puede ser vacia.");
+                PrintLoggedMenu();
+            }
+            else
+            {
+                var datosRespuestaChip = $"{usuarioLogueado}?{usuarioDelChip}?{numeroChip}?{respuesta}";
+                networkDataHelper.SendMessage(clientSocket, datosRespuestaChip, CommandConstants.ResponderChip);
+            }
         }
     }
 }

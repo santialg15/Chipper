@@ -12,6 +12,12 @@ namespace Servidor
         public DateTime pFch;
         public string pContenido;
 
+        public Respuesta(string nombreUsuario, string contenido)
+        {
+            pNomUsu = nombreUsuario;
+            pFch = DateTime.Now;
+            pContenido = contenido;
+        }
 
         public string PNomUsu { get => pNomUsu; set => pNomUsu = value;}
         public DateTime PFch { get => pFch; set => pFch = value; }
