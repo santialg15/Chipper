@@ -21,8 +21,8 @@ namespace Cliente
         static void Main(string[] args)
         {
             var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            clientSocket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0));
-            clientSocket.Connect("127.0.0.1", 20000);
+            clientSocket.Bind(new IPEndPoint(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)), 0));
+            clientSocket.Connect(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ClientConf.SeverPortConfigKey)));
             connected = true;
             NetworkDataHelper networkDataHelper = new NetworkDataHelper(clientSocket);
             Console.WriteLine("Bienvenido al Sistema Client");
@@ -34,212 +34,213 @@ namespace Cliente
             while (connected)
             {
                 var opcion = Console.ReadLine();
-
-                if (usuLogin.Equals(""))
-                {
-                    switch (opcion)
+                if (connected){
+                    if (usuLogin.Equals(""))
                     {
-                        case "exit":
-                            clientSocket.Shutdown(SocketShutdown.Both);
-                            clientSocket.Close();
-                            connected = false;
-                            usuLogin = "";
-                            break;
-                        case "1":
-                            Console.WriteLine("Ingrese su nombre de usuario:");
-                            var nomUsuario = Console.ReadLine();
-
-                            Console.WriteLine("Ingrese su nombre real:");
-                            var nombReal = Console.ReadLine();
-
-                            Console.WriteLine("Ingrese su contraseña:");
-                            var contraseña = Console.ReadLine();
-
-                            //Console.WriteLine("Ingrese su foto de perfil:"); FALTA IMPLEMENTAR!
-
-                            var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
-
-                            try
-                            {
-                                networkDataHelper.SendMessage(clientSocket, infoUsuario, CommandConstants.Registro);
-                            }
-                            catch (SocketException)
-                            {
-                                Console.WriteLine("Connection with the server has been interrupted");
+                        switch (opcion)
+                        {
+                            case "exit":
+                                clientSocket.Shutdown(SocketShutdown.Both);
+                                clientSocket.Close();
+                                connected = false;
+                                usuLogin = "";
                                 break;
-                            }
+                            case "1":
+                                Console.WriteLine("Ingrese su nombre de usuario:");
+                                var nomUsuario = Console.ReadLine();
 
-                            break;
-                        case "2":
-                            Console.WriteLine("Ingrese su nombre de usuario:");
-                            var nombreLogin = Console.ReadLine();
+                                Console.WriteLine("Ingrese su nombre real:");
+                                var nombReal = Console.ReadLine();
 
-                            Console.WriteLine("Ingrese su contraseña:");
-                            var contraseñaLogin = Console.ReadLine();
+                                Console.WriteLine("Ingrese su contraseña:");
+                                var contraseña = Console.ReadLine();
 
-                            var infoLogin = $"{nombreLogin}?{contraseñaLogin}";
-                            usuLogin = nombreLogin;
-                            try
-                            {
-                                networkDataHelper.SendMessage(clientSocket, infoLogin, CommandConstants.Login);
-                            }
-                            catch (SocketException)
-                            {
-                                Console.WriteLine("Connection with the server has been interrupted");
+                                //Console.WriteLine("Ingrese su foto de perfil:"); FALTA IMPLEMENTAR!
+
+                                var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
+
+                                try
+                                {
+                                    networkDataHelper.SendMessage(clientSocket, infoUsuario, CommandConstants.Registro);
+                                }
+                                catch (SocketException)
+                                {
+                                    Console.WriteLine("Connection with the server has been interrupted");
+                                    break;
+                                }
+
                                 break;
-                            }
+                            case "2":
+                                Console.WriteLine("Ingrese su nombre de usuario:");
+                                var nombreLogin = Console.ReadLine();
 
-                            break;
-                        default:
-                            Console.WriteLine("Opcion invalida");
-                            PrintMenu();
-                            break;
+                                Console.WriteLine("Ingrese su contraseña:");
+                                var contraseñaLogin = Console.ReadLine();
+
+                                var infoLogin = $"{nombreLogin}?{contraseñaLogin}";
+                                usuLogin = nombreLogin;
+                                try
+                                {
+                                    networkDataHelper.SendMessage(clientSocket, infoLogin, CommandConstants.Login);
+                                }
+                                catch (SocketException)
+                                {
+                                    Console.WriteLine("Connection with the server has been interrupted");
+                                    break;
+                                }
+
+                                break;
+                            default:
+                                Console.WriteLine("Opcion invalida");
+                                PrintMenu();
+                                break;
+                        }
                     }
-                }
-                else
-                {
-                    switch (opcion)
+                    else
                     {
-                        case "exit":
-                            clientSocket.Shutdown(SocketShutdown.Both);
-                            clientSocket.Close();
-                            connected = false;
-                            usuLogin = "";
-                            break;
+                        switch (opcion)
+                        {
+                            case "exit":
+                                clientSocket.Shutdown(SocketShutdown.Both);
+                                clientSocket.Close();
+                                connected = false;
+                                usuLogin = "";
+                                break;
 
-                        case "4": //BUSQUEDA DE USUARIOS
-                            Console.WriteLine("Ingresar caracteres del usuario a buscar:");
-                            var caracteres = Console.ReadLine();
-                            Console.WriteLine("Elija el tipo de busqueda:");
-                            Console.WriteLine("1 -> Busqueda incluyente");
-                            Console.WriteLine("2 -> Busqueda excluyente");
-                            var tipoDeBusqueda = Console.ReadLine();
-                            switch (tipoDeBusqueda)
-                            {
-                                case "1": //busqueda incluyente
-                                    try
-                                    {
-                                        networkDataHelper.SendMessage(clientSocket, caracteres,
-                                            CommandConstants.BusquedaIncluyente);
-                                    }
-                                    catch (SocketException)
-                                    {
-                                        Console.WriteLine("Connection with the server has been interrupted");
+                            case "4": //BUSQUEDA DE USUARIOS
+                                Console.WriteLine("Ingresar caracteres del usuario a buscar:");
+                                var caracteres = Console.ReadLine();
+                                Console.WriteLine("Elija el tipo de busqueda:");
+                                Console.WriteLine("1 -> Busqueda incluyente");
+                                Console.WriteLine("2 -> Busqueda excluyente");
+                                var tipoDeBusqueda = Console.ReadLine();
+                                switch (tipoDeBusqueda)
+                                {
+                                    case "1": //busqueda incluyente
+                                        try
+                                        {
+                                            networkDataHelper.SendMessage(clientSocket, caracteres,
+                                                CommandConstants.BusquedaIncluyente);
+                                        }
+                                        catch (SocketException)
+                                        {
+                                            Console.WriteLine("Connection with the server has been interrupted");
+                                            break;
+                                        }
+
                                         break;
-                                    }
+                                    case "2": //busqueda excluyente
+                                        try
+                                        {
+                                            networkDataHelper.SendMessage(clientSocket, caracteres,
+                                                CommandConstants.BusquedaExcluyente);
+                                        }
+                                        catch (SocketException)
+                                        {
+                                            Console.WriteLine("Connection with the server has been interrupted");
+                                            break;
+                                        }
 
-                                    break;
-                                case "2": //busqueda excluyente
-                                    try
-                                    {
-                                        networkDataHelper.SendMessage(clientSocket, caracteres,
-                                            CommandConstants.BusquedaExcluyente);
-                                    }
-                                    catch (SocketException)
-                                    {
-                                        Console.WriteLine("Connection with the server has been interrupted");
                                         break;
-                                    }
+                                    default:
+                                        Console.WriteLine("Opcion invalida");
+                                        PrintLoggedMenu();
+                                        break;
+                                }
+                                break;
 
-                                    break;
-                                default:
-                                    Console.WriteLine("Opcion invalida");
+                            case "5": //SEGUIR A UN USUARIO
+                                Console.WriteLine("Ingrese el nombre del usuario a seguir:");
+                                var nombreASeguir = Console.ReadLine();
+                                var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
+                                networkDataHelper.SendMessage(clientSocket, datosParaSeguirUsuario, CommandConstants.SeguirUsuario);
+                                break;
+                            
+                            case "6": //NUEVO CHIP
+                                Console.WriteLine("Chip:");
+                                var chip = Console.ReadLine();
+
+                                if (chip.Length == 0)
+                                {
+                                    Console.WriteLine("Un chip no puede ser vacío");
                                     PrintLoggedMenu();
                                     break;
-                            }
-                            break;
+                                }
 
-                        case "5": //SEGUIR A UN USUARIO
-                            Console.WriteLine("Ingrese el nombre del usuario a seguir:");
-                            var nombreASeguir = Console.ReadLine();
-                            var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
-                            networkDataHelper.SendMessage(clientSocket, datosParaSeguirUsuario, CommandConstants.SeguirUsuario);
-                            break;
-                        
-                        case "6": //NUEVO CHIP
-                            Console.WriteLine("Chip:");
-                            var chip = Console.ReadLine();
+                                if (chip.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey)))
+                                {
+                                    Console.WriteLine("Un chip puede tener un máximo de " +
+                                                      SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey) +
+                                                      " caracteres");
+                                    PrintLoggedMenu();
+                                    break;
+                                }
 
-                            if (chip.Length == 0)
-                            {
-                                Console.WriteLine("Un chip no puede ser vacío");
-                                PrintLoggedMenu();
-                                break;
-                            }
+                                Console.WriteLine("Ingresa imagenes?:");
+                                Console.WriteLine("1 -> Si");
+                                Console.WriteLine("2 -> No");
 
-                            if (chip.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey)))
-                            {
-                                Console.WriteLine("Un chip puede tener un máximo de " +
-                                                  SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey) +
-                                                  " caracteres");
-                                PrintLoggedMenu();
-                                break;
-                            }
+                                var op = Console.ReadLine();
 
-                            Console.WriteLine("Ingresa imagenes?:");
-                            Console.WriteLine("1 -> Si");
-                            Console.WriteLine("2 -> No");
+                                switch (op)
+                                {
+                                    case "1": //ingresa img 
 
-                            var op = Console.ReadLine();
+                                        Console.WriteLine("Ingrese las rutas de acceso de las imagenes separadas por ?");
+                                        var rutasImg = Console.ReadLine();
+                                        rutasImg += '?';
+                                        var dSeparados = rutasImg.Split("?");
+                                        networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
+                                        var ClientHandler = new ClientFileHandler();
+                                        ClientHandler.StartServer();
 
-                            switch (op)
-                            {
-                                case "1": //ingresa img 
-
-                                    Console.WriteLine("Ingrese las rutas de acceso de las imagenes separadas por ?");
-                                    var rutasImg = Console.ReadLine();
-                                    rutasImg += '?';
-                                    var dSeparados = rutasImg.Split("?");
-                                    networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
-                                    var ClientHandler = new ClientFileHandler();
-                                    ClientHandler.StartServer();
-
-                                    if (dSeparados.Length > 0)
-                                    {
-                                        int index = 0;
-                                        while (index < dSeparados.Length)
+                                        if (dSeparados.Length > 0)
                                         {
-                                            string path = dSeparados[index];
-                                            IFileHandler fileHandler = new FileHandler();
-                                            if (fileHandler.FileExists(path))
+                                            int index = 0;
+                                            while (index < dSeparados.Length)
                                             {
-                                                ClientHandler.SendFile(path);
+                                                string path = dSeparados[index];
+                                                IFileHandler fileHandler = new FileHandler();
+                                                if (fileHandler.FileExists(path))
+                                                {
+                                                    ClientHandler.SendFile(path);
+                                                }
+
+                                                index++;
                                             }
-
-                                            index++;
+                                            ClientHandler.stop();
                                         }
-                                        ClientHandler.stop();
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Error debe ingresar la ruta de los archivos");
-                                    }
-                                    break;
+                                        else
+                                        {
+                                            Console.WriteLine("Error debe ingresar la ruta de los archivos");
+                                        }
+                                        break;
 
-                                case "2":
-                                    networkDataHelper.SendMessage(clientSocket, usuLogin + "?0?" + chip, CommandConstants.chip);
-                                    break;
-                                default:
-                                    Console.WriteLine("Opcion invalida");
-                                    break;
+                                    case "2":
+                                        networkDataHelper.SendMessage(clientSocket, usuLogin + "?0?" + chip, CommandConstants.chip);
+                                        break;
+                                    default:
+                                        Console.WriteLine("Opcion invalida");
+                                        break;
 
-                            }
-                            PrintLoggedMenu();
-                            break;
+                                }
+                                PrintLoggedMenu();
+                                break;
 
-                        case "7": //VER Noficaciones
-                            Console.WriteLine("Notificaciones:");
-                            networkDataHelper.SendMessage(clientSocket, usuLogin, CommandConstants.verNotif);
-                            break;
-                        case "8": //VER CHIPS DE UN USUARIO
-                            Console.WriteLine("Ingrese el nombre de usuario:");
-                            var nombreUsuario = Console.ReadLine();
-                            networkDataHelper.SendMessage(clientSocket, nombreUsuario, CommandConstants.VerChips);
-                            break;
-                        default:
-                            Console.WriteLine("Opcion invalida");
-                            PrintLoggedMenu();
-                            break;
+                            case "7": //VER Noficaciones
+                                Console.WriteLine("Notificaciones:");
+                                networkDataHelper.SendMessage(clientSocket, usuLogin, CommandConstants.verNotif);
+                                break;
+                            case "8": //VER CHIPS DE UN USUARIO
+                                Console.WriteLine("Ingrese el nombre de usuario:");
+                                var nombreUsuario = Console.ReadLine();
+                                networkDataHelper.SendMessage(clientSocket, nombreUsuario, CommandConstants.VerChips);
+                                break;
+                            default:
+                                Console.WriteLine("Opcion invalida");
+                                PrintLoggedMenu();
+                                break;
+                        }
                     }
                 }
             }
@@ -280,7 +281,7 @@ namespace Cliente
                 {
                     networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, connected);
                     var header = new Header();
-                    header.DecodeData(buffer);
+                    connected = header.DecodeData(buffer);
                     switch (header.ICommand)
                     {
                         case CommandConstants.Registro:
@@ -460,6 +461,7 @@ namespace Cliente
                 catch (Exception e)
                 {
                     Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");
+                    connected = false;
                 }
             }
         }

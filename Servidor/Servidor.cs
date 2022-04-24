@@ -23,7 +23,9 @@ namespace Servidor
             agregarDatos();
 
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socketServer.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 20000));
+            
+            socketServer.Bind(new IPEndPoint(IPAddress.Parse(SettingsMgr.ReadSetting(ServerConfig.ServerIpConfigKey)),
+                Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverPortConfigKey))));
             socketServer.Listen(100);
 
             //Lanzar un thread para manejar las conexiones
@@ -48,8 +50,8 @@ namespace Servidor
                             client.Shutdown(SocketShutdown.Both);
                             client.Close();
                         }
-                        var fakeSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        fakeSocket.Connect("127.0.0.1", 20000);
+                        //var fakeSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        //fakeSocket.Connect("127.0.0.1", 20000);
                         break;
 
                     case "2": // SRF2
@@ -420,6 +422,8 @@ namespace Servidor
                     Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");
                 }
             }
+
+            _exit = false;
         }
 
 

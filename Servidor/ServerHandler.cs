@@ -8,19 +8,21 @@ using Protocolo.NetworkUtils;
 using Protocolo.NetworkUtils.Interfaces;
 using Protocolo;
 using Protocolo.FileTransfer;
+using Protocolo.Interfaces;
+using Servidor;
 
 namespace servidor
 {
     class ServerHandler
     {
-
+        static readonly ISettingsManager SettingsMgr = new SettingsManager();
         private readonly TcpClient _tcpClient;
         private readonly IFileStreamHandler _fileStreamHandler;
         private INetworkStreamHandler _networkStreamHandler;
 
         public ServerHandler()
         {
-            _tcpClient = new TcpClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6001));
+            _tcpClient = new TcpClient(new IPEndPoint(IPAddress.Parse(SettingsMgr.ReadSetting(ServerConfig.ServerIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverPortTCPClifigKey))));
             _fileStreamHandler = new FileStreamHandler();
         }
 
@@ -28,7 +30,7 @@ namespace servidor
         {
             if (!_tcpClient.Connected)
             {
-                _tcpClient.Connect(IPAddress.Parse("127.0.0.1"), 6000);
+                _tcpClient.Connect(IPAddress.Parse(SettingsMgr.ReadSetting(ServerConfig.ServerIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverPortTCPConnfigKey)));
                 _networkStreamHandler = new NetworkStreamHandler(_tcpClient.GetStream());
             }
         }

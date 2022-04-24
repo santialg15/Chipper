@@ -2,12 +2,14 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Cliente;
 using Protocolo.FileHandler;
 using Protocolo.FileHandler.Interfaces;
 using Protocolo.NetworkUtils;
 using Protocolo.NetworkUtils.Interfaces;
 using Protocolo;
 using Protocolo.FileTransfer;
+using Protocolo.Interfaces;
 
 namespace cliente
 {
@@ -18,10 +20,11 @@ namespace cliente
         private readonly IFileStreamHandler _fileStreamHandler;
         private TcpClient _tcpClient;
         private INetworkStreamHandler _networkStreamHandler;
+        static readonly ISettingsManager SettingsMgr = new SettingsManager();
 
         public ClientFileHandler()
         {
-            _tcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), 6000);
+            _tcpListener = new TcpListener(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ClientConf.SeverPortTCPLiCofigKey)));
             _fileHandler = new FileHandler();
             _fileStreamHandler = new FileStreamHandler();
         }
