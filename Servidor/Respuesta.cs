@@ -22,5 +22,10 @@ namespace Servidor
         public string PNomUsu { get => pNomUsu; set => pNomUsu = value;}
         public DateTime PFch { get => pFch; set => pFch = value; }
         public string PContenido { get => pContenido; set => pContenido = value; }
+
+        public override string ToString()
+        {
+            return $"{pNomUsu}:{pFch} -> {pContenido}";
+        }
     }
 }

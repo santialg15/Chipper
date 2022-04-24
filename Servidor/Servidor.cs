@@ -220,19 +220,19 @@ namespace Servidor
 
 
             //Notificaciones
-            Publicacion p1 = new Publicacion("Publicación 1", _usu2.ColPublicacion.Count);
-            Publicacion p2 = new Publicacion("Publicación 2", _usu2.ColPublicacion.Count);
-            Publicacion p3 = new Publicacion("Publicación 3", _usu2.ColPublicacion.Count);
-            Publicacion p4 = new Publicacion("Publicación 4", _usu2.ColPublicacion.Count);
-            Publicacion p5 = new Publicacion("Publicación 5", _usu2.ColPublicacion.Count);
-            Publicacion p6 = new Publicacion("Publicación 6", _usu2.ColPublicacion.Count);
+            Publicacion p1 = new Publicacion("Publicacion 1", _usu2.ColPublicacion.Count);
+            Publicacion p2 = new Publicacion("Publicacion 2", _usu2.ColPublicacion.Count);
+            Publicacion p3 = new Publicacion("Publicacion 3", _usu2.ColPublicacion.Count);
+            Publicacion p4 = new Publicacion("Publicacion 4", _usu2.ColPublicacion.Count);
+            Publicacion p5 = new Publicacion("Publicacion 5", _usu2.ColPublicacion.Count);
+            Publicacion p6 = new Publicacion("Publicacion 6", _usu2.ColPublicacion.Count);
 
-            _usu2.nuevoChip("Publicación 1");
-            _usu2.nuevoChip("Publicación 2");
-            _usu2.nuevoChip("Publicación 3");
-            _usu2.nuevoChip("Publicación 4");
-            _usu2.nuevoChip("Publicación 5");
-            _usu1.nuevoChip("Publicación 6");
+            _usu2.nuevoChip("Publicacion 1");
+            _usu2.nuevoChip("Publicacion 2");
+            _usu2.nuevoChip("Publicacion 3");
+            _usu2.nuevoChip("Publicacion 4");
+            _usu2.nuevoChip("Publicacion 5");
+            _usu1.nuevoChip("Publicacion 6");
 
             _usu1.AddNotif(p1);
             _usu1.AddNotif(p2);
@@ -259,7 +259,7 @@ namespace Servidor
             Console.WriteLine("5 -> Negar acceso a usuario");
             Console.WriteLine("6 -> Permitir acceso a usuario");
             Console.WriteLine("7 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey) + " que mas usaron el sistema en los ultimos " + SettingsMgr.ReadSetting(ServerConfig.SeverTmpMostrarPubConfigKey) + " minutos");
-            Console.WriteLine("Ingrese el numero de la opción deseada: ");
+            Console.WriteLine("Ingrese el numero de la opcion deseada: ");
         }
 
 
@@ -472,7 +472,7 @@ namespace Servidor
             else if (!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
             {
                 networkDataHelper.SendMessage(clientSocket, "Contraseña incorrecta", CommandConstants.Login);
-                Console.WriteLine("Logueo incorrecto por contraseña incorrecta");
+                Console.WriteLine("Logueo incorrecto por contrasena incorrecta");
             }
             else if (_usuarios.Exists(u => u.PNomUsu == nombreLogin && u.Pass == contraseña && u.Habilitado == false))
             {
@@ -640,10 +640,16 @@ namespace Servidor
                 totalChips += $"{usuarioElegido.PNomUsu}?";
                 for (int i = 0; i < chips.Count; i++)
                 {
-                    totalChips += chips[i].ToString() + "?";
-                    for (int r = 0; r < chips[i].colRespuesta.Count; r++)
+                    if(i-1 == chips.Count)
+                        totalChips += chips[i].ToString();
+                    else
                     {
-                        totalChips += $"{chips[i].colRespuesta[r]}?";
+                        totalChips += chips[i].ToString() + "?";
+                        var respuestas = chips[i].colRespuesta;
+                        for (int r = 0; r < respuestas.Count; r++)
+                        {
+                            totalChips += $"{respuestas[r]}?";
+                        }
                     }
                 }
             }
@@ -656,17 +662,25 @@ namespace Servidor
             var datosRespuesta = datosRespuestaChip.Split("?");
             var usuarioLogueado = datosRespuesta[0];
             var usuarioDeChip = datosRespuesta[1];
-            var numeroChip = int.Parse(datosRespuesta[2]);
-            var respuesta = datosRespuesta[3];
+            var respuesta = datosRespuesta[2];
+            var numeroChip = int.Parse(datosRespuesta[3]);
             Respuesta nuevaRespuesta = new Respuesta(usuarioLogueado, respuesta);
 
             foreach (var usuario in _usuarios)
             {
                 if(usuario.PNomUsu == usuarioDeChip)
                 {
-                    var publicacion = usuario.ColPublicacion[numeroChip];
-                    publicacion.colRespuesta.Add(nuevaRespuesta);
-                    break;
+                    if (numeroChip <= usuario.ColPublicacion.Count)
+                    {
+                        var publicacion = usuario.ColPublicacion[numeroChip - 1];
+                        publicacion.colRespuesta.Add(nuevaRespuesta);
+                        break;
+                    }
+                    else
+                    {
+                        networkDataHelper.SendMessage(clientSocket, "No existe el numero de chip seleccionado.", CommandConstants.ResponderChip);
+                        return;
+                    }
                 }
             }
             networkDataHelper.SendMessage(clientSocket, "Respuesta creada correctamente.", CommandConstants.ResponderChip);
