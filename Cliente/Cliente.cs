@@ -284,7 +284,6 @@ namespace Cliente
                 Console.WriteLine("6 -> Nuevo Chip");
                 Console.WriteLine("7 -> Ver mis notificaciones");
                 Console.WriteLine("8  -> Ver chips de un usuario");
-                Console.WriteLine("9 -> Responder un chip");
                 Console.WriteLine("exit -> abandonar el programa");
                 Console.WriteLine("Ingrese su opcion: ");
             }
