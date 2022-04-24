@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using ConsoleArchiveSender;
+using cliente;
 using Microsoft.VisualBasic;
 using Protocolo;
 using Protocolo.FileHandler;
@@ -185,13 +185,22 @@ namespace Cliente
                             switch (op)
                             {
                                 case "1": //ingresa img 
-                                    networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + op + "?" + chip, CommandConstants.chip);
-                                    var ClientHandler = new ClientFileHandler();
-                                    ClientHandler.StartServer();
+
+                                    //networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + op + "?" + chip, CommandConstants.chip);
+                                    //var ClientHandler = new ClientFileHandler();
+                                    //ClientHandler.StartServer();
+                                    //Console.WriteLine("Ingrese las rutas de acceso de las imagenes separadas por ?");
+                                    //var rutasImg = Console.ReadLine();
+                                    //rutasImg += '?';
+                                    //var dSeparados = rutasImg.Split("?");
+
                                     Console.WriteLine("Ingrese las rutas de acceso de las imagenes separadas por ?");
                                     var rutasImg = Console.ReadLine();
                                     rutasImg += '?';
                                     var dSeparados = rutasImg.Split("?");
+                                    networkDataHelper.SendMessage(clientSocket, usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
+                                    var ClientHandler = new ClientFileHandler();
+                                    ClientHandler.StartServer();
 
                                     if (dSeparados.Length > 0)
                                     {
@@ -250,7 +259,6 @@ namespace Cliente
             Console.WriteLine("Opciones validas: ");
             Console.WriteLine("1 -> Registrar un usuario");
             Console.WriteLine("2 -> Ingresar al sistema");
-            Console.WriteLine("3 -> Envia un mensaje al server");
             Console.WriteLine("exit -> Abandonar el programa");
             Console.WriteLine("Ingrese su opcion: ");
         }

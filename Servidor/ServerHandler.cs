@@ -9,7 +9,7 @@ using Protocolo.NetworkUtils.Interfaces;
 using Protocolo;
 using Protocolo.FileTransfer;
 
-namespace ConsoleArchiveSender
+namespace servidor
 {
     class ServerHandler
     {
@@ -30,7 +30,7 @@ namespace ConsoleArchiveSender
             _networkStreamHandler = new NetworkStreamHandler(_tcpClient.GetStream());
         }
 
-        public void ReceiveFile()
+        public string ReceiveFile()
         {
             //1 - Recibo el header
             var header = _networkStreamHandler.Read(FileHeader.GetLength());
@@ -69,6 +69,8 @@ namespace ConsoleArchiveSender
                 _fileStreamHandler.Write(fileName, data);
                 currentPart++;
             }
+
+            return fileName;
         }
     }
 }

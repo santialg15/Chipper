@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using ConsoleArchiveSender;
 using Protocolo;
 using Protocolo.FileTransfer;
 using Protocolo.Interfaces;
+using servidor;
 
 
 namespace Servidor
@@ -348,20 +348,31 @@ namespace Servidor
                             var nomUsu = dSeparados[0];
                             var hayImg = dSeparados[1];
                             var chip = dSeparados[2];
-
-                            if (hayImg.Equals("1"))
+                            Publicacion nuevaPub;
+                            Usuario usuChip = buscarUsuarioLogin(nomUsu);
+                            if (int.Parse(hayImg) > 0)
                             {
                                 var serverHandler = new ServerHandler();
                                 serverHandler.StartClient();
-                                serverHandler.ReceiveFile();
+                                int contadorImg = 1;
+                                var colFileName = "";
+                                while (contadorImg < int.Parse(hayImg))
+                                {
+                                    var fileName = serverHandler.ReceiveFile();
+                                    colFileName += fileName + "?";
+                                    contadorImg++;
+                                }
+
+                                colFileName = colFileName.Remove(colFileName.Length - 1);
+                                nuevaPub = usuChip.nuevoChipConImg(chip, colFileName);
+
+                            }
+                            else
+                            {
+                                nuevaPub = usuChip.nuevoChip(chip);
                             }
 
-                            Usuario usuChip = buscarUsuarioLogin(nomUsu);
-                            Publicacion nuevaPub = usuChip.nuevoChip(chip);
-
                             Notificar(usuChip, nuevaPub);
-
-                            //networkDataHelper.ReceiveFile();
 
                             break;
 

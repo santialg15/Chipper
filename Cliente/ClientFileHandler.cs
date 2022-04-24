@@ -9,7 +9,7 @@ using Protocolo.NetworkUtils.Interfaces;
 using Protocolo;
 using Protocolo.FileTransfer;
 
-namespace ConsoleArchiveSender
+namespace cliente
 {
     class ClientFileHandler
     {
