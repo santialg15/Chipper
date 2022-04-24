@@ -379,30 +379,13 @@ namespace Servidor
                         case CommandConstants.VerChips:
                             Console.WriteLine("Procesando solicitud de visualizacion de chips...");
                             var nombreDeUsuario = ObtenerDatosDelCliente(header, clientSocket);
-                            var usuarioElegido = _usuarios.Find(u => u.PNomUsu == nombreDeUsuario);
-                            var totalChips = "";
-                            if (usuarioElegido == null)
-                            {
-                                networkDataHelper.SendMessage(clientSocket, "El usuario no existe", CommandConstants.VerChips);
-                            }
-                            else
-                            {
-                                var chips = usuarioElegido.ColPublicacion;
-                                if(chips.Count > 0)
-                                {
-                                    totalChips += $"{usuarioElegido.PNomUsu} :?";
-                                    for (int i = 0; i < chips.Count; i++)
-                                    {
-                                        totalChips += chips[i].ToString() + "?";
-                                        for (int r = 0; r < chips[i].colRespuesta.Count; r++)
-                                        {
-                                            totalChips += $"Respuesta {r}: {chips[i].colRespuesta[r]}?";
-                                        }
-                                    }
-                                }
-                                networkDataHelper.SendMessage(clientSocket, totalChips, CommandConstants.VerChips);
-                            }
-                            Console.WriteLine("Funcionalidad ver chips finalizada.");
+                            VerChipsDeUsuario(clientSocket, nombreDeUsuario);
+                            break;
+
+                        case CommandConstants.ResponderChip:
+                            Console.WriteLine("Procesando solicitud de respuesta de chip...");
+                            var datosRespuestaChip = ObtenerDatosDelCliente(header, clientSocket);
+                            ResponderChip(clientSocket, datosRespuestaChip);
                             break;
 
                         case CommandConstants.verNotif:
@@ -429,12 +412,6 @@ namespace Servidor
                             usu.clearNotif();
 
                             Console.WriteLine("Funcionalidad ver notificaciones finalizada.");
-                            break;
-
-                        case CommandConstants.ResponderChip:
-                            Console.WriteLine("Procesando solicitud de respuesta de chip...");
-                            var datosRespuestaChip = ObtenerDatosDelCliente(header, clientSocket);
-                            ResponderChip(clientSocket, datosRespuestaChip);
                             break;
                     }
                 }
@@ -659,16 +636,52 @@ namespace Servidor
             }
         }
 
-
-
+        private static void VerChipsDeUsuario(Socket clientSocket, string nombreUsuario)
+        {
+            var usuarioElegido = _usuarios.Find(u => u.PNomUsu == nombreUsuario);
+            if (usuarioElegido == null)
+            {
+                networkDataHelper.SendMessage(clientSocket, "El usuario no existe", CommandConstants.VerChips);
+                return;
+            }
+            var chips = usuarioElegido.ColPublicacion;
+            var totalChips = "";
+            if (chips.Count > 0)
+            {
+                totalChips += $"{usuarioElegido.PNomUsu}?";
+                for (int i = 0; i < chips.Count; i++)
+                {
+                    totalChips += chips[i].ToString() + "?";
+                    for (int r = 0; r < chips[i].colRespuesta.Count; r++)
+                    {
+                        totalChips += $"{chips[i].colRespuesta[r]}?";
+                    }
+                }
+            }
+            networkDataHelper.SendMessage(clientSocket, totalChips, CommandConstants.VerChips);
+            Console.WriteLine("Funcionalidad ver chips finalizada.");
+        }
 
         private static void ResponderChip(Socket clientSocket, string datosRespuestaChip)
         {
             var datosRespuesta = datosRespuestaChip.Split("?");
             var usuarioLogueado = datosRespuesta[0];
             var usuarioDeChip = datosRespuesta[1];
-            var numeroChip = datosRespuesta[2];
+            var numeroChip = int.Parse(datosRespuesta[2]);
+            var respuesta = datosRespuesta[3];
+            Respuesta nuevaRespuesta = new Respuesta(usuarioLogueado, respuesta);
 
+            foreach (var usuario in _usuarios)
+            {
+                if(usuario.PNomUsu == usuarioDeChip)
+                {
+                    var publicacion = usuario.ColPublicacion[numeroChip];
+                    publicacion.colRespuesta.Add(nuevaRespuesta);
+                    break;
+                }
+            }
+            networkDataHelper.SendMessage(clientSocket, "Respuesta creada correctamente.", CommandConstants.ResponderChip);
+            Console.WriteLine("Finalizo funcionalidad de responder chip.");
         }
     }
 }
