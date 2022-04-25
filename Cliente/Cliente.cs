@@ -45,7 +45,7 @@ namespace Cliente
                         switch (opcion)
                         {
                             case "exit":
-                                networkDataHelper.SendMessage(clientSocket, "", CommandConstants.exit);
+                                networkDataHelper.SendMessage("", CommandConstants.exit);
                                 clientSocket.Shutdown(SocketShutdown.Both);
                                 clientSocket.Close();
                                 connected = false;
@@ -67,7 +67,7 @@ namespace Cliente
 
                                 try
                                 {
-                                    networkDataHelper.SendMessage(clientSocket, infoUsuario, CommandConstants.Registro);
+                                    networkDataHelper.SendMessage(infoUsuario, CommandConstants.Registro);
                                 }
                                 catch (SocketException)
                                 {
@@ -87,7 +87,7 @@ namespace Cliente
                                 usuLogin = nombreLogin;
                                 try
                                 {
-                                    networkDataHelper.SendMessage(clientSocket, infoLogin, CommandConstants.Login);
+                                    networkDataHelper.SendMessage(infoLogin, CommandConstants.Login);
                                 }
                                 catch (SocketException)
                                 {
@@ -125,7 +125,7 @@ namespace Cliente
                                     case "1": //busqueda incluyente
                                         try
                                         {
-                                            networkDataHelper.SendMessage(clientSocket, caracteres,
+                                            networkDataHelper.SendMessage(caracteres,
                                                 CommandConstants.BusquedaIncluyente);
                                         }
                                         catch (SocketException)
@@ -138,7 +138,7 @@ namespace Cliente
                                     case "2": //busqueda excluyente
                                         try
                                         {
-                                            networkDataHelper.SendMessage(clientSocket, caracteres,
+                                            networkDataHelper.SendMessage(caracteres,
                                                 CommandConstants.BusquedaExcluyente);
                                         }
                                         catch (SocketException)
@@ -160,7 +160,7 @@ namespace Cliente
                                 Console.WriteLine("Ingrese el nombre del usuario a seguir:");
                                 var nombreASeguir = Console.ReadLine();
                                 var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
-                                networkDataHelper.SendMessage(clientSocket, datosParaSeguirUsuario,
+                                networkDataHelper.SendMessage(datosParaSeguirUsuario,
                                     CommandConstants.SeguirUsuario);
                                 break;
                             case "6": //NUEVO CHIP
@@ -199,8 +199,7 @@ namespace Cliente
                                         var rutasImg = Console.ReadLine();
                                         rutasImg += '?';
                                         var dSeparados = rutasImg.Split("?");
-                                        networkDataHelper.SendMessage(clientSocket,
-                                            usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
+                                        networkDataHelper.SendMessage(usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
                                         var ClientHandler = new ClientFileHandler();
                                         ClientHandler.StartServer();
 
@@ -229,8 +228,7 @@ namespace Cliente
                                         break;
 
                                     case "2":
-                                        networkDataHelper.SendMessage(clientSocket, usuLogin + "?0?" + chip,
-                                            CommandConstants.chip);
+                                        networkDataHelper.SendMessage(usuLogin + "?0?" + chip, CommandConstants.chip);
                                         break;
                                     default:
                                         Console.WriteLine("Opcion invalida");
@@ -242,12 +240,12 @@ namespace Cliente
 
                             case "7": //VER Noficaciones
                                 Console.WriteLine("Notificaciones:");
-                                networkDataHelper.SendMessage(clientSocket, usuLogin, CommandConstants.verNotif);
+                                networkDataHelper.SendMessage(usuLogin, CommandConstants.verNotif);
                                 break;
                             case "8": //VER CHIPS DE UN USUARIO
                                 Console.WriteLine("Ingrese el nombre de usuario:");
                                 var nombreUsuario = Console.ReadLine();
-                                networkDataHelper.SendMessage(clientSocket, nombreUsuario, CommandConstants.VerChips);
+                                networkDataHelper.SendMessage(nombreUsuario, CommandConstants.VerChips);
                                 //estaRespondiendoChip = true;
                                 break;
 
@@ -265,7 +263,7 @@ namespace Cliente
                                 var respuesta = Console.ReadLine();
                                 var datosResponder = $"{usuLogin}?{usuAResponder}?{respuesta}?{numeroChip}";
                                 usuAResponder = "";
-                                networkDataHelper.SendMessage(clientSocket, datosResponder,
+                                networkDataHelper.SendMessage(datosResponder,
                                     CommandConstants.ResponderChip);
                                 break;
                             case "NO":
@@ -314,7 +312,7 @@ namespace Cliente
                     var buffer = new byte[headerLength];
                     try
                     {
-                        networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, connected);
+                        networkDataHelper.ReceiveData(headerLength, buffer, connected);
                         var header = new Header();
                         connected = header.DecodeData(buffer);
                         switch (header.ICommand)
@@ -322,7 +320,7 @@ namespace Cliente
                             case CommandConstants.Registro:
                                 Console.WriteLine("El servidor esta validando el registro del usuario en el sistema...");
                                 var datosRegistro = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosRegistro, connected);
+                                networkDataHelper.ReceiveData(header.IDataLength, datosRegistro, connected);
                                 var respuestaRegistro = Encoding.UTF8.GetString(datosRegistro);
                                 Console.WriteLine($"{respuestaRegistro}");
                                 PrintMenu();
@@ -331,7 +329,7 @@ namespace Cliente
                             case CommandConstants.Login:
                                 Console.WriteLine("El servidor esta validando el ingreso del usuario al sistema...");
                                 var datosLogin = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosLogin, connected);
+                                networkDataHelper.ReceiveData(header.IDataLength, datosLogin, connected);
                                 var respuestaLogin = Encoding.UTF8.GetString(datosLogin);
                                 Console.WriteLine($"{respuestaLogin}");
                                 if (respuestaLogin == "El usuario se logueo correctamente.")
@@ -350,7 +348,7 @@ namespace Cliente
                             case CommandConstants.BusquedaIncluyente:
                                 Console.WriteLine("El servidor esta validando la busqueda...");
                                 var bufferBusquedaIncluyentes = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferBusquedaIncluyentes,
+                                networkDataHelper.ReceiveData(header.IDataLength, bufferBusquedaIncluyentes,
                                     connected);
                                 var totalUsuarios = Encoding.UTF8.GetString(bufferBusquedaIncluyentes);
                                 if (totalUsuarios == "")
@@ -373,7 +371,7 @@ namespace Cliente
                             case CommandConstants.BusquedaExcluyente:
                                 Console.WriteLine("El servidor esta validando la busqueda...");
                                 var bufferBusquedaExcluyente = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferBusquedaExcluyente,
+                                networkDataHelper.ReceiveData(header.IDataLength, bufferBusquedaExcluyente,
                                     connected);
                                 var totalUsuariosExcluyentes = Encoding.UTF8.GetString(bufferBusquedaExcluyente);
                                 if (totalUsuariosExcluyentes == "")
@@ -396,7 +394,7 @@ namespace Cliente
                             case CommandConstants.SeguirUsuario:
                                 Console.WriteLine("El servidor esta validando el seguimiento de usuario...");
                                 var bufferSeguirUsuario = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferSeguirUsuario, connected);
+                                networkDataHelper.ReceiveData(header.IDataLength, bufferSeguirUsuario, connected);
                                 var respuestaSeguirUsuario = Encoding.UTF8.GetString(bufferSeguirUsuario);
                                 if (respuestaSeguirUsuario == "")
                                 {
@@ -416,7 +414,7 @@ namespace Cliente
                             case CommandConstants.VerChips:
                                 Console.WriteLine("El servidor esta validando los chips del usuario ingresado...");
                                 var bufferVerChips = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferVerChips, connected);
+                                networkDataHelper.ReceiveData(header.IDataLength, bufferVerChips, connected);
                                 var totalChips = Encoding.UTF8.GetString(bufferVerChips);
                                 if (totalChips == "El usuario no existe")
                                 {
@@ -452,7 +450,7 @@ namespace Cliente
 
                             case CommandConstants.ResponderChip:
                                 var bufferResponderChip = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferResponderChip, connected);
+                                networkDataHelper.ReceiveData(header.IDataLength, bufferResponderChip, connected);
                                 var respuestaServidor = Encoding.UTF8.GetString(bufferResponderChip);
                                 Console.WriteLine(respuestaServidor);
                                 PrintLoggedMenu();
@@ -460,7 +458,7 @@ namespace Cliente
 
                             case CommandConstants.verNotif:
                                 var bufferVerNotif = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(clientSocket, header.IDataLength, bufferVerNotif, connected);
+                                networkDataHelper.ReceiveData(header.IDataLength, bufferVerNotif, connected);
                                 var totalNotif = Encoding.UTF8.GetString(bufferVerNotif);
                                 Console.WriteLine("Lista de Notificaciones:");
                                 if (totalNotif.Length > 0)
