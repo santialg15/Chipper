@@ -307,6 +307,10 @@ namespace Servidor
 
                     switch (header.ICommand)
                     {
+                        case CommandConstants.exit:
+                            _exit = true;
+                            Console.WriteLine("Terminó la conexión de un cliente");
+                            break;
                         case CommandConstants.Registro:
                             Console.WriteLine("Validando registro de un usuario en el sistema");
                             var datosRegistro = ObtenerDatosDelCliente(header, clientSocket);

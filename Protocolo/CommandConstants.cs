@@ -13,6 +13,7 @@ namespace Protocolo
         public const int SeguirUsuario = 10;
         public const int verNotif = 11;
         public const int ResponderChip = 12;
+        public const int exit = 13;
 
     }
 }

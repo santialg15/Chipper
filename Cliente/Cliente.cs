@@ -45,6 +45,7 @@ namespace Cliente
                         switch (opcion)
                         {
                             case "exit":
+                                networkDataHelper.SendMessage(clientSocket, "", CommandConstants.exit);
                                 clientSocket.Shutdown(SocketShutdown.Both);
                                 clientSocket.Close();
                                 connected = false;
