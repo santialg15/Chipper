@@ -17,6 +17,7 @@ namespace Servidor
         private static List<Usuario> _usuarios = new List<Usuario>();
         private static NetworkDataHelper networkDataHelper;
 
+        private static readonly object _lockUsuarios = new object();
 
         static void Main(string[] args)
         {
@@ -463,20 +464,25 @@ namespace Servidor
                 networkDataHelper.SendMessage("Ningun campo puede estar vacio.", CommandConstants.Registro);
                 Console.WriteLine("No se realizo el registro de usuario.");
             }
-            else if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
-            {
-                networkDataHelper.SendMessage("El usuario ya existe.", CommandConstants.Registro);
-                Console.WriteLine("No se realizo el registro de usuario.");
-            }
             else
             {
-                Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
-                _usuarios.Add(nuevoUsuario);
-                Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
-                networkDataHelper.SendMessage("El usuario fue registrado con exito.", CommandConstants.Registro);
+                lock (_lockUsuarios)
+                {
+                    if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
+                    {
+                        networkDataHelper.SendMessage("El usuario ya existe.", CommandConstants.Registro);
+                        Console.WriteLine("No se realizo el registro de usuario.");
+                    }
+                    else
+                    {
+                        Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
+                        _usuarios.Add(nuevoUsuario);
+                        Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
+                        networkDataHelper.SendMessage("El usuario fue registrado con exito.", CommandConstants.Registro);
+                    }
+                }
             }
         }
-
 
         private static void ValidarLoginUsuario(NetworkDataHelper networkDataHelper, Socket clientSocket, string nombreLogin, string contraseña)
         {
@@ -586,12 +592,8 @@ namespace Servidor
                 // Actualizo lista de usuarios agregando norificación a los que siguen al usuario creador del chip
                 foreach (var usu in _usuarios)
                 {
-                    //if (usu.PNomUsu == usuSeguidos.PNomUsu)
-                    //    usu.AddNotif(chip);
-                    if (!usu.Equals(usuSeguidos))
-                    {
+                    if (usu.PNomUsu == usuSeguidos.PNomUsu)
                         usu.AddNotif(chip);
-                    }
                 }
             }
         }
