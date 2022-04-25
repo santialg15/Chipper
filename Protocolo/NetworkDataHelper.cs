@@ -50,7 +50,7 @@ namespace Protocolo
                 try
                 {
                     var localRecv = _socket.Receive(buffer, iRecv, Length - iRecv, SocketFlags.None);
-                    if (localRecv == 0) // Si recieve retorna 0 -> la conexion se cerro desde el endpoint remoto
+                    if (localRecv == 0) 
                     {
                         if (!_exit)
                         {

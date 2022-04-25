@@ -44,17 +44,14 @@ namespace servidor
 
         public string ReceiveFile()
         {
-            //1 - Recibo el header
             var header = _networkStreamHandler.Read(FileHeader.GetLength());
-            // 2 - Me quedo con el largo del nombre del archivo
+            
             var fileNameSize = BitConverter.ToInt32(header, 0);
-            // 3 - Me quedo con el tamaño del file
+            
             var fileSize = BitConverter.ToInt64(header, Specification.FixedFileNameLength);
 
-            //4 - Recibo el nombre del archivo, usando el tamaño que recibi en el punto 2
             var fileName = Encoding.UTF8.GetString(_networkStreamHandler.Read(fileNameSize));
 
-            // 5 - Calculo cuantas partes voy a recibir
             long parts = SpecificationHelper.GetParts(fileSize);
             long offset = 0;
             long currentPart = 1;
