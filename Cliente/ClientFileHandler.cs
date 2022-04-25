@@ -46,14 +46,14 @@ namespace cliente
 
         public void SendFile(string path)
         {
-            //1) Obtiene el tamaño del archivo
+            // Obtiene el tamaño del archivo
             long fileSize = _fileHandler.GetFileSize(path);
-            //2) Obtenemos el nombre del archivo
+            // Obtenemos el nombre del archivo
             string fileName = _fileHandler.GetFileName(path);
             var header = new FileHeader().Create(fileName, fileSize);
-            _networkStreamHandler.Write(header); // Aca enviamos largo del nombre y tamaño del file
+            _networkStreamHandler.Write(header); // envia largo del nombre y tamaño del file
             
-            _networkStreamHandler.Write(Encoding.UTF8.GetBytes(fileName)); // Enviamos el nombre del archivo
+            _networkStreamHandler.Write(Encoding.UTF8.GetBytes(fileName)); // Envia nombre del archivo
 
             long parts = SpecificationHelper.GetParts(fileSize);
             Console.WriteLine("Will Send {0} parts",parts);
@@ -69,14 +69,14 @@ namespace cliente
                 byte[] data;
                 if (currentPart == parts)
                 {
-                    // leo el ultimo segmento del archivo
+                    // leo el ultimo segmento
                     var lastPartSize = (int)(fileSize - offset);
                     data = _fileStreamHandler.Read(path, offset, lastPartSize); //Puntos 1 y 2 
                     offset += lastPartSize;
                 }
                 else
                 {
-                    // leo un segmento del archivo
+                    // leo un segmento
                     data = _fileStreamHandler.Read(path, offset, Specification.MaxPacketSize); //Puntos 1 y 2
                     offset += Specification.MaxPacketSize;
                 }

@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using Protocolo.FileHandler.Interfaces;
-using Protocolo.FileHandler;
-using Protocolo.Interfaces;
-using Protocolo.NetworkUtils;
-using Protocolo.NetworkUtils.Interfaces;
+
 
 namespace Protocolo
 {

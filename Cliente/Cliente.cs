@@ -61,7 +61,7 @@ namespace Cliente
                                 Console.WriteLine("Ingrese su contraseña:");
                                 var contraseña = Console.ReadLine();
 
-                                //Console.WriteLine("Ingrese su foto de perfil:"); FALTA IMPLEMENTAR!
+                                //Console.WriteLine("Ingrese su foto de perfil:"); 
 
                                 var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
 

@@ -4,16 +4,6 @@ using System.Text;
 namespace Protocolo
 {
     
-    /*
-     * Protocolo -> XXX YY ZZZZ <DATA>
-     *   XXX -> REQ/RES -> Si es REQ, va del client al server, cuando el server contesta, es un RES
-     *    YY -> ID COMANDO 
-     *  ZZZZ -> LARGO
-     *  <DATA> -> los datos en si del comando
-     */ 
-    
-    // RES040015XXXXXXXXXXXXXXX
-    
     public class Header
     {
         private byte[] _direction;
@@ -48,9 +38,9 @@ namespace Protocolo
         {
 
             _direction = Encoding.UTF8.GetBytes(direction);
-            var stringCommand = command.ToString("D2");  //Maximo largo 2, si es menor a 2 cifras, completo con 0s a la izquierda 
+            var stringCommand = command.ToString("D2");  
             _command = Encoding.UTF8.GetBytes(stringCommand);
-            var stringData = datalength.ToString("D4");  // 0 < Largo <= 9999 
+            var stringData = datalength.ToString("D4");  
             _dataLength = Encoding.UTF8.GetBytes(stringData);
         }
 

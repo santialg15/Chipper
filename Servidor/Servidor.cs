@@ -39,9 +39,6 @@ namespace Servidor
                 var userInput = Console.ReadLine();
                 switch (userInput)
                 {
-                    // Cosas a hacer al cerrar el server
-                    // 1 - Cerrar el socket que esta escuchando conexiones nuevas
-                    // 2 - Cerrar todas las conexiones abiertas desde los clientes
                     case "1": // SRF1
                         _exit = true;
                         socketServer.Close(0);
@@ -50,8 +47,6 @@ namespace Servidor
                             client.Shutdown(SocketShutdown.Both);
                             client.Close();
                         }
-                        //var fakeSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        //fakeSocket.Connect("127.0.0.1", 20000);
                         break;
 
                     case "2": // SRF2
