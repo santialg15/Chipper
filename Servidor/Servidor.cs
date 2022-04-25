@@ -243,12 +243,6 @@ namespace Servidor
             _usu1.AddNotif(p5);
             _usu2.AddNotif(p6);
 
-
-            _usu2.nuevoChip("Publicacion 1");
-            _usu2.nuevoChip("Publicacion 2");
-            _usu2.nuevoChip("Publicacion 3");
-            _usu2.nuevoChip("Publicacion 4");
-            _usu2.nuevoChip("Publicacion 5");
         }
 
 
