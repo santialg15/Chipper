@@ -352,17 +352,17 @@ namespace Servidor
                             var dLogin = ObtenerDatosDelCliente(header, clientSocket);
                             var dSeparados = dLogin.Split("?");
                             var nomUsu = dSeparados[0];
-                            var hayImg = dSeparados[1];
+                            var CntImg = dSeparados[1];
                             var chip = dSeparados[2];
                             Publicacion nuevaPub;
                             Usuario usuChip = buscarUsuarioLogin(nomUsu);
-                            if (int.Parse(hayImg) > 0)
+                            if (int.Parse(CntImg) > 0)
                             {
                                 var serverHandler = new ServerHandler();
                                 serverHandler.StartClient();
                                 int contadorImg = 1;
                                 var colFileName = "";
-                                while (contadorImg < int.Parse(hayImg))
+                                while (contadorImg < int.Parse(CntImg))
                                 {
                                     var fileName = serverHandler.ReceiveFile();
                                     colFileName += fileName + "?";

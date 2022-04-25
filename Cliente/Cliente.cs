@@ -196,36 +196,75 @@ namespace Cliente
 
                                         Console.WriteLine(
                                             "Ingrese las rutas de acceso de las imagenes separadas por ?");
-                                        var rutasImg = Console.ReadLine();
-                                        rutasImg += '?';
-                                        var dSeparados = rutasImg.Split("?");
-                                        networkDataHelper.SendMessage(clientSocket,
-                                            usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
-                                        var ClientHandler = new ClientFileHandler();
-                                        ClientHandler.StartServer();
-
-                                        if (dSeparados.Length > 0)
+                                        var isValidEnvio = false;
+                                        bool isOkControles;
+                                        while (!isValidEnvio)
                                         {
-                                            int index = 0;
-                                            while (index < dSeparados.Length)
-                                            {
-                                                string path = dSeparados[index];
-                                                IFileHandler fileHandler = new FileHandler();
-                                                if (fileHandler.FileExists(path))
-                                                {
-                                                    ClientHandler.SendFile(path);
-                                                }
+                                            isOkControles = true;
 
-                                                index++;
+                                            var rutasImg = Console.ReadLine();
+                                            if (rutasImg.Equals(""))
+                                            {
+                                                Console.WriteLine("La ruta no puede ser vacía");
+                                                break;
                                             }
 
-                                            ClientHandler.stop();
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Error debe ingresar la ruta de los archivos");
-                                        }
+                                            rutasImg += '?';
+                                            var dSeparados = rutasImg.Split("?");
 
+                                            if (dSeparados.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey))+1)
+                                            {
+                                                Console.WriteLine("Puede ingresar un máximo de " + SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey) + " archivos. Ingrese las rutas nuevamente");
+                                                isOkControles = false;
+                                            }
+
+                                            if (isOkControles)
+                                            {
+                                                if (dSeparados.Length == 0)
+                                                {
+                                                    Console.WriteLine("Error debe ingresar la ruta de los archivos");
+                                                    isOkControles = false;
+                                                }
+                                            }
+
+                                            if (isOkControles)
+                                            {
+                                                int index = 0;
+                                                IFileHandler fileHandler = new FileHandler();
+                                                while (index < dSeparados.Length && isOkControles)
+                                                {
+                                                    string path = dSeparados[index];
+                                                    
+                                                    if (!path.Equals("") && !fileHandler.FileExists(path))
+                                                    {
+                                                        Console.WriteLine("la ruta de acceso al archivo " + index + 1 + " no es valida. Intente nuevamente");
+                                                        isOkControles = false;
+                                                    }
+                                                    index++;
+                                                }
+                                            }
+
+                                            if (isOkControles)
+                                            {
+                                                networkDataHelper.SendMessage(clientSocket,
+                                                    usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
+                                                var ClientHandler = new ClientFileHandler();
+                                                ClientHandler.StartServer();
+                                               
+                                                int index = 0;
+                                                while (index < dSeparados.Length)
+                                                {
+                                                    string path = dSeparados[index];
+                                                    if (!path.Equals(""))
+                                                    {
+                                                        ClientHandler.SendFile(path);
+                                                    }
+                                                    index++;
+                                                }
+                                                ClientHandler.stop();
+                                                isValidEnvio = true;
+                                            }
+                                        }
                                         break;
 
                                     case "2":
