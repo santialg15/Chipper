@@ -16,7 +16,7 @@ namespace Servidor
         static List<Socket> _clients = new List<Socket>();
         private static List<Usuario> _usuarios = new List<Usuario>();
         private static NetworkDataHelper networkDataHelper;
-
+        private static readonly object _lockUsuarios = new object();
 
         static void Main(string[] args)
         {
@@ -455,17 +455,23 @@ namespace Servidor
                 networkDataHelper.SendMessage(clientSocket, "Ningun campo puede estar vacio.", CommandConstants.Registro);
                 Console.WriteLine("No se realizo el registro de usuario.");
             }
-            else if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
-            {
-                networkDataHelper.SendMessage(clientSocket, "El usuario ya existe.", CommandConstants.Registro);
-                Console.WriteLine("No se realizo el registro de usuario.");
-            }
             else
             {
-                Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
-                _usuarios.Add(nuevoUsuario);
-                Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
-                networkDataHelper.SendMessage(clientSocket, "El usuario fue registrado con exito.", CommandConstants.Registro);
+                lock (_lockUsuarios)
+                {
+                    if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
+                    {
+                        networkDataHelper.SendMessage(clientSocket, "El usuario ya existe.", CommandConstants.Registro);
+                        Console.WriteLine("No se realizo el registro de usuario.");
+                    }
+                    else
+                    {
+                        Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
+                        _usuarios.Add(nuevoUsuario);
+                        Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
+                        networkDataHelper.SendMessage(clientSocket, "El usuario fue registrado con exito.", CommandConstants.Registro);
+                    }
+                }
             }
         }
 
