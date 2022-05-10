@@ -1,14 +1,11 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text;
 
-
-namespace Protocolo
+namespace ProyectoCompartido.Protocolo
 {
     public class NetworkDataHelper
     {
         private readonly Socket _socket;
-
 
         public NetworkDataHelper(Socket socket)
         {

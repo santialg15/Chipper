@@ -1,10 +1,9 @@
-﻿using Protocolo;
-using Protocolo.Interfaces;
-
-namespace Servidor
+﻿namespace Logica
 {
     public class Usuario
     {
+
+        private const int TmpMostrarPub = 10;
         private string pNomReal;
         private string pNomUsu;
         private string pass;
@@ -14,7 +13,6 @@ namespace Servidor
         private List<Usuario> colSeguidos;
         private List<Publicacion> colPublicacion;
         private List<Publicacion> colNotif;
-        static readonly ISettingsManager SettingsMgr = new SettingsManager();
 
         public string PNomUsu { get => pNomUsu; }
 
@@ -72,7 +70,7 @@ namespace Servidor
             int contador = 0;
             for (int i = 0; i < colPublicacion.Count; i++)
             {
-                if ((DateTime.Now - colPublicacion[i].getFch()).TotalMinutes <= Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTmpMostrarPubConfigKey)))
+                if ((DateTime.Now - colPublicacion[i].getFch()).TotalMinutes <= TmpMostrarPub)
                 {
                     contador++;
                 }

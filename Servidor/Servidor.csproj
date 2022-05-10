@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Protocolo\Protocolo.csproj" />
+    <ProjectReference Include="..\Logica\Logica.csproj" />
+    <ProjectReference Include="..\ProyectoCompartido\ProyectoCompartido.csproj" />
   </ItemGroup>
 
 </Project>

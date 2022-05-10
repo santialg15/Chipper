@@ -1,8 +1,6 @@
-using System;
 using System.Configuration;
-using Protocolo.Interfaces;
 
-namespace Protocolo
+namespace ProyectoCompartido.Interfaces
 {
     public partial class SettingsManager : ISettingsManager
     {

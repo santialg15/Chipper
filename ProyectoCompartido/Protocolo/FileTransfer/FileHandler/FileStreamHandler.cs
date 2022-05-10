@@ -1,8 +1,6 @@
-using System;
-using System.IO;
-using Protocolo.FileHandler.Interfaces;
+using ProyectoCompartido.Protocolo.FileTransfer.FileHandler.Interfaces;
 
-namespace Protocolo.FileHandler
+namespace ProyectoCompartido.Protocolo.FileTransfer.FileHandler
 {
     public class FileStreamHandler : IFileStreamHandler
     {

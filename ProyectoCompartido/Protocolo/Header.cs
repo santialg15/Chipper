@@ -1,9 +1,8 @@
 using System;
 using System.Text;
 
-namespace Protocolo
+namespace ProyectoCompartido.Protocolo
 {
-    
     public class Header
     {
         private byte[] _direction;

@@ -1,4 +1,4 @@
-namespace Protocolo
+namespace ProyectoCompartido.Protocolo
 {
     public static class CommandConstants
     {

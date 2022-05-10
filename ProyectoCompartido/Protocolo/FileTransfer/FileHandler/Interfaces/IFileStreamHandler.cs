@@ -1,4 +1,4 @@
-namespace Protocolo.FileHandler.Interfaces
+namespace ProyectoCompartido.Protocolo.FileTransfer.FileHandler.Interfaces
 {
     public interface IFileStreamHandler
     {

@@ -7,7 +7,6 @@ namespace Servidor
         public static string SeverPortTCPConnfigKey = "ServerTCPConnPort";
         public static string SeverPortTCPClifigKey = "ServerTCPCliPort";
 
-
         // SRF6
         public static string SeverTopSeguidoresConfigKey = "TopSeguidores";
 

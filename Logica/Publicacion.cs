@@ -1,5 +1,5 @@
 ﻿
-namespace Servidor
+namespace Logica
 {
     public class Publicacion
     {

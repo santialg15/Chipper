@@ -1,15 +1,14 @@
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Cliente;
-using Protocolo.FileHandler;
-using Protocolo.FileHandler.Interfaces;
-using Protocolo.NetworkUtils;
-using Protocolo.NetworkUtils.Interfaces;
-using Protocolo;
-using Protocolo.FileTransfer;
-using Protocolo.Interfaces;
+using ProyectoCompartido.Interfaces;
+using ProyectoCompartido.Protocolo;
+using ProyectoCompartido.Protocolo.FileTransfer;
+using ProyectoCompartido.Protocolo.FileTransfer.FileHandler;
+using ProyectoCompartido.Protocolo.FileTransfer.FileHandler.Interfaces;
+using ProyectoCompartido.Protocolo.FileTransfer.NetworkUtils.Interfaces;
+using ProyectoCompartido.Protocolo.FileTransfer.NetworkUtils.NetworkUtils;
 
 namespace cliente
 {

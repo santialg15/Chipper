@@ -1,7 +1,7 @@
+using ProyectoCompartido.Protocolo.FileTransfer.NetworkUtils.Interfaces;
 using System.Net.Sockets;
-using Protocolo.NetworkUtils.Interfaces;
 
-namespace Protocolo.NetworkUtils
+namespace ProyectoCompartido.Protocolo.FileTransfer.NetworkUtils.NetworkUtils
 {
     public class NetworkStreamHandler : INetworkStreamHandler
     {

@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Protocolo;
-using Protocolo.FileTransfer;
-using Protocolo.Interfaces;
+using Logica;
+using ProyectoCompartido.Interfaces;
+using ProyectoCompartido.Protocolo;
+using ProyectoCompartido.Protocolo.FileTransfer;
 using servidor;
-
 
 namespace Servidor
 {
@@ -22,10 +22,12 @@ namespace Servidor
         {
             agregarDatos();
 
+            var serverIpAdress = IPAddress.Parse(SettingsMgr.ReadSetting(ServerConfig.ServerIpConfigKey));
+            var serverPort = Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverPortConfigKey));
+            var ipServerEndpoint = new IPEndPoint(serverIpAdress, serverPort);
+
             var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            
-            socketServer.Bind(new IPEndPoint(IPAddress.Parse(SettingsMgr.ReadSetting(ServerConfig.ServerIpConfigKey)),
-                Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverPortConfigKey))));
+            socketServer.Bind(ipServerEndpoint);
             socketServer.Listen(100);
 
             //Lanzar un thread para manejar las conexiones
@@ -249,7 +251,7 @@ namespace Servidor
             Console.WriteLine("4 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopSeguidoresConfigKey) + " con mas seguidores");
             Console.WriteLine("5 -> Negar acceso a usuario");
             Console.WriteLine("6 -> Permitir acceso a usuario");
-            Console.WriteLine("7 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey) + " que mas usaron el sistema en los ultimos " + SettingsMgr.ReadSetting(ServerConfig.SeverTmpMostrarPubConfigKey) + " minutos");
+            Console.WriteLine("7 -> top " + SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey) + " que mas usaron el sistema en los ultimos minutos");
             Console.WriteLine("Ingrese el numero de la opcion deseada: ");
         }
 

@@ -1,4 +1,4 @@
-namespace Protocolo.Interfaces
+namespace ProyectoCompartido.Interfaces
 {
     public interface ISettingsManager
     {

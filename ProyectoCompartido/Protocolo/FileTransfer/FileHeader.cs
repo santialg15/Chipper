@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Protocolo.FileTransfer
+namespace ProyectoCompartido.Protocolo.FileTransfer
 {
     public class FileHeader
     {

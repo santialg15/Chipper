@@ -2,11 +2,10 @@
 using System.Net.Sockets;
 using System.Text;
 using cliente;
-using Microsoft.VisualBasic;
-using Protocolo;
-using Protocolo.FileHandler;
-using Protocolo.FileHandler.Interfaces;
-using Protocolo.Interfaces;
+using ProyectoCompartido.Interfaces;
+using ProyectoCompartido.Protocolo;
+using ProyectoCompartido.Protocolo.FileTransfer.FileHandler;
+using ProyectoCompartido.Protocolo.FileTransfer.FileHandler.Interfaces;
 
 namespace Cliente
 {
