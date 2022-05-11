@@ -291,7 +291,7 @@ namespace Servidor
                 var buffer = new byte[headerLength];
                 try
                 {
-                    networkDataHelper.ReceiveData(clientSocket, headerLength, buffer, _exit);
+                    networkDataHelper.ReceiveData(headerLength, buffer, _exit);
                     var fileheader = new FileHeader();
                     var header = new Header();
                     _exit = !header.DecodeData(buffer);
@@ -399,11 +399,11 @@ namespace Servidor
 
                             if (totalNotif.Equals(""))
                             {
-                                networkDataHelper.SendMessage(clientSocket, "No hay notificaciones", CommandConstants.verNotif);
+                                networkDataHelper.SendMessage("No hay notificaciones", CommandConstants.verNotif);
                             }
                             else
                             {
-                                networkDataHelper.SendMessage(clientSocket, totalNotif, CommandConstants.verNotif);
+                                networkDataHelper.SendMessage(totalNotif, CommandConstants.verNotif);
                             }
 
                             usu.clearNotif();
@@ -440,7 +440,7 @@ namespace Servidor
         private static string ObtenerDatosDelCliente(Header header, Socket clientSocket)
         {
             var datosBuffer = new byte[header.IDataLength];
-            networkDataHelper.ReceiveData(clientSocket, header.IDataLength, datosBuffer, _exit);
+            networkDataHelper.ReceiveData(header.IDataLength, datosBuffer, _exit);
             return Encoding.UTF8.GetString(datosBuffer);
         }
 
@@ -449,7 +449,7 @@ namespace Servidor
         {
             if (nombreUsuario == "" || nombreReal == "" || contraseña == "")
             {
-                networkDataHelper.SendMessage(clientSocket, "Ningun campo puede estar vacio.", CommandConstants.Registro);
+                networkDataHelper.SendMessage("Ningun campo puede estar vacio.", CommandConstants.Registro);
                 Console.WriteLine("No se realizo el registro de usuario.");
             }
             else
@@ -458,7 +458,7 @@ namespace Servidor
                 {
                     if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
                     {
-                        networkDataHelper.SendMessage(clientSocket, "El usuario ya existe.", CommandConstants.Registro);
+                        networkDataHelper.SendMessage("El usuario ya existe.", CommandConstants.Registro);
                         Console.WriteLine("No se realizo el registro de usuario.");
                     }
                     else
@@ -466,7 +466,7 @@ namespace Servidor
                         Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
                         _usuarios.Add(nuevoUsuario);
                         Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
-                        networkDataHelper.SendMessage(clientSocket, "El usuario fue registrado con exito.", CommandConstants.Registro);
+                        networkDataHelper.SendMessage("El usuario fue registrado con exito.", CommandConstants.Registro);
                     }
                 }
             }
@@ -477,27 +477,27 @@ namespace Servidor
         {
             if (nombreLogin == "" || contraseña == "")
             {
-                networkDataHelper.SendMessage(clientSocket, "Ningun campo puede ser vacio.", CommandConstants.Login);
+                networkDataHelper.SendMessage("Ningun campo puede ser vacio.", CommandConstants.Login);
                 Console.WriteLine("Logueo incorrecto por campos vacios.");
             }
             else if (!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
             {
-                networkDataHelper.SendMessage(clientSocket, "No existe el usuario con el que se quiere loguear.", CommandConstants.Login);
+                networkDataHelper.SendMessage("No existe el usuario con el que se quiere loguear.", CommandConstants.Login);
                 Console.WriteLine("Logueo incorrecto por usuario inexistente.");
             }
             else if (!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
             {
-                networkDataHelper.SendMessage(clientSocket, "Contraseña incorrecta", CommandConstants.Login);
+                networkDataHelper.SendMessage("Contraseña incorrecta", CommandConstants.Login);
                 Console.WriteLine("Logueo incorrecto por contrasena incorrecta");
             }
             else if (_usuarios.Exists(u => u.PNomUsu == nombreLogin && u.Pass == contraseña && u.Habilitado == false))
             {
-                networkDataHelper.SendMessage(clientSocket, "El usuario se encuentra inhabilitado.", CommandConstants.Login);
+                networkDataHelper.SendMessage("El usuario se encuentra inhabilitado.", CommandConstants.Login);
                 Console.WriteLine("Logueo denegado por usuario no habilitado");
             }
             else
             {
-                networkDataHelper.SendMessage(clientSocket, "El usuario se logueo correctamente.", CommandConstants.Login);
+                networkDataHelper.SendMessage("El usuario se logueo correctamente.", CommandConstants.Login);
                 Console.WriteLine("El usuario se logueo correctamente.");
             }
         }
@@ -521,12 +521,12 @@ namespace Servidor
             var totalUsuarios = "";
             if (_usuarios.Count == 0)
             {
-                networkDataHelper.SendMessage(clientSocket, $"{totalUsuarios}", constante);
+                networkDataHelper.SendMessage($"{totalUsuarios}", constante);
                 return;
             }
             else if (caracteres == "" && constante == CommandConstants.BusquedaIncluyente)
             {
-                networkDataHelper.SendMessage(clientSocket, $"{totalUsuarios}", constante);
+                networkDataHelper.SendMessage($"{totalUsuarios}", constante);
                 Console.WriteLine("Busqueda Finalizada");
                 return;
             }
@@ -568,7 +568,7 @@ namespace Servidor
                     }
                 }
             }
-            networkDataHelper.SendMessage(clientSocket, $"{totalUsuarios}", constante);
+            networkDataHelper.SendMessage($"{totalUsuarios}", constante);
             Console.WriteLine("Busqueda Finalizada");
         }
 
@@ -595,7 +595,7 @@ namespace Servidor
             var existeASeguir = _usuarios.Any(u => u.PNomUsu == aSeguir);
             if (!existeUsuario || !existeASeguir)
             {
-                networkDataHelper.SendMessage(clientSocket, "", CommandConstants.SeguirUsuario);
+                networkDataHelper.SendMessage("", CommandConstants.SeguirUsuario);
             }
             else
             {
@@ -612,10 +612,10 @@ namespace Servidor
                         }
                         else
                         {
-                            networkDataHelper.SendMessage(clientSocket, "Ya sigue a este usuario.", CommandConstants.SeguirUsuario);
+                            networkDataHelper.SendMessage("Ya sigue a este usuario.", CommandConstants.SeguirUsuario);
                             break;
                         }
-                        networkDataHelper.SendMessage(clientSocket, "El usuario fue agregado.", CommandConstants.SeguirUsuario);
+                        networkDataHelper.SendMessage("El usuario fue agregado.", CommandConstants.SeguirUsuario);
                         break;
                     }
                 }
@@ -646,7 +646,7 @@ namespace Servidor
             var usuarioElegido = _usuarios.Find(u => u.PNomUsu == nombreUsuario);
             if (usuarioElegido == null)
             {
-                networkDataHelper.SendMessage(clientSocket, "El usuario no existe", CommandConstants.VerChips);
+                networkDataHelper.SendMessage("El usuario no existe", CommandConstants.VerChips);
                 return;
             }
             var chips = usuarioElegido.ColPublicacion;
@@ -669,7 +669,7 @@ namespace Servidor
                     }
                 }
             }
-            networkDataHelper.SendMessage(clientSocket, totalChips, CommandConstants.VerChips);
+            networkDataHelper.SendMessage(totalChips, CommandConstants.VerChips);
             Console.WriteLine("Funcionalidad ver chips finalizada.");
         }
 
@@ -694,12 +694,12 @@ namespace Servidor
                     }
                     else
                     {
-                        networkDataHelper.SendMessage(clientSocket, "No existe el numero de chip seleccionado.", CommandConstants.ResponderChip);
+                        networkDataHelper.SendMessage("No existe el numero de chip seleccionado.", CommandConstants.ResponderChip);
                         return;
                     }
                 }
             }
-            networkDataHelper.SendMessage(clientSocket, "Respuesta creada correctamente.", CommandConstants.ResponderChip);
+            networkDataHelper.SendMessage("Respuesta creada correctamente.", CommandConstants.ResponderChip);
             Console.WriteLine("Finalizo funcionalidad de responder chip.");
         }
     }
