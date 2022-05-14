@@ -13,25 +13,30 @@ namespace Servidor
     {
         static readonly ISettingsManager SettingsMgr = new SettingsManager();
         static bool _exit = false;
-        static List<Socket> _clients = new List<Socket>();
+        static List<TcpClient> _clients = new List<TcpClient>();
         private static List<Usuario> _usuarios = new List<Usuario>();
         private static NetworkDataHelper networkDataHelper;
         private static readonly object _lockUsuarios = new object();
 
         static void Main(string[] args)
         {
-            agregarDatos();
-
+                agregarDatos();
             var serverIpAdress = IPAddress.Parse(SettingsMgr.ReadSetting(ServerConfig.ServerIpConfigKey));
             var serverPort = Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverPortConfigKey));
             var ipServerEndpoint = new IPEndPoint(serverIpAdress, serverPort);
 
-            var socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socketServer.Bind(ipServerEndpoint);
-            socketServer.Listen(100);
+            var tcpListener = new TcpListener(ipServerEndpoint);
+            tcpListener.Start(100); //Acepta 100 clientes encolados sin tener que ser procesados.
 
-            //Lanzar un thread para manejar las conexiones
-            var threadServer = new Thread(() => ListenForConnections(socketServer));
+            while (true)
+            {
+                var tcpClientSocket = tcpListener.AcceptTcpClient();
+                var clientThread = new Thread(() => HandleClient(tcpClientSocket));
+                clientThread.Start();
+            }
+
+        //Lanzar un thread para manejar las conexiones
+        var threadServer = new Thread(() => ListenForConnections(tcpListener/*socketServer*/));
             threadServer.Start();
 
             Console.WriteLine("Bienvenido al Sistema Server");
@@ -43,10 +48,10 @@ namespace Servidor
                 {
                     case "1": // SRF1
                         _exit = true;
-                        socketServer.Close(0);
+                        //socketServer.Close(0);
                         foreach (var client in _clients)
                         {
-                            client.Shutdown(SocketShutdown.Both);
+                            // client.Shutdown(SocketShutdown.Both);
                             client.Close();
                         }
                         break;
@@ -78,7 +83,7 @@ namespace Servidor
                             {
                                 if (pub.getContenido().Contains(buscar.Trim()))
                                 {
-                                    ret += usu4.getNomUsu() +":3 "+pub.getContenido() + "\n";
+                                    ret += usu4.getNomUsu() + ":3 " + pub.getContenido() + "\n";
                                 }
                             }
                         }
@@ -184,14 +189,14 @@ namespace Servidor
                     case "7": // SRF7
                         IEnumerable<Usuario> colUsuarios = _usuarios.OrderByDescending(usuario => usuario.GetCantPubEnTmpConf());
                         int cont = 0;
-                        foreach (var usu in colUsuarios)  
+                        foreach (var usu in colUsuarios)
                         {
                             Console.WriteLine(usu.ToString());
                             cont++;
-                           if (cont == Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey)))
-                           {
-                               break;
-                           }
+                            if (cont == Int32.Parse(SettingsMgr.ReadSetting(ServerConfig.SeverTopMasUsosConfigKey)))
+                            {
+                                break;
+                            }
                         }
                         printMenu();
                         break;
@@ -256,20 +261,20 @@ namespace Servidor
         }
 
 
-        private static void ListenForConnections(Socket socketServer)
+        private static void ListenForConnections(TcpListener tcpListener)
         {
             while (!_exit)
             {
                 try
                 {
-                    var clientConnected = socketServer.Accept();
-                    _clients.Add(clientConnected);
+                    var tcpClientSocket = tcpListener.AcceptTcpClient(); //Obtiene el cliente y lo encola.
+                    _clients.Add(tcpClientSocket);
 
-                    networkDataHelper = new NetworkDataHelper(clientConnected);
+                    networkDataHelper = new NetworkDataHelper(tcpClientSocket.GetStream());
 
                     Console.WriteLine("Nueva conexion aceptada...");
-                    var threadcClient = new Thread(() => HandleClient(clientConnected));
-                    threadcClient.Start();
+                    var threadClient = new Thread(() => HandleClient(tcpClientSocket));
+                    threadClient.Start();
 
                 }
                 catch (Exception e)
@@ -282,7 +287,7 @@ namespace Servidor
         }
 
 
-        private static void HandleClient(Socket clientSocket)
+        private static void HandleClient(TcpClient clientSocket)
         {
             while (!_exit)
             {
@@ -300,47 +305,49 @@ namespace Servidor
                     {
                         case CommandConstants.exit:
                             _exit = true;
+                            var prueba = ObtenerDatosDelCliente(header);
+                            Console.WriteLine(prueba);
                             Console.WriteLine("Terminó la conexión de un cliente");
                             break;
                         case CommandConstants.Registro:
                             Console.WriteLine("Validando registro de un usuario en el sistema");
-                            var datosRegistro = ObtenerDatosDelCliente(header, clientSocket);
+                            var datosRegistro = ObtenerDatosDelCliente(header);
                             var datosSeparados = datosRegistro.Split("?");
                             var nombreUsuario = datosSeparados[0];
                             var nombreReal = datosSeparados[1];
                             var contraseña = datosSeparados[2];
-                            ValidarRegistroUsuario(clientSocket, nombreUsuario, nombreReal, contraseña);
+                            ValidarRegistroUsuario(nombreUsuario, nombreReal, contraseña);
                             break;
 
                         case CommandConstants.Login:
                             Console.WriteLine("Validando ingreso de usuario en el sistema");
-                            var datosLogin = ObtenerDatosDelCliente(header, clientSocket);
+                            var datosLogin = ObtenerDatosDelCliente(header);
                             var datosLoginSeparados = datosLogin.Split("?");
                             var nombreLogin = datosLoginSeparados[0];
                             var contraseñaLogin = datosLoginSeparados[1];
-                            ValidarLoginUsuario(networkDataHelper, clientSocket, nombreLogin, contraseñaLogin);
+                            ValidarLoginUsuario(networkDataHelper, nombreLogin, contraseñaLogin);
                             break;
 
                         case CommandConstants.BusquedaIncluyente:
                             Console.WriteLine("El usuario inicio una busqueda de usuarios...");
-                            var datosBusquedaIncluyente = ObtenerDatosDelCliente(header, clientSocket);
-                            BusquedaUsuarios(clientSocket, datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
+                            var datosBusquedaIncluyente = ObtenerDatosDelCliente(header);
+                            BusquedaUsuarios(datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
                             break;
 
                         case CommandConstants.BusquedaExcluyente:
                             Console.WriteLine("El usuario inicio una busqueda de usuarios...");
-                            var datosBusquedaExcluyente = ObtenerDatosDelCliente(header, clientSocket);
-                            BusquedaUsuarios(clientSocket, datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
+                            var datosBusquedaExcluyente = ObtenerDatosDelCliente(header);
+                            BusquedaUsuarios(datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
                             break;
 
                         case CommandConstants.SeguirUsuario:
                             Console.WriteLine("El usuario quiere seguir a un usuario...");
-                            var datosSeguirUsuario = ObtenerDatosDelCliente(header, clientSocket);
+                            var datosSeguirUsuario = ObtenerDatosDelCliente(header);
                             var seguidorYaSeguir = datosSeguirUsuario.Split("?");
-                            SeguirUnUsuario(clientSocket, seguidorYaSeguir[0], seguidorYaSeguir[1]);
+                            SeguirUnUsuario(seguidorYaSeguir[0], seguidorYaSeguir[1]);
                             break;
                         case CommandConstants.chip:
-                            var dLogin = ObtenerDatosDelCliente(header, clientSocket);
+                            var dLogin = ObtenerDatosDelCliente(header);
                             var dSeparados = dLogin.Split("?");
                             var nomUsu = dSeparados[0];
                             var CntImg = dSeparados[1];
@@ -375,22 +382,22 @@ namespace Servidor
 
                         case CommandConstants.VerChips:
                             Console.WriteLine("Procesando solicitud de visualizacion de chips...");
-                            var nombreDeUsuario = ObtenerDatosDelCliente(header, clientSocket);
-                            VerChipsDeUsuario(clientSocket, nombreDeUsuario);
+                            var nombreDeUsuario = ObtenerDatosDelCliente(header);
+                            VerChipsDeUsuario(nombreDeUsuario);
                             break;
 
                         case CommandConstants.ResponderChip:
                             Console.WriteLine("Procesando solicitud de respuesta de chip...");
-                            var datosRespuestaChip = ObtenerDatosDelCliente(header, clientSocket);
-                            ResponderChip(clientSocket, datosRespuestaChip);
+                            var datosRespuestaChip = ObtenerDatosDelCliente(header);
+                            ResponderChip(datosRespuestaChip);
                             break;
 
                         case CommandConstants.verNotif:
                             Console.WriteLine("Procesando solicitud de notificaciones...");
-                            nomUsu = ObtenerDatosDelCliente(header, clientSocket);
+                            nomUsu = ObtenerDatosDelCliente(header);
                             var usu = _usuarios.Find(u => u.PNomUsu == nomUsu);
                             var totalNotif = "";
-                           
+
                             var notif = usu.getColNotif;
                             for (int i = 0; i < notif.Count; i++)
                             {
@@ -436,16 +443,14 @@ namespace Servidor
             return null;
         }
 
-
-        private static string ObtenerDatosDelCliente(Header header, Socket clientSocket)
+        private static string ObtenerDatosDelCliente(Header header)
         {
             var datosBuffer = new byte[header.IDataLength];
             networkDataHelper.ReceiveData(header.IDataLength, datosBuffer, _exit);
             return Encoding.UTF8.GetString(datosBuffer);
         }
 
-
-        private static void ValidarRegistroUsuario(Socket clientSocket, string nombreUsuario, string nombreReal, string contraseña)
+        private static void ValidarRegistroUsuario(string nombreUsuario, string nombreReal, string contraseña)
         {
             if (nombreUsuario == "" || nombreReal == "" || contraseña == "")
             {
@@ -473,7 +478,7 @@ namespace Servidor
         }
 
 
-        private static void ValidarLoginUsuario(NetworkDataHelper networkDataHelper, Socket clientSocket, string nombreLogin, string contraseña)
+        private static void ValidarLoginUsuario(NetworkDataHelper networkDataHelper, string nombreLogin, string contraseña)
         {
             if (nombreLogin == "" || contraseña == "")
             {
@@ -515,7 +520,7 @@ namespace Servidor
         }
 
 
-        private static void BusquedaUsuarios(Socket clientSocket, string caracteres, int constante)
+        private static void BusquedaUsuarios(string caracteres, int constante)
         {
             caracteres = caracteres.ToLower();
             var totalUsuarios = "";
@@ -573,7 +578,7 @@ namespace Servidor
         }
 
 
-        private static void Notificar(Usuario usuChip, Publicacion chip) 
+        private static void Notificar(Usuario usuChip, Publicacion chip)
         {
             // Busco en usuarios seguidos del usuario que crea chip (usuChip)
             foreach (var usuSeguidos in usuChip.getColSeguidores)
@@ -589,7 +594,7 @@ namespace Servidor
             }
         }
 
-        private static void SeguirUnUsuario(Socket clientSocket, string nombreUsuario, string aSeguir)
+        private static void SeguirUnUsuario(string nombreUsuario, string aSeguir)
         {
             var existeUsuario = _usuarios.Any(u => u.PNomUsu == nombreUsuario);
             var existeASeguir = _usuarios.Any(u => u.PNomUsu == aSeguir);
@@ -641,7 +646,7 @@ namespace Servidor
             }
         }
 
-        private static void VerChipsDeUsuario(Socket clientSocket, string nombreUsuario)
+        private static void VerChipsDeUsuario(string nombreUsuario)
         {
             var usuarioElegido = _usuarios.Find(u => u.PNomUsu == nombreUsuario);
             if (usuarioElegido == null)
@@ -656,7 +661,7 @@ namespace Servidor
                 totalChips += $"{usuarioElegido.PNomUsu}?";
                 for (int i = 0; i < chips.Count; i++)
                 {
-                    if(i-1 == chips.Count)
+                    if (i - 1 == chips.Count)
                         totalChips += chips[i].ToString();
                     else
                     {
@@ -673,7 +678,7 @@ namespace Servidor
             Console.WriteLine("Funcionalidad ver chips finalizada.");
         }
 
-        private static void ResponderChip(Socket clientSocket, string datosRespuestaChip)
+        private static void ResponderChip(string datosRespuestaChip)
         {
             var datosRespuesta = datosRespuestaChip.Split("?");
             var usuarioLogueado = datosRespuesta[0];
@@ -684,7 +689,7 @@ namespace Servidor
 
             foreach (var usuario in _usuarios)
             {
-                if(usuario.PNomUsu == usuarioDeChip)
+                if (usuario.PNomUsu == usuarioDeChip)
                 {
                     if (numeroChip <= usuario.ColPublicacion.Count)
                     {
@@ -702,5 +707,6 @@ namespace Servidor
             networkDataHelper.SendMessage("Respuesta creada correctamente.", CommandConstants.ResponderChip);
             Console.WriteLine("Finalizo funcionalidad de responder chip.");
         }
-    }
+    } 
 }
+

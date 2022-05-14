@@ -21,18 +21,26 @@ namespace Cliente
 
         static void Main(string[] args)
         {
-            var clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            clientSocket.Bind(new IPEndPoint(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)),
-                0));
-            clientSocket.Connect(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)),
-                Int32.Parse(SettingsMgr.ReadSetting(ClientConf.SeverPortConfigKey)));
+            //Cliente
+            var clientIp = IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ClientIpConfigKey));
+            var clientPort = Int32.Parse(SettingsMgr.ReadSetting(ClientConf.ClientPortConfigKey));
+            var ipClientEndpoint = new IPEndPoint(clientIp, clientPort);
+            var tcpClient = new TcpClient(ipClientEndpoint);
+
+            //Servidor
+            var ipServerEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"),20000);
+
+            //Cliente se conecta al servidor
+            tcpClient.Connect(ipServerEndpoint);
             connected = true;
-            networkDataHelper = new NetworkDataHelper(clientSocket);
+            
+            var stream = tcpClient.GetStream();
+            networkDataHelper = new NetworkDataHelper(stream);
             Console.WriteLine("Bienvenido al Sistema Client");
 
             PrintMenu();
 
-            new Thread(() => HandleServer(clientSocket, networkDataHelper)).Start();
+            new Thread(() => HandleServer(networkDataHelper)).Start();
 
             while (connected)
             {
@@ -45,8 +53,7 @@ namespace Cliente
                         {
                             case "exit":
                                 networkDataHelper.SendMessage("", CommandConstants.exit);
-                                clientSocket.Shutdown(SocketShutdown.Both);
-                                clientSocket.Close();
+                                stream.Close();
                                 connected = false;
                                 usuLogin = "";
                                 break;
@@ -106,8 +113,7 @@ namespace Cliente
                         switch (opcion)
                         {
                             case "exit":
-                                clientSocket.Shutdown(SocketShutdown.Both);
-                                clientSocket.Close();
+                                stream.Close();
                                 connected = false;
                                 usuLogin = "";
                                 break;
@@ -211,7 +217,7 @@ namespace Cliente
                                             rutasImg += '?';
                                             var dSeparados = rutasImg.Split("?");
 
-                                            if (dSeparados.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey))+1)
+                                            if (dSeparados.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey)) + 1)
                                             {
                                                 Console.WriteLine("Puede ingresar un máximo de " + SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey) + " archivos. Ingrese las rutas nuevamente");
                                                 isOkControles = false;
@@ -233,7 +239,7 @@ namespace Cliente
                                                 while (index < dSeparados.Length && isOkControles)
                                                 {
                                                     string path = dSeparados[index];
-                                                    
+
                                                     if (!path.Equals("") && !fileHandler.FileExists(path))
                                                     {
                                                         Console.WriteLine("la ruta de acceso al archivo " + index + 1 + " no es valida. Intente nuevamente");
@@ -245,11 +251,11 @@ namespace Cliente
 
                                             if (isOkControles)
                                             {
-                                                networkDataHelper.SendMessage(usuLogin + "?" + dSeparados.Length 
+                                                networkDataHelper.SendMessage(usuLogin + "?" + dSeparados.Length
                                                     + "?" + chip, CommandConstants.chip);
                                                 var ClientHandler = new ClientFileHandler();
                                                 ClientHandler.StartServer();
-                                               
+
                                                 int index = 0;
                                                 while (index < dSeparados.Length)
                                                 {
@@ -323,206 +329,206 @@ namespace Cliente
         }
 
         static void PrintMenu()
-            {
-                Console.WriteLine("Opciones validas: ");
-                Console.WriteLine("1 -> Registrar un usuario");
-                Console.WriteLine("2 -> Ingresar al sistema");
-                Console.WriteLine("exit -> Abandonar el programa");
-                Console.WriteLine("Ingrese su opcion: ");
-            }
+        {
+            Console.WriteLine("Opciones validas: ");
+            Console.WriteLine("1 -> Registrar un usuario");
+            Console.WriteLine("2 -> Ingresar al sistema");
+            Console.WriteLine("exit -> Abandonar el programa");
+            Console.WriteLine("Ingrese su opcion: ");
+        }
 
-            static void PrintLoggedMenu()
-            {
-                Console.WriteLine("Menu:");
-                Console.WriteLine("4 -> Buscar usuarios");
-                Console.WriteLine("5 -> Seguir usuario");
-                Console.WriteLine("6 -> Nuevo Chip");
-                Console.WriteLine("7 -> Ver mis notificaciones");
-                Console.WriteLine("8  -> Ver chips de un usuario");
-                Console.WriteLine("exit -> abandonar el programa");
-                Console.WriteLine("Ingrese su opcion: ");
-            }
+        static void PrintLoggedMenu()
+        {
+            Console.WriteLine("Menu:");
+            Console.WriteLine("4 -> Buscar usuarios");
+            Console.WriteLine("5 -> Seguir usuario");
+            Console.WriteLine("6 -> Nuevo Chip");
+            Console.WriteLine("7 -> Ver mis notificaciones");
+            Console.WriteLine("8  -> Ver chips de un usuario");
+            Console.WriteLine("exit -> abandonar el programa");
+            Console.WriteLine("Ingrese su opcion: ");
+        }
 
-            static void HandleServer(Socket clientSocket, NetworkDataHelper networkDataHelper)
+        static void HandleServer(NetworkDataHelper networkDataHelper)
+        {
+            while (connected)
             {
-                while (connected)
+                var headerLength = HeaderConstants.Request.Length + HeaderConstants.CommandLength +
+                                   HeaderConstants.DataLength;
+                var buffer = new byte[headerLength];
+                try
                 {
-                    var headerLength = HeaderConstants.Request.Length + HeaderConstants.CommandLength +
-                                       HeaderConstants.DataLength;
-                    var buffer = new byte[headerLength];
-                    try
+                    networkDataHelper.ReceiveData(headerLength, buffer, connected);
+                    var header = new Header();
+                    connected = header.DecodeData(buffer);
+                    switch (header.ICommand)
                     {
-                        networkDataHelper.ReceiveData(headerLength, buffer, connected);
-                        var header = new Header();
-                        connected = header.DecodeData(buffer);
-                        switch (header.ICommand)
-                        {
-                            case CommandConstants.Registro:
-                                Console.WriteLine("El servidor esta validando el registro del usuario en el sistema...");
-                                var datosRegistro = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(header.IDataLength, datosRegistro, connected);
-                                var respuestaRegistro = Encoding.UTF8.GetString(datosRegistro);
-                                Console.WriteLine($"{respuestaRegistro}");
+                        case CommandConstants.Registro:
+                            Console.WriteLine("El servidor esta validando el registro del usuario en el sistema...");
+                            var datosRegistro = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(header.IDataLength, datosRegistro, connected);
+                            var respuestaRegistro = Encoding.UTF8.GetString(datosRegistro);
+                            Console.WriteLine($"{respuestaRegistro}");
+                            PrintMenu();
+                            break;
+
+                        case CommandConstants.Login:
+                            Console.WriteLine("El servidor esta validando el ingreso del usuario al sistema...");
+                            var datosLogin = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(header.IDataLength, datosLogin, connected);
+                            var respuestaLogin = Encoding.UTF8.GetString(datosLogin);
+                            Console.WriteLine($"{respuestaLogin}");
+                            if (respuestaLogin == "El usuario se logueo correctamente.")
+                            {
+                                PrintLoggedMenu();
+                                break;
+                            }
+                            else
+                            {
+                                usuLogin = "";
                                 PrintMenu();
-                                break;
+                            }
 
-                            case CommandConstants.Login:
-                                Console.WriteLine("El servidor esta validando el ingreso del usuario al sistema...");
-                                var datosLogin = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(header.IDataLength, datosLogin, connected);
-                                var respuestaLogin = Encoding.UTF8.GetString(datosLogin);
-                                Console.WriteLine($"{respuestaLogin}");
-                                if (respuestaLogin == "El usuario se logueo correctamente.")
-                                {
-                                    PrintLoggedMenu();
-                                    break;
-                                }
-                                else
-                                {
-                                    usuLogin = "";
-                                    PrintMenu();
-                                }
+                            break;
 
-                                break;
-
-                            case CommandConstants.BusquedaIncluyente:
-                                Console.WriteLine("El servidor esta validando la busqueda...");
-                                var bufferBusquedaIncluyentes = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(header.IDataLength, bufferBusquedaIncluyentes,
-                                    connected);
-                                var totalUsuarios = Encoding.UTF8.GetString(bufferBusquedaIncluyentes);
-                                if (totalUsuarios == "")
+                        case CommandConstants.BusquedaIncluyente:
+                            Console.WriteLine("El servidor esta validando la busqueda...");
+                            var bufferBusquedaIncluyentes = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(header.IDataLength, bufferBusquedaIncluyentes,
+                                connected);
+                            var totalUsuarios = Encoding.UTF8.GetString(bufferBusquedaIncluyentes);
+                            if (totalUsuarios == "")
+                            {
+                                Console.WriteLine("No se encontraron usuarios");
+                            }
+                            else
+                            {
+                                var listaUsuarios = totalUsuarios.Split("?");
+                                Console.WriteLine("Lista de usuarios solicitada:");
+                                for (int i = 0; i < listaUsuarios.Length; i++)
                                 {
-                                    Console.WriteLine("No se encontraron usuarios");
+                                    Console.WriteLine($"{listaUsuarios[i]}");
                                 }
-                                else
+                            }
+
+                            PrintLoggedMenu();
+                            break;
+
+                        case CommandConstants.BusquedaExcluyente:
+                            Console.WriteLine("El servidor esta validando la busqueda...");
+                            var bufferBusquedaExcluyente = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(header.IDataLength, bufferBusquedaExcluyente,
+                                connected);
+                            var totalUsuariosExcluyentes = Encoding.UTF8.GetString(bufferBusquedaExcluyente);
+                            if (totalUsuariosExcluyentes == "")
+                            {
+                                Console.WriteLine("No se encontraron usuarios");
+                            }
+                            else
+                            {
+                                var listaUsuarios = totalUsuariosExcluyentes.Split("?");
+                                Console.WriteLine("Lista de usuarios solicitada:");
+                                for (int i = 0; i < listaUsuarios.Length; i++)
                                 {
-                                    var listaUsuarios = totalUsuarios.Split("?");
-                                    Console.WriteLine("Lista de usuarios solicitada:");
-                                    for (int i = 0; i < listaUsuarios.Length; i++)
+                                    Console.WriteLine($"{listaUsuarios[i]}");
+                                }
+                            }
+
+                            PrintLoggedMenu();
+                            break;
+
+                        case CommandConstants.SeguirUsuario:
+                            Console.WriteLine("El servidor esta validando el seguimiento de usuario...");
+                            var bufferSeguirUsuario = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(header.IDataLength, bufferSeguirUsuario, connected);
+                            var respuestaSeguirUsuario = Encoding.UTF8.GetString(bufferSeguirUsuario);
+                            if (respuestaSeguirUsuario == "")
+                            {
+                                Console.WriteLine("El usuario no existe.");
+                            }
+                            else if (respuestaSeguirUsuario == "Ya sigue a este usuario.")
+                            {
+                                Console.WriteLine("Ya sigue a este usuario.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("El usuario fue seguido correctamente.");
+                            }
+                            PrintLoggedMenu();
+                            break;
+
+                        case CommandConstants.VerChips:
+                            Console.WriteLine("El servidor esta validando los chips del usuario ingresado...");
+                            var bufferVerChips = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(header.IDataLength, bufferVerChips, connected);
+                            var totalChips = Encoding.UTF8.GetString(bufferVerChips);
+                            if (totalChips == "El usuario no existe")
+                            {
+                                Console.WriteLine("El usuario ingresado no existe");
+                                PrintLoggedMenu();
+                            }
+                            else if (totalChips == "")
+                            {
+                                Console.WriteLine("El usuario ingresado no tiene chips aun.");
+                                PrintLoggedMenu();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Lista de chips:");
+                                var listaChips = totalChips.Split("?");
+                                string usuarioDelChip = "";
+                                for (int i = 0; i < listaChips.Length; i++)
+                                {
+                                    if (i == 0)
                                     {
-                                        Console.WriteLine($"{listaUsuarios[i]}");
+                                        usuarioDelChip = listaChips[i];
+                                        Console.WriteLine(listaChips[i]);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"{listaChips[i]}");
                                     }
                                 }
+                                usuAResponder = usuarioDelChip;
+                                Console.WriteLine("Ingrese R + numero de chip al que quiere responder, de lo contrario escriba: NO.");
+                            }
+                            break;
 
-                                PrintLoggedMenu();
-                                break;
+                        case CommandConstants.ResponderChip:
+                            var bufferResponderChip = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(header.IDataLength, bufferResponderChip, connected);
+                            var respuestaServidor = Encoding.UTF8.GetString(bufferResponderChip);
+                            Console.WriteLine(respuestaServidor);
+                            PrintLoggedMenu();
+                            break;
 
-                            case CommandConstants.BusquedaExcluyente:
-                                Console.WriteLine("El servidor esta validando la busqueda...");
-                                var bufferBusquedaExcluyente = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(header.IDataLength, bufferBusquedaExcluyente,
-                                    connected);
-                                var totalUsuariosExcluyentes = Encoding.UTF8.GetString(bufferBusquedaExcluyente);
-                                if (totalUsuariosExcluyentes == "")
+                        case CommandConstants.verNotif:
+                            var bufferVerNotif = new byte[header.IDataLength];
+                            networkDataHelper.ReceiveData(header.IDataLength, bufferVerNotif, connected);
+                            var totalNotif = Encoding.UTF8.GetString(bufferVerNotif);
+                            Console.WriteLine("Lista de Notificaciones:");
+                            if (totalNotif.Length > 0)
+                            {
+                                var listaNotif = totalNotif.Split("?");
+                                for (int i = 0; i < listaNotif.Length; i++)
                                 {
-                                    Console.WriteLine("No se encontraron usuarios");
+                                    Console.WriteLine(listaNotif[i].ToString());
                                 }
-                                else
-                                {
-                                    var listaUsuarios = totalUsuariosExcluyentes.Split("?");
-                                    Console.WriteLine("Lista de usuarios solicitada:");
-                                    for (int i = 0; i < listaUsuarios.Length; i++)
-                                    {
-                                        Console.WriteLine($"{listaUsuarios[i]}");
-                                    }
-                                }
-
-                                PrintLoggedMenu();
-                                break;
-
-                            case CommandConstants.SeguirUsuario:
-                                Console.WriteLine("El servidor esta validando el seguimiento de usuario...");
-                                var bufferSeguirUsuario = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(header.IDataLength, bufferSeguirUsuario, connected);
-                                var respuestaSeguirUsuario = Encoding.UTF8.GetString(bufferSeguirUsuario);
-                                if (respuestaSeguirUsuario == "")
-                                {
-                                    Console.WriteLine("El usuario no existe.");
-                                }
-                                else if (respuestaSeguirUsuario == "Ya sigue a este usuario.")
-                                {
-                                    Console.WriteLine("Ya sigue a este usuario.");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("El usuario fue seguido correctamente.");
-                                }
-                                PrintLoggedMenu();
-                                break;
-
-                            case CommandConstants.VerChips:
-                                Console.WriteLine("El servidor esta validando los chips del usuario ingresado...");
-                                var bufferVerChips = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(header.IDataLength, bufferVerChips, connected);
-                                var totalChips = Encoding.UTF8.GetString(bufferVerChips);
-                                if (totalChips == "El usuario no existe")
-                                {
-                                    Console.WriteLine("El usuario ingresado no existe");
-                                    PrintLoggedMenu();
-                                }
-                                else if (totalChips == "")
-                                {
-                                    Console.WriteLine("El usuario ingresado no tiene chips aun.");
-                                    PrintLoggedMenu();
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Lista de chips:");
-                                    var listaChips = totalChips.Split("?");
-                                    string usuarioDelChip = "";
-                                    for (int i = 0; i < listaChips.Length; i++)
-                                    {
-                                        if (i == 0)
-                                        {
-                                            usuarioDelChip = listaChips[i];
-                                            Console.WriteLine(listaChips[i]);
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine($"{listaChips[i]}");
-                                        }
-                                    }
-                                    usuAResponder = usuarioDelChip;
-                                    Console.WriteLine("Ingrese R + numero de chip al que quiere responder, de lo contrario escriba: NO.");
-                                }
-                                break;
-
-                            case CommandConstants.ResponderChip:
-                                var bufferResponderChip = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(header.IDataLength, bufferResponderChip, connected);
-                                var respuestaServidor = Encoding.UTF8.GetString(bufferResponderChip);
-                                Console.WriteLine(respuestaServidor);
-                                PrintLoggedMenu();
-                                break;
-
-                            case CommandConstants.verNotif:
-                                var bufferVerNotif = new byte[header.IDataLength];
-                                networkDataHelper.ReceiveData(header.IDataLength, bufferVerNotif, connected);
-                                var totalNotif = Encoding.UTF8.GetString(bufferVerNotif);
-                                Console.WriteLine("Lista de Notificaciones:");
-                                if (totalNotif.Length > 0)
-                                {
-                                    var listaNotif = totalNotif.Split("?");
-                                    for (int i = 0; i < listaNotif.Length; i++)
-                                    {
-                                        Console.WriteLine(listaNotif[i].ToString());
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine("No tiene notificaciones");
-                                }
-                                PrintLoggedMenu();
-                                break;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");
-                        connected = false;
+                            }
+                            else
+                            {
+                                Console.WriteLine("No tiene notificaciones");
+                            }
+                            PrintLoggedMenu();
+                            break;
                     }
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Server is closing, will not process more data -> Message {e.Message}..");
+                    connected = false;
+                }
             }
+        }
         }
     }

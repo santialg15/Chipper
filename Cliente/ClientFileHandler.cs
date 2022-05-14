@@ -23,7 +23,7 @@ namespace cliente
 
         public ClientFileHandler()
         {
-            _tcpListener = new TcpListener(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ServerIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ClientConf.SeverPortTCPLiCofigKey)));
+            _tcpListener = new TcpListener(IPAddress.Parse(SettingsMgr.ReadSetting(ClientConf.ClientIpConfigKey)), Int32.Parse(SettingsMgr.ReadSetting(ClientConf.SeverPortTCPLiCofigKey)));
             _fileHandler = new FileHandler();
             _fileStreamHandler = new FileStreamHandler();
         }

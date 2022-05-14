@@ -11,8 +11,8 @@ namespace Cliente
         public static string clientCntCarPubConfigKey = "CntCarPub"; //caracteres por publicación
         public static string clientCntImgPubConfigKey = "CntImgPub"; // Imagenes por publicación
 
-        public static string ServerIpConfigKey = "ServerIpAddress";
-        public static string SeverPortConfigKey = "ServerPort";
+        public static string ClientIpConfigKey = "ClientIpAddress";
+        public static string ClientPortConfigKey = "ClientPort";
         public static string SeverPortTCPLiCofigKey = "ServerTCPLiPort";
     }
 }
