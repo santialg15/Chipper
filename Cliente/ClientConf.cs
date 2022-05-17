@@ -14,5 +14,7 @@ namespace Cliente
         public static string ServerIpConfigKey = "ServerIpAddress";
         public static string SeverPortConfigKey = "ServerPort";
         public static string SeverPortTCPLiCofigKey = "ServerTCPLiPort";
+
+        public static string ClientIpConfigKey = "ClientIpAddress";
     }
 }

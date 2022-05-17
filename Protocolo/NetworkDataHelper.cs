@@ -7,62 +7,74 @@ namespace Protocolo
 {
     public class NetworkDataHelper
     {
-        private readonly Socket _socket;
-
-
-        public NetworkDataHelper(Socket socket)
+        private readonly TcpClient _tcpClient;
+        public NetworkDataHelper(TcpClient tcpClient)
         {
-            _socket = socket;
+            _tcpClient = tcpClient;
         }
 
-        public void SendMessage(Socket socket, string mensaje, int constant)
+        public void SendMessage(TcpClient tcpClient, string mensaje, int constant)
         {
+
+            var networkStream = _tcpClient.GetStream();
             var header = new Header(HeaderConstants.Request, constant, mensaje.Length);
             var dataMessage = header.GetRequest();
-            var sentBytes = 0;
-            while (sentBytes < dataMessage.Length)
-            {
-                sentBytes += socket.Send(dataMessage, sentBytes, dataMessage.Length - sentBytes, SocketFlags.None);
-            }
+            //byte[] headerBytes = BitConverter.GetBytes(dataMessage.Length);
 
-            sentBytes = 0;
-            var bytesMessage = Encoding.UTF8.GetBytes(mensaje);
-            while (sentBytes < bytesMessage.Length)
-            {
-                sentBytes += socket.Send(bytesMessage, sentBytes, bytesMessage.Length - sentBytes,
-                    SocketFlags.None);
-            }
+            byte[] data = Encoding.UTF8.GetBytes(mensaje);
+
+            networkStream.Write(dataMessage, 0, dataMessage.Length);
+            networkStream.Write(data, 0, data.Length);
         }
 
-        public void ReceiveData(Socket clientSocket, int Length, byte[] buffer, bool _exit)
+        public (string, Header) ReceiveData()
         {
-            var iRecv = 0;
-            while (iRecv < Length)
+            Header header = new Header();
+            var word = "";
+            try
             {
-                try
+                NetworkStream networkStream = _tcpClient.GetStream();
+                //Obtengo el header
+                var dataLength = new byte[HeaderConstants.DataLength + HeaderConstants.CommandLength +
+                                          HeaderConstants.Request.Length];
+                var totalReceived = 0;
+                while (totalReceived < HeaderConstants.DataLength)
                 {
-                    var localRecv = clientSocket.Receive(buffer, iRecv, Length - iRecv, SocketFlags.None);
-                    if (localRecv == 0) // Si recieve retorna 0 -> la conexion se cerro desde el endpoint remoto
+                    var received = networkStream.Read(dataLength, totalReceived, dataLength.Length);
+                    if (received ==
+                        0) // if receive 0 bytes this means that connection was interrupted between the two points
                     {
-                        if (!_exit)
-                        {
-                            clientSocket.Shutdown(SocketShutdown.Both);
-                            clientSocket.Close();
-                        }
-                        else
-                        {
-                            throw new Exception("Server is closing");
-                        }
+                        throw new SocketException();
                     }
 
-                    iRecv += localRecv;
+                    totalReceived += received;
                 }
-                catch (SocketException se)
+
+                header.DecodeData(dataLength);
+
+
+                //Obtengo los datos enviados
+                var length = header.IDataLength; // largo del mensaje que viene en header
+                var data = new byte[length];
+                totalReceived = 0;
+                while (totalReceived < length)
                 {
-                    Console.WriteLine(se.Message);
-                    return;
+                    var received = networkStream.Read(data, totalReceived, length);
+                    if (received == 0)
+                    {
+                        throw new SocketException();
+                    }
+
+                    totalReceived += received;
                 }
+
+                word = Encoding.UTF8.GetString(data);
             }
+            catch (SocketException)
+            {
+                Console.WriteLine("The client connection was interrupted");
+            }
+            return (word, header);
         }
 
     }
