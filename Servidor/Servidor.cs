@@ -288,7 +288,7 @@ namespace Servidor
                         var headerLength = HeaderConstants.Request.Length + HeaderConstants.CommandLength +
                                            HeaderConstants.DataLength;
                         var buffer = new byte[headerLength];
-                        await networkDataHelper.ReceiveData(headerLength, buffer, clienteConectado);
+                        await networkDataHelper.ReceiveData(buffer);
                         var fileheader = new FileHeader();
                         var header = new Header();
                         clienteConectado = header.DecodeData(buffer);
@@ -432,7 +432,7 @@ namespace Servidor
         private static async Task<string> ObtenerDatosDelCliente(Header header)
         {
             var datosBuffer = new byte[header.IDataLength];
-            await networkDataHelper.ReceiveData(header.IDataLength, datosBuffer, _exit);
+            await networkDataHelper.ReceiveData(datosBuffer);
             return Encoding.UTF8.GetString(datosBuffer);
         }
 

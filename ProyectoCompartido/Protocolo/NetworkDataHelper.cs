@@ -28,26 +28,18 @@ namespace ProyectoCompartido.Protocolo
             await networkStream.WriteAsync(bytesMessage, 0, bytesMessage.Length).ConfigureAwait(false);
         }
 
-        public async Task ReceiveData(int Length, byte[] buffer, bool _exit)
+        public async Task ReceiveData(byte[] buffer)
         {
+            var Length2 = buffer.Length;
             var iRecv = 0;
-            while (iRecv < Length)
+            while (iRecv < Length2)
             {
-                //try
-                //{
-                    var localRecv = await networkStream.ReadAsync(buffer, iRecv, Length - iRecv).ConfigureAwait(false);
-                    if (localRecv == 0) // Si recieve retorna 0 -> la conexion se cerro desde el endpoint remoto
-                    {
-                        //networkStream.Close();
-                        throw new SocketException();
-                    }
-                    iRecv += localRecv;
-                //}
-                //catch (SocketException se)
-                //{
-                //    Console.WriteLine(se.Message);
-                //    return;
-                //}
+                var localRecv = await networkStream.ReadAsync(buffer, iRecv, Length2 - iRecv).ConfigureAwait(false);
+                if (localRecv == 0) // Si recieve retorna 0 -> la conexion se cerro desde el endpoint remoto
+                {
+                    throw new SocketException();
+                }
+                iRecv += localRecv;
                 var dataLength = new byte[HeaderConstants.DataLength];
                 var length = BitConverter.ToInt32(dataLength, 0);
                 var data = new byte[length];
@@ -61,16 +53,6 @@ namespace ProyectoCompartido.Protocolo
                     }
                     totalReceived += received;
                 }
-                //var word = Encoding.UTF8.GetString(data);
-                //if (word.Equals("exit"))
-                //{
-                //    _exit = false;
-                //    Console.WriteLine("Client is leaving");
-                //}
-                //else
-                //{
-                //    Console.WriteLine("Client says: " + word);
-                //}
             }
         }
 
