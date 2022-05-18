@@ -5,6 +5,7 @@ using Protocolo.FileHandler.Interfaces;
 using Protocolo.Interfaces;
 using System.Net;
 using System.Net.Sockets;
+using Protocolo.FileTransfer.FileHandler;
 
 namespace Cliente
 {
@@ -38,8 +39,6 @@ namespace Cliente
             Console.WriteLine("Bienvenido al Sistema Client");
             PrintMenu();
 
-
-
             Task serverConexion = Task.Run(() => HandleServer(tcpClient, networkDataHelper));
 
             while (connected)
@@ -53,7 +52,7 @@ namespace Cliente
                         switch (opcion)
                         {
                             case "exit":
-                                networkDataHelper.SendMessage(tcpClient, "", CommandConstants.exit);
+                                networkDataHelper.SendMessage("", CommandConstants.exit);
                                 tcpClient.Close();
                                 //tcpClient.Dispose();
                                 connected = false;
@@ -75,7 +74,7 @@ namespace Cliente
 
                                 try
                                 {
-                                    networkDataHelper.SendMessage(tcpClient, infoUsuario, CommandConstants.Registro);
+                                    networkDataHelper.SendMessage(infoUsuario, CommandConstants.Registro);
                                 }
                                 catch (SocketException)
                                 {
@@ -95,7 +94,7 @@ namespace Cliente
                                 usuLogin = nombreLogin;
                                 try
                                 {
-                                    networkDataHelper.SendMessage(tcpClient, infoLogin, CommandConstants.Login);
+                                    networkDataHelper.SendMessage(infoLogin, CommandConstants.Login);
                                 }
                                 catch (SocketException)
                                 {
@@ -133,7 +132,7 @@ namespace Cliente
                                     case "1": //busqueda incluyente
                                         try
                                         {
-                                            networkDataHelper.SendMessage(tcpClient, caracteres,
+                                            networkDataHelper.SendMessage(caracteres,
                                                 CommandConstants.BusquedaIncluyente);
                                         }
                                         catch (SocketException)
@@ -146,7 +145,7 @@ namespace Cliente
                                     case "2": //busqueda excluyente
                                         try
                                         {
-                                            networkDataHelper.SendMessage(tcpClient, caracteres,
+                                            networkDataHelper.SendMessage(caracteres,
                                                 CommandConstants.BusquedaExcluyente);
                                         }
                                         catch (SocketException)
@@ -168,7 +167,7 @@ namespace Cliente
                                 Console.WriteLine("Ingrese el nombre del usuario a seguir:");
                                 var nombreASeguir = Console.ReadLine();
                                 var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
-                                networkDataHelper.SendMessage(tcpClient, datosParaSeguirUsuario,
+                                networkDataHelper.SendMessage(datosParaSeguirUsuario,
                                     CommandConstants.SeguirUsuario);
                                 break;
                             case "6": //NUEVO CHIP
@@ -202,81 +201,80 @@ namespace Cliente
                                 {
                                     case "1": //ingresa img 
 
-                                        //Console.WriteLine(
-                                        //    "Ingrese las rutas de acceso de las imagenes separadas por ?");
-                                        //var isValidEnvio = false;
-                                        //bool isOkControles;
-                                        //while (!isValidEnvio)
-                                        //{
-                                        //    isOkControles = true;
+                                        Console.WriteLine(
+                                            "Ingrese las rutas de acceso de las imagenes separadas por ?");
+                                        var isValidEnvio = false;
+                                        bool isOkControles;
+                                        while (!isValidEnvio)
+                                        {
+                                            isOkControles = true;
 
-                                        //    var rutasImg = Console.ReadLine();
-                                        //    if (rutasImg.Equals(""))
-                                        //    {
-                                        //        Console.WriteLine("La ruta no puede ser vacía");
-                                        //        break;
-                                        //    }
+                                            var rutasImg = Console.ReadLine();
+                                            if (rutasImg.Equals(""))
+                                            {
+                                                Console.WriteLine("La ruta no puede ser vacía");
+                                                break;
+                                            }
 
-                                        //    rutasImg += '?';
-                                        //    var dSeparados = rutasImg.Split("?");
+                                            rutasImg += '?';
+                                            var dSeparados = rutasImg.Split("?");
 
-                                        //    if (dSeparados.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey)) + 1)
-                                        //    {
-                                        //        Console.WriteLine("Puede ingresar un máximo de " + SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey) + " archivos. Ingrese las rutas nuevamente");
-                                        //        isOkControles = false;
-                                        //    }
+                                            if (dSeparados.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey)) + 1)
+                                            {
+                                                Console.WriteLine("Puede ingresar un máximo de " + SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey) + " archivos. Ingrese las rutas nuevamente");
+                                                isOkControles = false;
+                                            }
 
-                                        //    if (isOkControles)
-                                        //    {
-                                        //        if (dSeparados.Length == 0)
-                                        //        {
-                                        //            Console.WriteLine("Error debe ingresar la ruta de los archivos");
-                                        //            isOkControles = false;
-                                        //        }
-                                        //    }
+                                            if (isOkControles)
+                                            {
+                                                if (dSeparados.Length == 0)
+                                                {
+                                                    Console.WriteLine("Error debe ingresar la ruta de los archivos");
+                                                    isOkControles = false;
+                                                }
+                                            }
 
-                                        //    if (isOkControles)
-                                        //    {
-                                        //        int index = 0;
-                                        //        IFileHandler fileHandler = new FileHandler();
-                                        //        while (index < dSeparados.Length && isOkControles)
-                                        //        {
-                                        //            string path = dSeparados[index];
+                                            if (isOkControles)
+                                            {
+                                                int index = 0;
+                                                IFileHandler fileHandler = new FileHandler();
+                                                while (index < dSeparados.Length && isOkControles)
+                                                {
+                                                    string path = dSeparados[index];
 
-                                        //            if (!path.Equals("") && !fileHandler.FileExists(path))
-                                        //            {
-                                        //                Console.WriteLine("la ruta de acceso al archivo " + index + 1 + " no es valida. Intente nuevamente");
-                                        //                isOkControles = false;
-                                        //            }
-                                        //            index++;
-                                        //        }
-                                        //    }
+                                                    if (!path.Equals("") && !fileHandler.FileExists(path))
+                                                    {
+                                                        Console.WriteLine("la ruta de acceso al archivo " + index + 1 + " no es valida. Intente nuevamente");
+                                                        isOkControles = false;
+                                                    }
+                                                    index++;
+                                                }
+                                            }
 
-                                        //    if (isOkControles)
-                                        //    {
-                                        //        networkDataHelper.SendMessage(tcpClient,
-                                        //            usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
-                                        //        var ClientHandler = new ClientFileHandler();
-                                        //        ClientHandler.StartServer();
+                                            if (isOkControles)
+                                            {
+                                                networkDataHelper.SendMessage(usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
+                                                //var ClientHandler = new ClientFileHandler();
+                                                //ClientHandler.StartServer();
 
-                                        //        int index = 0;
-                                        //        while (index < dSeparados.Length)
-                                        //        {
-                                        //            string path = dSeparados[index];
-                                        //            if (!path.Equals(""))
-                                        //            {
-                                        //                ClientHandler.SendFile(path);
-                                        //            }
-                                        //            index++;
-                                        //        }
-                                        //        ClientHandler.stop();
-                                        //        isValidEnvio = true;
-                                        //    }
-                                        //}
+                                                int index = 0;
+                                                while (index < dSeparados.Length)
+                                                {
+                                                    string path = dSeparados[index];
+                                                    if (!path.Equals(""))
+                                                    {
+                                                        networkDataHelper.SendFile(path);
+                                                    }
+                                                    index++;
+                                                }
+                                                //ClientHandler.stop();
+                                                isValidEnvio = true;
+                                            }
+                                        }
                                         break;
 
                                     case "2":
-                                        networkDataHelper.SendMessage(tcpClient, usuLogin + "?0?" + chip,
+                                        networkDataHelper.SendMessage(usuLogin + "?0?" + chip,
                                             CommandConstants.chip);
                                         break;
                                     default:
@@ -289,12 +287,12 @@ namespace Cliente
 
                             case "7": //VER Noficaciones
                                 Console.WriteLine("Notificaciones:");
-                                networkDataHelper.SendMessage(tcpClient, usuLogin, CommandConstants.verNotif);
+                                networkDataHelper.SendMessage(usuLogin, CommandConstants.verNotif);
                                 break;
                             case "8": //VER CHIPS DE UN USUARIO
                                 Console.WriteLine("Ingrese el nombre de usuario:");
                                 var nombreUsuario = Console.ReadLine();
-                                networkDataHelper.SendMessage(tcpClient, nombreUsuario, CommandConstants.VerChips);
+                                networkDataHelper.SendMessage(nombreUsuario, CommandConstants.VerChips);
                                 //estaRespondiendoChip = true;
                                 break;
 
@@ -312,7 +310,7 @@ namespace Cliente
                                 var respuesta = Console.ReadLine();
                                 var datosResponder = $"{usuLogin}?{usuAResponder}?{respuesta}?{numeroChip}";
                                 usuAResponder = "";
-                                networkDataHelper.SendMessage(tcpClient, datosResponder,
+                                networkDataHelper.SendMessage(datosResponder,
                                     CommandConstants.ResponderChip);
                                 break;
                             case "NO":
@@ -356,7 +354,6 @@ namespace Cliente
         {
             try
             {
-                using var networkStream = tcpClient.GetStream();
                 while (connected)
                 {
                     var headerLength = HeaderConstants.Request.Length + HeaderConstants.CommandLength +

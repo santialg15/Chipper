@@ -349,30 +349,29 @@ namespace Servidor
                             var chip = dSeparados[2];
                             Publicacion nuevaPub;
                             Usuario usuChip = buscarUsuarioLogin(nomUsu);
-                            //if (int.Parse(CntImg) > 0)
-                            //{
-                                //    var serverHandler = new ServerHandler();
-                                //    serverHandler.StartClient();
-                                //    int contadorImg = 1;
-                                //    var colFileName = "";
-                                //    while (contadorImg < int.Parse(CntImg))
-                                //    {
-                                //        var fileName = serverHandler.ReceiveFile();
-                                //        colFileName += fileName + "?";
-                                //        contadorImg++;
-                                //    }
+                            if (int.Parse(CntImg) > 0)
+                            {
+                                //var serverHandler = new ServerHandler();
+                                //serverHandler.StartClient();
+                                int contadorImg = 1;
+                                var colFileName = "";
+                                while (contadorImg < int.Parse(CntImg))
+                                {
+                                    var fileName = networkDataHelper.ReceiveFile();
+                                    colFileName += fileName + "?";
+                                    contadorImg++;
+                                }
+                                //serverHandler.stop();
+                                colFileName = colFileName.Remove(colFileName.Length - 1);
+                                nuevaPub = usuChip.nuevoChipConImg(chip, colFileName);
 
-                                //    serverHandler.stop();
-                                //    colFileName = colFileName.Remove(colFileName.Length - 1);
-                                //    nuevaPub = usuChip.nuevoChipConImg(chip, colFileName);
+                            }
+                            else
+                            {
+                                nuevaPub = usuChip.nuevoChip(chip);
+                            }
 
-                            //}
-                            //else
-                            //    {
-                                    nuevaPub = usuChip.nuevoChip(chip);
-                                //}
-
-                                Notificar(usuChip, nuevaPub);
+                            Notificar(usuChip, nuevaPub);
 
                             break;
 
@@ -402,12 +401,12 @@ namespace Servidor
 
                             if (totalNotif.Equals(""))
                             {
-                                networkDataHelper.SendMessage(tcpClient, "No hay notificaciones",
+                                networkDataHelper.SendMessage("No hay notificaciones",
                                     CommandConstants.verNotif);
                             }
                             else
                             {
-                                networkDataHelper.SendMessage(tcpClient, totalNotif, CommandConstants.verNotif);
+                                networkDataHelper.SendMessage(totalNotif, CommandConstants.verNotif);
                             }
 
                             usu.clearNotif();
@@ -459,7 +458,7 @@ namespace Servidor
         {
             if (nombreUsuario == "" || nombreReal == "" || contraseña == "")
             {
-                networkDataHelper.SendMessage(tcpClient, "Ningun campo puede estar vacio.", CommandConstants.Registro);
+                networkDataHelper.SendMessage("Ningun campo puede estar vacio.", CommandConstants.Registro);
                 Console.WriteLine("No se realizo el registro de usuario.");
             }
             else
@@ -468,7 +467,7 @@ namespace Servidor
                 {
                     if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
                     {
-                        networkDataHelper.SendMessage(tcpClient, "El usuario ya existe.", CommandConstants.Registro);
+                        networkDataHelper.SendMessage("El usuario ya existe.", CommandConstants.Registro);
                         Console.WriteLine("No se realizo el registro de usuario.");
                     }
                     else
@@ -476,7 +475,7 @@ namespace Servidor
                         Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
                         _usuarios.Add(nuevoUsuario);
                         Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
-                        networkDataHelper.SendMessage(tcpClient, "El usuario fue registrado con exito.", CommandConstants.Registro);
+                        networkDataHelper.SendMessage("El usuario fue registrado con exito.", CommandConstants.Registro);
                     }
                 }
             }
@@ -487,27 +486,27 @@ namespace Servidor
         {
             if (nombreLogin == "" || contraseña == "")
             {
-                networkDataHelper.SendMessage(tcpClient, "Ningun campo puede ser vacio.", CommandConstants.Login);
+                networkDataHelper.SendMessage("Ningun campo puede ser vacio.", CommandConstants.Login);
                 Console.WriteLine("Logueo incorrecto por campos vacios.");
             }
             else if (!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
             {
-                networkDataHelper.SendMessage(tcpClient, "No existe el usuario con el que se quiere loguear.", CommandConstants.Login);
+                networkDataHelper.SendMessage("No existe el usuario con el que se quiere loguear.", CommandConstants.Login);
                 Console.WriteLine("Logueo incorrecto por usuario inexistente.");
             }
             else if (!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
             {
-                networkDataHelper.SendMessage(tcpClient, "Contraseña incorrecta", CommandConstants.Login);
+                networkDataHelper.SendMessage("Contraseña incorrecta", CommandConstants.Login);
                 Console.WriteLine("Logueo incorrecto por contrasena incorrecta");
             }
             else if (_usuarios.Exists(u => u.PNomUsu == nombreLogin && u.Pass == contraseña && u.Habilitado == false))
             {
-                networkDataHelper.SendMessage(tcpClient, "El usuario se encuentra inhabilitado.", CommandConstants.Login);
+                networkDataHelper.SendMessage("El usuario se encuentra inhabilitado.", CommandConstants.Login);
                 Console.WriteLine("Logueo denegado por usuario no habilitado");
             }
             else
             {
-                networkDataHelper.SendMessage(tcpClient, "El usuario se logueo correctamente.", CommandConstants.Login);
+                networkDataHelper.SendMessage("El usuario se logueo correctamente.", CommandConstants.Login);
                 Console.WriteLine("El usuario se logueo correctamente.");
             }
         }
@@ -531,12 +530,12 @@ namespace Servidor
             var totalUsuarios = "";
             if (_usuarios.Count == 0)
             {
-                networkDataHelper.SendMessage(tcpClient, $"{totalUsuarios}", constante);
+                networkDataHelper.SendMessage($"{totalUsuarios}", constante);
                 return;
             }
             else if (caracteres == "" && constante == CommandConstants.BusquedaIncluyente)
             {
-                networkDataHelper.SendMessage(tcpClient, $"{totalUsuarios}", constante);
+                networkDataHelper.SendMessage($"{totalUsuarios}", constante);
                 Console.WriteLine("Busqueda Finalizada");
                 return;
             }
@@ -578,7 +577,7 @@ namespace Servidor
                     }
                 }
             }
-            networkDataHelper.SendMessage(tcpClient, $"{totalUsuarios}", constante);
+            networkDataHelper.SendMessage($"{totalUsuarios}", constante);
             Console.WriteLine("Busqueda Finalizada");
         }
 
@@ -605,7 +604,7 @@ namespace Servidor
             var existeASeguir = _usuarios.Any(u => u.PNomUsu == aSeguir);
             if (!existeUsuario || !existeASeguir)
             {
-                networkDataHelper.SendMessage(tcpClient, "", CommandConstants.SeguirUsuario);
+                networkDataHelper.SendMessage("", CommandConstants.SeguirUsuario);
             }
             else
             {
@@ -622,10 +621,10 @@ namespace Servidor
                         }
                         else
                         {
-                            networkDataHelper.SendMessage(tcpClient, "Ya sigue a este usuario.", CommandConstants.SeguirUsuario);
+                            networkDataHelper.SendMessage("Ya sigue a este usuario.", CommandConstants.SeguirUsuario);
                             break;
                         }
-                        networkDataHelper.SendMessage(tcpClient, "El usuario fue agregado.", CommandConstants.SeguirUsuario);
+                        networkDataHelper.SendMessage("El usuario fue agregado.", CommandConstants.SeguirUsuario);
                         break;
                     }
                 }
@@ -656,7 +655,7 @@ namespace Servidor
             var usuarioElegido = _usuarios.Find(u => u.PNomUsu == nombreUsuario);
             if (usuarioElegido == null)
             {
-                networkDataHelper.SendMessage(tcpClient, "El usuario no existe", CommandConstants.VerChips);
+                networkDataHelper.SendMessage("El usuario no existe", CommandConstants.VerChips);
                 return;
             }
             var chips = usuarioElegido.ColPublicacion;
@@ -679,7 +678,7 @@ namespace Servidor
                     }
                 }
             }
-            networkDataHelper.SendMessage(tcpClient, totalChips, CommandConstants.VerChips);
+            networkDataHelper.SendMessage(totalChips, CommandConstants.VerChips);
             Console.WriteLine("Funcionalidad ver chips finalizada.");
         }
 
@@ -704,12 +703,12 @@ namespace Servidor
                     }
                     else
                     {
-                        networkDataHelper.SendMessage(tcpClient, "No existe el numero de chip seleccionado.", CommandConstants.ResponderChip);
+                        networkDataHelper.SendMessage("No existe el numero de chip seleccionado.", CommandConstants.ResponderChip);
                         return;
                     }
                 }
             }
-            networkDataHelper.SendMessage(tcpClient, "Respuesta creada correctamente.", CommandConstants.ResponderChip);
+            networkDataHelper.SendMessage("Respuesta creada correctamente.", CommandConstants.ResponderChip);
             Console.WriteLine("Finalizo funcionalidad de responder chip.");
         }
     }

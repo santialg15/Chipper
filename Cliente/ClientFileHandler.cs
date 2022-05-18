@@ -9,6 +9,7 @@ using Protocolo.NetworkUtils;
 using Protocolo.NetworkUtils.Interfaces;
 using Protocolo;
 using Protocolo.FileTransfer;
+using Protocolo.FileTransfer.FileHandler;
 using Protocolo.Interfaces;
 
 namespace cliente

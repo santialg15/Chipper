@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Protocolo.FileHandler.Interfaces;
 
-namespace Protocolo.FileHandler
+namespace Protocolo.FileTransfer.FileHandler
 {
     public class FileHandler : IFileHandler
     {

@@ -1,12 +1,12 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Protocolo.FileHandler;
 using Protocolo.FileHandler.Interfaces;
 using Protocolo.NetworkUtils;
 using Protocolo.NetworkUtils.Interfaces;
 using Protocolo;
 using Protocolo.FileTransfer;
+using Protocolo.FileTransfer.FileHandler;
 using Protocolo.Interfaces;
 using Servidor;
 
