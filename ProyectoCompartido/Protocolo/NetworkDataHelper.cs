@@ -19,78 +19,58 @@ namespace ProyectoCompartido.Protocolo
             networkStream = stream;
         }
 
-        public void SendMessage(string mensaje, int constant)
+        public async Task SendMessage(string mensaje, int constant)
         {
             var header = new Header(HeaderConstants.Request, constant, mensaje.Length);
             var dataMessage = header.GetRequest();
-            var sentBytes = 0;
-            //while (sentBytes < dataMessage.Length)
-            //{
-                networkStream.Write(dataMessage, 0, sentBytes);
-                //sentBytes += _socket.Send(dataMessage, sentBytes, dataMessage.Length - sentBytes, SocketFlags.None);
-            //}
-
-            sentBytes = 0;
+            await networkStream.WriteAsync(dataMessage, 0, dataMessage.Length).ConfigureAwait(false);
             var bytesMessage = Encoding.UTF8.GetBytes(mensaje);
-            //while (sentBytes < bytesMessage.Length)
-            //{
-                networkStream.Write(bytesMessage, 0, sentBytes);
-                //sentBytes += _socket.Send(bytesMessage, sentBytes, bytesMessage.Length - sentBytes, SocketFlags.None);
-            //}
+            await networkStream.WriteAsync(bytesMessage, 0, bytesMessage.Length).ConfigureAwait(false);
         }
 
-        public void ReceiveData(int Length, byte[] buffer, bool _exit)
+        public async Task ReceiveData(int Length, byte[] buffer, bool _exit)
         {
             var iRecv = 0;
             while (iRecv < Length)
             {
-                try
-                {
-                    var localRecv = networkStream.Read(buffer, iRecv, Length - iRecv);
-                    //var localRecv = _socket.Receive(buffer, iRecv, Length - iRecv, SocketFlags.None);
+                //try
+                //{
+                    var localRecv = await networkStream.ReadAsync(buffer, iRecv, Length - iRecv).ConfigureAwait(false);
                     if (localRecv == 0) // Si recieve retorna 0 -> la conexion se cerro desde el endpoint remoto
                     {
-                        if (!_exit)
-                        {
-                            _socket.Shutdown(SocketShutdown.Both);
-                            _socket.Close();
-                        }
-                        else
-                        {
-                            throw new Exception("Server is closing");
-                        }
+                        //networkStream.Close();
+                        throw new SocketException();
                     }
-
                     iRecv += localRecv;
-                }
-
-                catch (SocketException se)
-                {
-                    Console.WriteLine(se.Message);
-                    return;
-                }
-                var length = BitConverter.ToInt32(buffer, 0);
+                //}
+                //catch (SocketException se)
+                //{
+                //    Console.WriteLine(se.Message);
+                //    return;
+                //}
+                var dataLength = new byte[HeaderConstants.DataLength];
+                var length = BitConverter.ToInt32(dataLength, 0);
                 var data = new byte[length];
                 var totalReceived = 0;
                 while (totalReceived < length)
                 {
-                    var received = networkStream.Read(data, totalReceived, length - totalReceived);
+                    var received = await networkStream.ReadAsync(data, totalReceived, length - totalReceived).ConfigureAwait(false);
                     if (received == 0)
                     {
                         throw new SocketException();
                     }
                     totalReceived += received;
                 }
-                var word = Encoding.UTF8.GetString(data);
-                if (word.Equals("exit"))
-                {
-                    _exit = false;
-                    Console.WriteLine("Client is leaving");
-                }
-                else
-                {
-                    Console.WriteLine("Client says: " + word);
-                }
+                //var word = Encoding.UTF8.GetString(data);
+                //if (word.Equals("exit"))
+                //{
+                //    _exit = false;
+                //    Console.WriteLine("Client is leaving");
+                //}
+                //else
+                //{
+                //    Console.WriteLine("Client says: " + word);
+                //}
             }
         }
 
