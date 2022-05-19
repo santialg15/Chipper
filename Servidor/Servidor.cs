@@ -34,9 +34,6 @@ namespace Servidor
             printMenu();
             while (!_exit)
             {
-                //var tcpClientSocket = await tcpListener.AcceptTcpClientAsync().ConfigureAwait(false);
-                //var task = Task.Run(async () => await HandleClient(tcpClientSocket));
-
                 var userInput = Console.ReadLine();
                 switch (userInput)
                 {
@@ -214,7 +211,6 @@ namespace Servidor
             SeguirUnUsuarioParaTest("dpena", "pprueba");
             SeguirUnUsuarioParaTest("salvarez", "dpena");
 
-
             //Notificaciones
             Publicacion p1 = new Publicacion("Publicacion 1", _usu2.ColPublicacion.Count);
             Publicacion p2 = new Publicacion("Publicacion 2", _usu2.ColPublicacion.Count);
@@ -245,15 +241,12 @@ namespace Servidor
                 try
                 {
                     var tcpClientSocket = await tcpListener.AcceptTcpClientAsync().ConfigureAwait(false);
-                    //var clientConnected = tcpListener.AcceptTcpClient();
-                    _clients.Add(tcpClientSocket/*clientConnected*/);
+                    _clients.Add(tcpClientSocket);
 
-                    networkDataHelper = new NetworkDataHelper(tcpClientSocket.GetStream()/*clientConnected.GetStream()*/);
+                    networkDataHelper = new NetworkDataHelper(tcpClientSocket.GetStream());
 
                     Console.WriteLine("Nueva conexion aceptada...");
                     var task = Task.Run(async () => await HandleClient(tcpClientSocket).ConfigureAwait(false));
-                    //Task nuevoCliente = Task.Run(() => { HandleClient(clientConnected); });
-
                 }
                 catch (Exception e)
                 {
@@ -293,6 +286,10 @@ namespace Servidor
                         var header = new Header();
                         clienteConectado = header.DecodeData(buffer);
 
+                        var datosBuffer = new byte[header.IDataLength];
+                        await networkDataHelper.ReceiveData(datosBuffer);
+                        var data = Encoding.UTF8.GetString(datosBuffer);
+
                         switch (header.ICommand)
                         {
                             case CommandConstants.exit:
@@ -301,8 +298,8 @@ namespace Servidor
                                 break;
                             case CommandConstants.Registro:
                                 Console.WriteLine("Validando registro de un usuario en el sistema");
-                                var datosRegistro = ObtenerDatosDelCliente(header).Result;
-                                var datosSeparados = datosRegistro.Split("?");
+                                var datosRegistro = data;
+                                var datosSeparados = data.Split("?");
                                 var nombreUsuario = datosSeparados[0];
                                 var nombreReal = datosSeparados[1];
                                 var contraseña = datosSeparados[2];
@@ -311,7 +308,7 @@ namespace Servidor
 
                             case CommandConstants.Login:
                                 Console.WriteLine("Validando ingreso de usuario en el sistema");
-                                var datosLogin = ObtenerDatosDelCliente(header).Result;
+                                var datosLogin = data;
                                 var datosLoginSeparados = datosLogin.Split("?");
                                 var nombreLogin = datosLoginSeparados[0];
                                 var contraseñaLogin = datosLoginSeparados[1];
@@ -320,24 +317,24 @@ namespace Servidor
 
                             case CommandConstants.BusquedaIncluyente:
                                 Console.WriteLine("El usuario inicio una busqueda de usuarios...");
-                                var datosBusquedaIncluyente = ObtenerDatosDelCliente(header).Result;
+                                var datosBusquedaIncluyente = data;
                                 BusquedaUsuarios(datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
                                 break;
 
                             case CommandConstants.BusquedaExcluyente:
                                 Console.WriteLine("El usuario inicio una busqueda de usuarios...");
-                                var datosBusquedaExcluyente = ObtenerDatosDelCliente(header).Result;
+                                var datosBusquedaExcluyente = data;
                                 BusquedaUsuarios(datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
                                 break;
 
                             case CommandConstants.SeguirUsuario:
                                 Console.WriteLine("El usuario quiere seguir a un usuario...");
-                                var datosSeguirUsuario = ObtenerDatosDelCliente(header).Result;
+                                var datosSeguirUsuario = data;
                                 var seguidorYaSeguir = datosSeguirUsuario.Split("?");
                                 SeguirUnUsuario(seguidorYaSeguir[0], seguidorYaSeguir[1]);
                                 break;
                             case CommandConstants.chip:
-                                var dLogin = ObtenerDatosDelCliente(header).Result;
+                                var dLogin = data;
                                 var dSeparados = dLogin.Split("?");
                                 var nomUsu = dSeparados[0];
                                 var CntImg = dSeparados[1];
@@ -372,19 +369,19 @@ namespace Servidor
 
                             case CommandConstants.VerChips:
                                 Console.WriteLine("Procesando solicitud de visualizacion de chips...");
-                                var nombreDeUsuario = ObtenerDatosDelCliente(header).Result;
+                                var nombreDeUsuario = data;
                                 VerChipsDeUsuario(nombreDeUsuario);
                                 break;
 
                             case CommandConstants.ResponderChip:
                                 Console.WriteLine("Procesando solicitud de respuesta de chip...");
-                                var datosRespuestaChip = ObtenerDatosDelCliente(header).Result;
+                                var datosRespuestaChip = data;
                                 ResponderChip(datosRespuestaChip);
                                 break;
 
                             case CommandConstants.verNotif:
                                 Console.WriteLine("Procesando solicitud de notificaciones...");
-                                nomUsu = ObtenerDatosDelCliente(header).Result;
+                                nomUsu = data;
                                 var usu = _usuarios.Find(u => u.PNomUsu == nomUsu);
                                 var totalNotif = "";
 
@@ -429,12 +426,12 @@ namespace Servidor
             return null;
         }
 
-        private static async Task<string> ObtenerDatosDelCliente(Header header)
-        {
-            var datosBuffer = new byte[header.IDataLength];
-            await networkDataHelper.ReceiveData(datosBuffer);
-            return Encoding.UTF8.GetString(datosBuffer);
-        }
+        //private static async Task<string> ObtenerDatosDelCliente(Header header)
+        //{
+        //    var datosBuffer = new byte[header.IDataLength];
+        //    await networkDataHelper.ReceiveData(datosBuffer);
+        //    return Encoding.UTF8.GetString(datosBuffer);
+        //}
 
         private static void ValidarRegistroUsuario(string nombreUsuario, string nombreReal, string contraseña)
         {

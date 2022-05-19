@@ -70,16 +70,7 @@ namespace Cliente
 
                                     var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
 
-                                    //try
-                                    //{
-                                        await networkDataHelper.SendMessage(infoUsuario, CommandConstants.Registro);
-                                    //}
-                                    //catch (SocketException)
-                                    //{
-                                    //    Console.WriteLine("Connection with the server has been interrupted");
-                                    //    break;
-                                    //}
-
+                                    await networkDataHelper.SendMessage(infoUsuario, CommandConstants.Registro);
                                     break;
                                 case "2":
                                     Console.WriteLine("Ingrese su nombre de usuario:");
@@ -90,16 +81,7 @@ namespace Cliente
 
                                     var infoLogin = $"{nombreLogin}?{contraseñaLogin}";
                                     usuLogin = nombreLogin;
-                                    //try
-                                    //{
-                                        await networkDataHelper.SendMessage(infoLogin, CommandConstants.Login);
-                                    //}
-                                    //catch (SocketException)
-                                    //{
-                                    //    Console.WriteLine("Connection with the server has been interrupted");
-                                    //    break;
-                                    //}
-
+                                    await networkDataHelper.SendMessage(infoLogin, CommandConstants.Login);
                                     break;
                                 default:
                                     Console.WriteLine("Opcion invalida");
@@ -127,35 +109,16 @@ namespace Cliente
                                     switch (tipoDeBusqueda)
                                     {
                                         case "1": //busqueda incluyente
-                                            //try
-                                            //{
-                                                await networkDataHelper.SendMessage(caracteres, CommandConstants.BusquedaIncluyente);
-                                            //}
-                                            //catch (SocketException)
-                                            //{
-                                            //   Console.WriteLine("Connection with the server has been interrupted");
-                                            //    break;
-                                            //}
-
+                                            await networkDataHelper.SendMessage(caracteres, CommandConstants.BusquedaIncluyente);
                                             break;
                                         case "2": //busqueda excluyente
-                                            //try
-                                            //{
-                                                await networkDataHelper.SendMessage(caracteres, CommandConstants.BusquedaExcluyente);
-                                            //}
-                                            //catch (SocketException)
-                                            //{
-                                            //    Console.WriteLine("Connection with the server has been interrupted");
-                                            //    break;
-                                            //}
-
+                                            await networkDataHelper.SendMessage(caracteres, CommandConstants.BusquedaExcluyente);
                                             break;
                                         default:
                                             Console.WriteLine("Opcion invalida");
                                             PrintLoggedMenu();
                                             break;
                                     }
-
                                     break;
 
                                 case "5": //SEGUIR A UN USUARIO
@@ -287,7 +250,6 @@ namespace Cliente
                                     Console.WriteLine("Ingrese el nombre de usuario:");
                                     var nombreUsuario = Console.ReadLine();
                                     await networkDataHelper.SendMessage(nombreUsuario, CommandConstants.VerChips);
-                                    //estaRespondiendoChip = true;
                                     break;
 
                                 case string s

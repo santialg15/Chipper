@@ -5,14 +5,7 @@ namespace ProyectoCompartido.Protocolo
 {
     public class NetworkDataHelper
     {
-        private readonly Socket _socket;
         private readonly NetworkStream networkStream;
-
-
-        public NetworkDataHelper(Socket socket)
-        {
-            _socket = socket;
-        }
 
         public NetworkDataHelper(NetworkStream stream)
         {
@@ -30,11 +23,11 @@ namespace ProyectoCompartido.Protocolo
 
         public async Task ReceiveData(byte[] buffer)
         {
-            var Length2 = buffer.Length;
+            var Length = buffer.Length;
             var iRecv = 0;
-            while (iRecv < Length2)
+            while (iRecv < Length)
             {
-                var localRecv = await networkStream.ReadAsync(buffer, iRecv, Length2 - iRecv).ConfigureAwait(false);
+                var localRecv = await networkStream.ReadAsync(buffer, iRecv, Length - iRecv).ConfigureAwait(false);
                 if (localRecv == 0) // Si recieve retorna 0 -> la conexion se cerro desde el endpoint remoto
                 {
                     throw new SocketException();
