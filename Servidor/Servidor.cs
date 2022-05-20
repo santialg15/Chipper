@@ -303,7 +303,7 @@ namespace Servidor
                                 var nombreUsuario = datosSeparados[0];
                                 var nombreReal = datosSeparados[1];
                                 var contraseña = datosSeparados[2];
-                                ValidarRegistroUsuario(nombreUsuario, nombreReal, contraseña);
+                                await ValidarRegistroUsuario(nombreUsuario, nombreReal, contraseña);
                                 break;
 
                             case CommandConstants.Login:
@@ -312,30 +312,29 @@ namespace Servidor
                                 var datosLoginSeparados = datosLogin.Split("?");
                                 var nombreLogin = datosLoginSeparados[0];
                                 var contraseñaLogin = datosLoginSeparados[1];
-                                ValidarLoginUsuario(networkDataHelper, nombreLogin, contraseñaLogin);
+                                await ValidarLoginUsuario(networkDataHelper, nombreLogin, contraseñaLogin);
                                 break;
 
                             case CommandConstants.BusquedaIncluyente:
                                 Console.WriteLine("El usuario inicio una busqueda de usuarios...");
                                 var datosBusquedaIncluyente = data;
-                                BusquedaUsuarios(datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
+                                await BusquedaUsuarios(datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
                                 break;
 
                             case CommandConstants.BusquedaExcluyente:
                                 Console.WriteLine("El usuario inicio una busqueda de usuarios...");
                                 var datosBusquedaExcluyente = data;
-                                BusquedaUsuarios(datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
+                                await BusquedaUsuarios(datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
                                 break;
 
                             case CommandConstants.SeguirUsuario:
                                 Console.WriteLine("El usuario quiere seguir a un usuario...");
                                 var datosSeguirUsuario = data;
                                 var seguidorYaSeguir = datosSeguirUsuario.Split("?");
-                                SeguirUnUsuario(seguidorYaSeguir[0], seguidorYaSeguir[1]);
+                                await SeguirUnUsuario(seguidorYaSeguir[0], seguidorYaSeguir[1]);
                                 break;
                             case CommandConstants.chip:
-                                var dLogin = data;
-                                var dSeparados = dLogin.Split("?");
+                                var dSeparados = data.Split("?");
                                 var nomUsu = dSeparados[0];
                                 var CntImg = dSeparados[1];
                                 var chip = dSeparados[2];
@@ -343,40 +342,34 @@ namespace Servidor
                                 Usuario usuChip = buscarUsuarioLogin(nomUsu);
                                 if (int.Parse(CntImg) > 0)
                                 {
-                                    var serverHandler = new ServerHandler();
-                                    serverHandler.StartClient();
                                     int contadorImg = 1;
                                     var colFileName = "";
                                     while (contadorImg < int.Parse(CntImg))
                                     {
-                                        var fileName = serverHandler.ReceiveFile();
+                                        var fileName = networkDataHelper.ReceiveFile().Result;
                                         colFileName += fileName + "?";
                                         contadorImg++;
                                     }
-                                    serverHandler.stop();
                                     colFileName = colFileName.Remove(colFileName.Length - 1);
                                     nuevaPub = usuChip.nuevoChipConImg(chip, colFileName);
-
                                 }
                                 else
                                 {
                                     nuevaPub = usuChip.nuevoChip(chip);
                                 }
-
                                 Notificar(usuChip, nuevaPub);
-
                                 break;
 
                             case CommandConstants.VerChips:
                                 Console.WriteLine("Procesando solicitud de visualizacion de chips...");
                                 var nombreDeUsuario = data;
-                                VerChipsDeUsuario(nombreDeUsuario);
+                                await VerChipsDeUsuario(nombreDeUsuario);
                                 break;
 
                             case CommandConstants.ResponderChip:
                                 Console.WriteLine("Procesando solicitud de respuesta de chip...");
                                 var datosRespuestaChip = data;
-                                ResponderChip(datosRespuestaChip);
+                                await ResponderChip(datosRespuestaChip);
                                 break;
 
                             case CommandConstants.verNotif:
@@ -393,11 +386,11 @@ namespace Servidor
 
                                 if (totalNotif.Equals(""))
                                 {
-                                    var sent = networkDataHelper.SendMessage("No hay notificaciones", CommandConstants.verNotif);
+                                    await networkDataHelper.SendMessage("No hay notificaciones", CommandConstants.verNotif);
                                 }
                                 else
                                 {
-                                    var sent = networkDataHelper.SendMessage(totalNotif, CommandConstants.verNotif);
+                                    await networkDataHelper.SendMessage(totalNotif, CommandConstants.verNotif);
                                 }
                                 usu.clearNotif();
                                 Console.WriteLine("Funcionalidad ver notificaciones finalizada.");
@@ -426,18 +419,11 @@ namespace Servidor
             return null;
         }
 
-        //private static async Task<string> ObtenerDatosDelCliente(Header header)
-        //{
-        //    var datosBuffer = new byte[header.IDataLength];
-        //    await networkDataHelper.ReceiveData(datosBuffer);
-        //    return Encoding.UTF8.GetString(datosBuffer);
-        //}
-
-        private static void ValidarRegistroUsuario(string nombreUsuario, string nombreReal, string contraseña)
+        private static async Task ValidarRegistroUsuario(string nombreUsuario, string nombreReal, string contraseña)
         {
             if (nombreUsuario == "" || nombreReal == "" || contraseña == "")
             {
-                var sent = networkDataHelper.SendMessage("Ningun campo puede estar vacio.", CommandConstants.Registro);
+                await networkDataHelper.SendMessage("Ningun campo puede estar vacio.", CommandConstants.Registro);
                 Console.WriteLine("No se realizo el registro de usuario.");
             }
             else
@@ -446,7 +432,7 @@ namespace Servidor
                 {
                     if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
                     {
-                        var sent = networkDataHelper.SendMessage("El usuario ya existe.", CommandConstants.Registro);
+                         networkDataHelper.SendMessage("El usuario ya existe.", CommandConstants.Registro);
                         Console.WriteLine("No se realizo el registro de usuario.");
                     }
                     else
@@ -454,38 +440,45 @@ namespace Servidor
                         Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
                         _usuarios.Add(nuevoUsuario);
                         Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
-                        var sent = networkDataHelper.SendMessage("El usuario fue registrado con exito.", CommandConstants.Registro);
+                        networkDataHelper.SendMessage("El usuario fue registrado con exito.", CommandConstants.Registro);
                     }
                 }
             }
         }
 
-
-        private static void ValidarLoginUsuario(NetworkDataHelper networkDataHelper, string nombreLogin, string contraseña)
+        private static async Task ValidarLoginUsuario(NetworkDataHelper networkDataHelper, string nombreLogin, string contraseña)
         {
+            var usuarioLogueado = _usuarios.FirstOrDefault(u => u.PNomUsu == nombreLogin);
             if (nombreLogin == "" || contraseña == "")
             {
-                var sent = networkDataHelper.SendMessage("Ningun campo puede ser vacio.", CommandConstants.Login);
+                await networkDataHelper.SendMessage("Ningun campo puede ser vacio.", CommandConstants.Login);
                 Console.WriteLine("Logueo incorrecto por campos vacios.");
             }
             else if (!_usuarios.Exists(u => u.PNomUsu == nombreLogin))
             {
-                var sent = networkDataHelper.SendMessage("No existe el usuario con el que se quiere loguear.", CommandConstants.Login);
+                await networkDataHelper.SendMessage("No existe el usuario con el que se quiere loguear.", CommandConstants.Login);
                 Console.WriteLine("Logueo incorrecto por usuario inexistente.");
             }
             else if (!_usuarios.Exists(u => u.Pass == contraseña && u.PNomUsu == nombreLogin))
             {
-                var sent = networkDataHelper.SendMessage("Contraseña incorrecta", CommandConstants.Login);
+                await networkDataHelper.SendMessage("Contraseña incorrecta", CommandConstants.Login);
                 Console.WriteLine("Logueo incorrecto por contrasena incorrecta");
             }
             else if (_usuarios.Exists(u => u.PNomUsu == nombreLogin && u.Pass == contraseña && u.Habilitado == false))
             {
-                var sent = networkDataHelper.SendMessage("El usuario se encuentra inhabilitado.", CommandConstants.Login);
+                await networkDataHelper.SendMessage("El usuario se encuentra inhabilitado.", CommandConstants.Login);
                 Console.WriteLine("Logueo denegado por usuario no habilitado");
+            }
+            else if(usuarioLogueado != null && usuarioLogueado.estaLogueado == true)
+            {
+                await networkDataHelper.SendMessage("El usuario ya esta logueado.", CommandConstants.Login);
+                Console.WriteLine("Un usuario ya logueado intento loguearse nuevamente.");
             }
             else
             {
-                var sent = networkDataHelper.SendMessage("El usuario se logueo correctamente.", CommandConstants.Login);
+                var usuario = _usuarios.FirstOrDefault(u => u.PNomUsu == nombreLogin);
+                usuario.estaLogueado = true;
+                await networkDataHelper.SendMessage("El usuario se logueo correctamente.", CommandConstants.Login);
                 Console.WriteLine("El usuario se logueo correctamente.");
             }
         }
@@ -502,19 +495,18 @@ namespace Servidor
             return _usuarios.Any(us => us.Habilitado == false);
         }
 
-
-        private static void BusquedaUsuarios(string caracteres, int constante)
+        private static async Task BusquedaUsuarios(string caracteres, int constante)
         {
             caracteres = caracteres.ToLower();
             var totalUsuarios = "";
             if (_usuarios.Count == 0)
             {
-                var sent2 = networkDataHelper.SendMessage($"{totalUsuarios}", constante);
+                await networkDataHelper.SendMessage($"{totalUsuarios}", constante);
                 return;
             }
             else if (caracteres == "" && constante == CommandConstants.BusquedaIncluyente)
             {
-                var sent3 = networkDataHelper.SendMessage($"{totalUsuarios}", constante);
+                await networkDataHelper.SendMessage($"{totalUsuarios}", constante);
                 Console.WriteLine("Busqueda Finalizada");
                 return;
             }
@@ -556,7 +548,7 @@ namespace Servidor
                     }
                 }
             }
-            var sent = networkDataHelper.SendMessage($"{totalUsuarios}", constante);
+            await networkDataHelper.SendMessage($"{totalUsuarios}", constante);
             Console.WriteLine("Busqueda Finalizada");
         }
 
@@ -577,17 +569,17 @@ namespace Servidor
             }
         }
 
-        private static void SeguirUnUsuario(string nombreUsuario, string aSeguir)
+        private static async Task SeguirUnUsuario(string nombreUsuario, string aSeguir)
         {
             var existeUsuario = _usuarios.Any(u => u.PNomUsu == nombreUsuario);
             var existeASeguir = _usuarios.Any(u => u.PNomUsu == aSeguir);
             if (!existeUsuario || !existeASeguir)
             {
-                var sent = networkDataHelper.SendMessage("", CommandConstants.SeguirUsuario);
+                await networkDataHelper.SendMessage("", CommandConstants.SeguirUsuario);
             }
             else if(nombreUsuario == aSeguir)
             {
-                var sent = networkDataHelper.SendMessage("No puedes seguirte a ti mismo.", CommandConstants.SeguirUsuario);
+                await networkDataHelper.SendMessage("No puedes seguirte a ti mismo.", CommandConstants.SeguirUsuario);
             }
             else
             {
@@ -604,10 +596,10 @@ namespace Servidor
                         }
                         else
                         {
-                            var sent2 = networkDataHelper.SendMessage("Ya sigue a este usuario.", CommandConstants.SeguirUsuario);
+                            await networkDataHelper.SendMessage("Ya sigue a este usuario.", CommandConstants.SeguirUsuario);
                             break;
                         }
-                        var sent = networkDataHelper.SendMessage("El usuario fue agregado.", CommandConstants.SeguirUsuario);
+                        await networkDataHelper.SendMessage("El usuario fue agregado.", CommandConstants.SeguirUsuario);
                         break;
                     }
                 }
@@ -633,12 +625,12 @@ namespace Servidor
             }
         }
 
-        private static void VerChipsDeUsuario(string nombreUsuario)
+        private static async Task VerChipsDeUsuario(string nombreUsuario)
         {
             var usuarioElegido = _usuarios.Find(u => u.PNomUsu == nombreUsuario);
             if (usuarioElegido == null)
             {
-                var sent2 = networkDataHelper.SendMessage("El usuario no existe", CommandConstants.VerChips);
+                await networkDataHelper.SendMessage("El usuario no existe", CommandConstants.VerChips);
                 return;
             }
             var chips = usuarioElegido.ColPublicacion;
@@ -661,11 +653,11 @@ namespace Servidor
                     }
                 }
             }
-            var sent = networkDataHelper.SendMessage(totalChips, CommandConstants.VerChips);
+            await networkDataHelper.SendMessage(totalChips, CommandConstants.VerChips);
             Console.WriteLine("Funcionalidad ver chips finalizada.");
         }
 
-        private static void ResponderChip(string datosRespuestaChip)
+        private static async Task ResponderChip(string datosRespuestaChip)
         {
             var datosRespuesta = datosRespuestaChip.Split("?");
             var usuarioLogueado = datosRespuesta[0];
@@ -686,12 +678,12 @@ namespace Servidor
                     }
                     else
                     {
-                        var sent = networkDataHelper.SendMessage("No existe el numero de chip seleccionado.", CommandConstants.ResponderChip);
+                        await networkDataHelper.SendMessage("No existe el numero de chip seleccionado.", CommandConstants.ResponderChip);
                         return;
                     }
                 }
             }
-            var sent2 = networkDataHelper.SendMessage("Respuesta creada correctamente.", CommandConstants.ResponderChip);
+            await networkDataHelper.SendMessage("Respuesta creada correctamente.", CommandConstants.ResponderChip);
             Console.WriteLine("Finalizo funcionalidad de responder chip.");
         }
     } 

@@ -157,9 +157,8 @@ namespace Cliente
                                     switch (op)
                                     {
                                         case "1": //ingresa img 
-
                                             Console.WriteLine(
-                                                "Ingrese las rutas de acceso de las imagenes separadas por ?");
+                                            "Ingrese las rutas de acceso de las imagenes separadas por ?");
                                             var isValidEnvio = false;
                                             bool isOkControles;
                                             while (!isValidEnvio)
@@ -207,25 +206,19 @@ namespace Cliente
                                                         index++;
                                                     }
                                                 }
-
                                                 if (isOkControles)
                                                 {
-                                                    await networkDataHelper.SendMessage(usuLogin + "?" + dSeparados.Length
-                                                        + "?" + chip, CommandConstants.chip);
-                                                    var ClientHandler = new ClientFileHandler();
-                                                    ClientHandler.StartServer();
-
+                                                    await networkDataHelper.SendMessage(usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
                                                     int index = 0;
                                                     while (index < dSeparados.Length)
                                                     {
                                                         string path = dSeparados[index];
                                                         if (!path.Equals(""))
                                                         {
-                                                            ClientHandler.SendFile(path);
+                                                            await networkDataHelper.SendFile(path);
                                                         }
                                                         index++;
                                                     }
-                                                    ClientHandler.stop();
                                                     isValidEnvio = true;
                                                 }
                                             }
@@ -344,7 +337,6 @@ namespace Cliente
                                 usuLogin = "";
                                 PrintMenu();
                             }
-
                             break;
 
                         case CommandConstants.BusquedaIncluyente:
@@ -365,7 +357,6 @@ namespace Cliente
                                     Console.WriteLine($"{listaUsuarios[i]}");
                                 }
                             }
-
                             PrintLoggedMenu();
                             break;
 

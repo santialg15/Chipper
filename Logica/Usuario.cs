@@ -9,6 +9,7 @@
         private string pass;
         private string imgPerfil;
         public bool habilitado;
+        public bool estaLogueado = false;
         private List<Usuario> colSeguidores;
         private List<Usuario> colSeguidos;
         private List<Publicacion> colPublicacion;
