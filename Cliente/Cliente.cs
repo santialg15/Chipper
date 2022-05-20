@@ -65,11 +65,33 @@ namespace Cliente
                                     Console.WriteLine("Ingrese su contraseña:");
                                     var contraseña = Console.ReadLine();
 
-                                    //Console.WriteLine("Ingrese su foto de perfil:"); 
+                                    Console.WriteLine("Ingrese su foto de perfil:"); 
+                                    var fotoperfil = Console.ReadLine();
 
-                                    var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
+                                    IFileHandler fileHandler = new FileHandler();
+                                    var isOkControles = true;
 
-                                    await networkDataHelper.SendMessage(infoUsuario, CommandConstants.Registro);
+                                    if (fotoperfil.Equals(""))
+                                    {
+                                        Console.WriteLine("La ruta no puede ser vacía");
+                                        PrintMenu();
+                                        break;
+                                    }
+
+                                    if (!fotoperfil.Equals("") && !fileHandler.FileExists(fotoperfil))
+                                    {
+                                        Console.WriteLine("la ruta de acceso al archivo no es valida. Intente nuevamente");
+                                        isOkControles = false;
+                                        PrintMenu();
+                                        break;
+                                    }
+
+                                    if (isOkControles){
+                                        var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
+                                        await networkDataHelper.SendMessage(infoUsuario, CommandConstants.Registro);
+                                        await networkDataHelper.SendFile(fotoperfil);
+                                    }
+
                                     break;
                                 case "2":
                                     Console.WriteLine("Ingrese su nombre de usuario:");

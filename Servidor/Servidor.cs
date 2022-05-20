@@ -297,7 +297,6 @@ namespace Servidor
                                 break;
                             case CommandConstants.Registro:
                                 Console.WriteLine("Validando registro de un usuario en el sistema");
-                                var datosRegistro = data;
                                 var datosSeparados = data.Split("?");
                                 var nombreUsuario = datosSeparados[0];
                                 var nombreReal = datosSeparados[1];
@@ -436,7 +435,8 @@ namespace Servidor
                     }
                     else
                     {
-                        Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, "imagen");
+                        var fileName = networkDataHelper.ReceiveFile().Result;
+                        Usuario nuevoUsuario = new Usuario(nombreReal, nombreUsuario, contraseña, fileName);
                         _usuarios.Add(nuevoUsuario);
                         Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
                         networkDataHelper.SendMessage("El usuario fue registrado con exito.", CommandConstants.Registro);
