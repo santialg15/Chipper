@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using cliente;
 using ProyectoCompartido.Interfaces;
 using ProyectoCompartido.Protocolo;
 using ProyectoCompartido.Protocolo.FileTransfer.FileHandler;

@@ -1,8 +1,6 @@
 ﻿using ProyectoCompartido.Protocolo.FileTransfer;
 using ProyectoCompartido.Protocolo.FileTransfer.FileHandler;
 using ProyectoCompartido.Protocolo.FileTransfer.FileHandler.Interfaces;
-using ProyectoCompartido.Protocolo.FileTransfer.NetworkUtils.Interfaces;
-using ProyectoCompartido.Protocolo.FileTransfer.NetworkUtils.NetworkUtils;
 using System.Net.Sockets;
 using System.Text;
 
