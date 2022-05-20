@@ -1,4 +1,6 @@
 ﻿
+using System.Reflection.Metadata.Ecma335;
+
 namespace Logica
 {
     public class Publicacion
@@ -20,7 +22,17 @@ namespace Logica
 
         public override string ToString()
         {
-            return $"{id} -> Fecha: {pFch} | Contenido: {pContenido.Trim()}";
+            String ret = $"{id} -> Fecha: {pFch} | Contenido: {pContenido.Trim()}";
+            if (colFile.Count > 0)
+            {
+                ret += " | ";
+                for (int i = 0; i < colFile.Count; i++)
+                {
+                    ret += "Imagen " + (i + 1).ToString() +": "+ colFile[i].Trim()+" ";
+                }
+            }
+
+            return ret;
         }
 
         public string getContenido()
