@@ -10,7 +10,6 @@ namespace ProyectoCompartido.Protocolo
     {
         private readonly NetworkStream networkStream;
 
-        //SendFile
         private readonly IFileStreamHandler _fileStreamHandler;
         private IFileHandler _fileHandler;
 
@@ -36,7 +35,7 @@ namespace ProyectoCompartido.Protocolo
             while (iRecv < Length)
             {
                 var localRecv = await networkStream.ReadAsync(buffer, iRecv, Length - iRecv).ConfigureAwait(false);
-                if (localRecv == 0) // Si recieve retorna 0 -> la conexion se cerro desde el endpoint remoto
+                if (localRecv == 0) 
                 {
                     throw new SocketException();
                 }
@@ -56,72 +55,54 @@ namespace ProyectoCompartido.Protocolo
                 }
             }
         }
-        //////////////////////////////////////////////
+
         public async Task SendFile(string path)
         {
             _fileHandler = new FileHandler();
 
-            // Obtiene el tamaño del archivo
             long fileSize = _fileHandler.GetFileSize(path);
-            // Obtenemos el nombre del archivo
             string fileName = _fileHandler.GetFileName(path);
             var header = new FileHeader().Create(fileName, fileSize);
-            await Write(header); // envia largo del nombre y tamaño del file
+            await Write(header); 
 
-            await Write(Encoding.UTF8.GetBytes(fileName)); // Envia nombre del archivo
+            await Write(Encoding.UTF8.GetBytes(fileName)); 
 
             long parts = SpecificationHelper.GetParts(fileSize);
             Console.WriteLine("Will Send {0} parts", parts);
             long offset = 0;
             long currentPart = 1;
 
-            // Mientras tengo un segmento a enviar
-            // 1 - Leo de disco el segmento
-            // 2 - Guardo ese segmento en un buffer
-            // 3 - Envio ese semgento a traves de la red
             while (fileSize > offset)
             {
                 byte[] data;
                 if (currentPart == parts)
                 {
-                    // leo el ultimo segmento
                     var lastPartSize = (int)(fileSize - offset);
-                    data = _fileStreamHandler.Read(path, offset, lastPartSize); //Puntos 1 y 2 
+                    data = await _fileStreamHandler.Read(path, offset, lastPartSize);
                     offset += lastPartSize;
                 }
                 else
                 {
-                    // leo un segmento
-                    data = _fileStreamHandler.Read(path, offset, Specification.MaxPacketSize); //Puntos 1 y 2
+                    data = await _fileStreamHandler.Read(path, offset, Specification.MaxPacketSize);
                     offset += Specification.MaxPacketSize;
                 }
-                await Write(data); // Punto 3
+                await Write(data); 
                 currentPart++;
             }
         }
 
         public async Task<string> ReceiveFile()
         {
-            //1 - Recibo el header
             var header = await Read(FileHeader.GetLength());
-            // 2 - Me quedo con el largo del nombre del archivo
             var fileNameSize = BitConverter.ToInt32(header, 0);
-            // 3 - Me quedo con el tamaño del file
             var fileSize = BitConverter.ToInt64(header, Specification.FixedFileNameLength);
 
-            //4 - Recibo el nombre del archivo, usando el tamaño que recibi en el punto 2
             var fileName = Encoding.UTF8.GetString(Read(fileNameSize).Result);
 
-            // 5 - Calculo cuantas partes voy a recibir
             long parts = SpecificationHelper.GetParts(fileSize);
             long offset = 0;
             long currentPart = 1;
 
-            // Mientras tengo partes para recibir
-            // 1 - Me fijo si es la ultima parte
-            // 1.1 - Si es, recibo la ultima parte
-            // 2.2 - Si no, recibo una parte cualquiera
-            // 3 - Escribo esa parte del archivo a disco
             while (fileSize > offset)
             {
                 byte[] data;
@@ -136,13 +117,11 @@ namespace ProyectoCompartido.Protocolo
                     data = await Read(Specification.MaxPacketSize);
                     offset += Specification.MaxPacketSize;
                 }
-                _fileStreamHandler.Write(fileName, data);
+                await _fileStreamHandler.Write(fileName, data);
                 currentPart++;
             }
             return fileName;
         }
-
-
 
         public async Task Write(byte[] data)
         {
@@ -164,6 +143,5 @@ namespace ProyectoCompartido.Protocolo
             }
             return data;
         }
-        //////////////////////////////////////////////
     }
 }

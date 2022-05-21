@@ -40,259 +40,267 @@ namespace Cliente
                 PrintMenu();
                 var task = Task.Run(async () => await HandleServer(networkDataHelper));
                 networkDataHelper = new NetworkDataHelper(stream);
-                while (connected)
+                try
                 {
-                    var opcion = Console.ReadLine();
-                    if (connected)
+                    while (connected)
                     {
-                        if (usuLogin.Equals(""))
+                        var opcion = Console.ReadLine();
+                        if (connected)
                         {
-                            switch (opcion)
+                            if (usuLogin.Equals(""))
                             {
-                                case "exit":
-                                    await networkDataHelper.SendMessage("", CommandConstants.exit);
-                                    stream.Close();
-                                    connected = false;
-                                    usuLogin = "";
-                                    break;
-                                case "1":
-                                    Console.WriteLine("Ingrese su nombre de usuario:");
-                                    var nomUsuario = Console.ReadLine();
+                                switch (opcion)
+                                {
+                                    case "exit":
+                                        await networkDataHelper.SendMessage("", CommandConstants.exit);
+                                        stream.Close();
+                                        connected = false;
+                                        usuLogin = "";
+                                        break;
+                                    case "1":
+                                        Console.WriteLine("Ingrese su nombre de usuario:");
+                                        var nomUsuario = Console.ReadLine();
 
-                                    Console.WriteLine("Ingrese su nombre real:");
-                                    var nombReal = Console.ReadLine();
+                                        Console.WriteLine("Ingrese su nombre real:");
+                                        var nombReal = Console.ReadLine();
 
-                                    Console.WriteLine("Ingrese su contraseña:");
-                                    var contraseña = Console.ReadLine();
+                                        Console.WriteLine("Ingrese su contraseña:");
+                                        var contraseña = Console.ReadLine();
 
-                                    Console.WriteLine("Ingrese su foto de perfil:"); 
-                                    var fotoperfil = Console.ReadLine();
+                                        Console.WriteLine("Ingrese su foto de perfil:");
+                                        var fotoperfil = Console.ReadLine();
 
-                                    IFileHandler fileHandler = new FileHandler();
-                                    var isOkControles = true;
+                                        IFileHandler fileHandler = new FileHandler();
+                                        var isOkControles = true;
 
-                                    if (fotoperfil.Equals(""))
-                                    {
-                                        Console.WriteLine("La ruta no puede ser vacía");
+                                        if (fotoperfil.Equals(""))
+                                        {
+                                            Console.WriteLine("La ruta no puede ser vacía");
+                                            PrintMenu();
+                                            break;
+                                        }
+
+                                        if (!fotoperfil.Equals("") && !fileHandler.FileExists(fotoperfil))
+                                        {
+                                            Console.WriteLine("la ruta de acceso al archivo no es valida. Intente nuevamente");
+                                            isOkControles = false;
+                                            PrintMenu();
+                                            break;
+                                        }
+
+                                        if (isOkControles)
+                                        {
+                                            var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
+                                            await networkDataHelper.SendMessage(infoUsuario, CommandConstants.Registro);
+                                            await networkDataHelper.SendFile(fotoperfil);
+                                        }
+
+                                        break;
+                                    case "2":
+                                        Console.WriteLine("Ingrese su nombre de usuario:");
+                                        var nombreLogin = Console.ReadLine();
+
+                                        Console.WriteLine("Ingrese su contraseña:");
+                                        var contraseñaLogin = Console.ReadLine();
+
+                                        var infoLogin = $"{nombreLogin}?{contraseñaLogin}";
+                                        usuLogin = nombreLogin;
+                                        await networkDataHelper.SendMessage(infoLogin, CommandConstants.Login);
+                                        break;
+                                    default:
+                                        Console.WriteLine("Opcion invalida");
                                         PrintMenu();
                                         break;
-                                    }
-
-                                    if (!fotoperfil.Equals("") && !fileHandler.FileExists(fotoperfil))
-                                    {
-                                        Console.WriteLine("la ruta de acceso al archivo no es valida. Intente nuevamente");
-                                        isOkControles = false;
-                                        PrintMenu();
-                                        break;
-                                    }
-
-                                    if (isOkControles){
-                                        var infoUsuario = $"{nomUsuario}?{nombReal}?{contraseña}";
-                                        await networkDataHelper.SendMessage(infoUsuario, CommandConstants.Registro);
-                                        await networkDataHelper.SendFile(fotoperfil);
-                                    }
-
-                                    break;
-                                case "2":
-                                    Console.WriteLine("Ingrese su nombre de usuario:");
-                                    var nombreLogin = Console.ReadLine();
-
-                                    Console.WriteLine("Ingrese su contraseña:");
-                                    var contraseñaLogin = Console.ReadLine();
-
-                                    var infoLogin = $"{nombreLogin}?{contraseñaLogin}";
-                                    usuLogin = nombreLogin;
-                                    await networkDataHelper.SendMessage(infoLogin, CommandConstants.Login);
-                                    break;
-                                default:
-                                    Console.WriteLine("Opcion invalida");
-                                    PrintMenu();
-                                    break;
+                                }
                             }
-                        }
-                        else
-                        {
-                            switch (opcion)
+                            else
                             {
-                                case "exit":
-                                    stream.Close();
-                                    connected = false;
-                                    usuLogin = "";
-                                    break;
+                                switch (opcion)
+                                {
+                                    case "exit":
+                                        stream.Close();
+                                        connected = false;
+                                        usuLogin = "";
+                                        break;
 
-                                case "4": //BUSQUEDA DE USUARIOS
-                                    Console.WriteLine("Ingresar caracteres del usuario a buscar:");
-                                    var caracteres = Console.ReadLine();
-                                    Console.WriteLine("Elija el tipo de busqueda:");
-                                    Console.WriteLine("1 -> Busqueda incluyente");
-                                    Console.WriteLine("2 -> Busqueda excluyente");
-                                    var tipoDeBusqueda = Console.ReadLine();
-                                    switch (tipoDeBusqueda)
-                                    {
-                                        case "1": //busqueda incluyente
-                                            await networkDataHelper.SendMessage(caracteres, CommandConstants.BusquedaIncluyente);
-                                            break;
-                                        case "2": //busqueda excluyente
-                                            await networkDataHelper.SendMessage(caracteres, CommandConstants.BusquedaExcluyente);
-                                            break;
-                                        default:
-                                            Console.WriteLine("Opcion invalida");
+                                    case "4": //BUSQUEDA DE USUARIOS
+                                        Console.WriteLine("Ingresar caracteres del usuario a buscar:");
+                                        var caracteres = Console.ReadLine();
+                                        Console.WriteLine("Elija el tipo de busqueda:");
+                                        Console.WriteLine("1 -> Busqueda incluyente");
+                                        Console.WriteLine("2 -> Busqueda excluyente");
+                                        var tipoDeBusqueda = Console.ReadLine();
+                                        switch (tipoDeBusqueda)
+                                        {
+                                            case "1": //busqueda incluyente
+                                                await networkDataHelper.SendMessage(caracteres, CommandConstants.BusquedaIncluyente);
+                                                break;
+                                            case "2": //busqueda excluyente
+                                                await networkDataHelper.SendMessage(caracteres, CommandConstants.BusquedaExcluyente);
+                                                break;
+                                            default:
+                                                Console.WriteLine("Opcion invalida");
+                                                PrintLoggedMenu();
+                                                break;
+                                        }
+                                        break;
+
+                                    case "5": //SEGUIR A UN USUARIO
+                                        Console.WriteLine("Ingrese el nombre del usuario a seguir:");
+                                        var nombreASeguir = Console.ReadLine();
+                                        var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
+                                        await networkDataHelper.SendMessage(datosParaSeguirUsuario, CommandConstants.SeguirUsuario);
+                                        break;
+                                    case "6": //NUEVO CHIP
+                                        Console.WriteLine("Chip:");
+                                        var chip = Console.ReadLine();
+
+                                        if (chip.Length == 0)
+                                        {
+                                            Console.WriteLine("Un chip no puede ser vacío");
                                             PrintLoggedMenu();
                                             break;
-                                    }
-                                    break;
+                                        }
 
-                                case "5": //SEGUIR A UN USUARIO
-                                    Console.WriteLine("Ingrese el nombre del usuario a seguir:");
-                                    var nombreASeguir = Console.ReadLine();
-                                    var datosParaSeguirUsuario = $"{usuLogin}?{nombreASeguir}";
-                                    await networkDataHelper.SendMessage(datosParaSeguirUsuario, CommandConstants.SeguirUsuario);
-                                    break;
-                                case "6": //NUEVO CHIP
-                                    Console.WriteLine("Chip:");
-                                    var chip = Console.ReadLine();
+                                        if (chip.Length >
+                                            Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey)))
+                                        {
+                                            Console.WriteLine("Un chip puede tener un máximo de " +
+                                                              SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey) +
+                                                              " caracteres");
+                                            PrintLoggedMenu();
+                                            break;
+                                        }
 
-                                    if (chip.Length == 0)
-                                    {
-                                        Console.WriteLine("Un chip no puede ser vacío");
-                                        PrintLoggedMenu();
-                                        break;
-                                    }
+                                        Console.WriteLine("Ingresa imagenes?:");
+                                        Console.WriteLine("1 -> Si");
+                                        Console.WriteLine("2 -> No");
 
-                                    if (chip.Length >
-                                        Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey)))
-                                    {
-                                        Console.WriteLine("Un chip puede tener un máximo de " +
-                                                          SettingsMgr.ReadSetting(ClientConf.clientCntCarPubConfigKey) +
-                                                          " caracteres");
-                                        PrintLoggedMenu();
-                                        break;
-                                    }
+                                        var op = Console.ReadLine();
 
-                                    Console.WriteLine("Ingresa imagenes?:");
-                                    Console.WriteLine("1 -> Si");
-                                    Console.WriteLine("2 -> No");
-
-                                    var op = Console.ReadLine();
-
-                                    switch (op)
-                                    {
-                                        case "1": //ingresa img 
-                                            Console.WriteLine(
-                                            "Ingrese las rutas de acceso de las imagenes separadas por ?");
-                                            var isValidEnvio = false;
-                                            bool isOkControles;
-                                            while (!isValidEnvio)
-                                            {
-                                                isOkControles = true;
-
-                                                var rutasImg = Console.ReadLine();
-                                                if (rutasImg.Equals(""))
+                                        switch (op)
+                                        {
+                                            case "1": //ingresa img 
+                                                Console.WriteLine(
+                                                "Ingrese las rutas de acceso de las imagenes separadas por ?");
+                                                var isValidEnvio = false;
+                                                bool isOkControles;
+                                                while (!isValidEnvio)
                                                 {
-                                                    Console.WriteLine("La ruta no puede ser vacía");
-                                                    break;
-                                                }
+                                                    isOkControles = true;
 
-                                                rutasImg += '?';
-                                                var dSeparados = rutasImg.Split("?");
-
-                                                if (dSeparados.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey)) + 1)
-                                                {
-                                                    Console.WriteLine("Puede ingresar un máximo de " + SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey) + " archivos. Ingrese las rutas nuevamente");
-                                                    isOkControles = false;
-                                                }
-
-                                                if (isOkControles)
-                                                {
-                                                    if (dSeparados.Length == 0)
+                                                    var rutasImg = Console.ReadLine();
+                                                    if (rutasImg.Equals(""))
                                                     {
-                                                        Console.WriteLine("Error debe ingresar la ruta de los archivos");
+                                                        Console.WriteLine("La ruta no puede ser vacía");
+                                                        break;
+                                                    }
+
+                                                    rutasImg += '?';
+                                                    var dSeparados = rutasImg.Split("?");
+
+                                                    if (dSeparados.Length > Int32.Parse(SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey)) + 1)
+                                                    {
+                                                        Console.WriteLine("Puede ingresar un máximo de " + SettingsMgr.ReadSetting(ClientConf.clientCntImgPubConfigKey) + " archivos. Ingrese las rutas nuevamente");
                                                         isOkControles = false;
                                                     }
-                                                }
 
-                                                if (isOkControles)
-                                                {
-                                                    int index = 0;
-                                                    IFileHandler fileHandler = new FileHandler();
-                                                    while (index < dSeparados.Length && isOkControles)
+                                                    if (isOkControles)
                                                     {
-                                                        string path = dSeparados[index];
-
-                                                        if (!path.Equals("") && !fileHandler.FileExists(path))
+                                                        if (dSeparados.Length == 0)
                                                         {
-                                                            Console.WriteLine("la ruta de acceso al archivo " + index + 1 + " no es valida. Intente nuevamente");
+                                                            Console.WriteLine("Error debe ingresar la ruta de los archivos");
                                                             isOkControles = false;
                                                         }
-                                                        index++;
                                                     }
-                                                }
-                                                if (isOkControles)
-                                                {
-                                                    await networkDataHelper.SendMessage(usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
-                                                    int index = 0;
-                                                    while (index < dSeparados.Length)
+
+                                                    if (isOkControles)
                                                     {
-                                                        string path = dSeparados[index];
-                                                        if (!path.Equals(""))
+                                                        int index = 0;
+                                                        IFileHandler fileHandler = new FileHandler();
+                                                        while (index < dSeparados.Length && isOkControles)
                                                         {
-                                                            await networkDataHelper.SendFile(path);
+                                                            string path = dSeparados[index];
+
+                                                            if (!path.Equals("") && !fileHandler.FileExists(path))
+                                                            {
+                                                                Console.WriteLine("la ruta de acceso al archivo " + index + 1 + " no es valida. Intente nuevamente");
+                                                                isOkControles = false;
+                                                            }
+                                                            index++;
                                                         }
-                                                        index++;
                                                     }
-                                                    isValidEnvio = true;
+                                                    if (isOkControles)
+                                                    {
+                                                        await networkDataHelper.SendMessage(usuLogin + "?" + dSeparados.Length + "?" + chip, CommandConstants.chip);
+                                                        int index = 0;
+                                                        while (index < dSeparados.Length)
+                                                        {
+                                                            string path = dSeparados[index];
+                                                            if (!path.Equals(""))
+                                                            {
+                                                                await networkDataHelper.SendFile(path);
+                                                            }
+                                                            index++;
+                                                        }
+                                                        isValidEnvio = true;
+                                                    }
                                                 }
-                                            }
-                                            break;
+                                                break;
 
-                                        case "2":
-                                            await networkDataHelper.SendMessage(usuLogin + "?0?" + chip, CommandConstants.chip);
-                                            break;
-                                        default:
-                                            Console.WriteLine("Opcion invalida");
-                                            break;
-                                    }
+                                            case "2":
+                                                await networkDataHelper.SendMessage(usuLogin + "?0?" + chip, CommandConstants.chip);
+                                                break;
+                                            default:
+                                                Console.WriteLine("Opcion invalida");
+                                                break;
+                                        }
 
-                                    PrintLoggedMenu();
-                                    break;
-
-                                case "7": //VER Noficaciones
-                                    Console.WriteLine("Notificaciones:");
-                                    await networkDataHelper.SendMessage(usuLogin, CommandConstants.verNotif);
-                                    break;
-                                case "8": //VER CHIPS DE UN USUARIO
-                                    Console.WriteLine("Ingrese el nombre de usuario:");
-                                    var nombreUsuario = Console.ReadLine();
-                                    await networkDataHelper.SendMessage(nombreUsuario, CommandConstants.VerChips);
-                                    break;
-
-                                case string s
-                                    when s.StartsWith("R"): //RECIBE R + NUMERO DE CHIP A CONTESTAR A usuAResponder
-                                    var numeroChip = opcion.Substring(1);
-                                    if (!int.TryParse(numeroChip, out int num))
-                                    {
-                                        Console.WriteLine("Debe escribir el numero de chip seguido de la R");
                                         PrintLoggedMenu();
                                         break;
-                                    }
 
-                                    Console.WriteLine("Ingrese su respuesta:");
-                                    var respuesta = Console.ReadLine();
-                                    var datosResponder = $"{usuLogin}?{usuAResponder}?{respuesta}?{numeroChip}";
-                                    usuAResponder = "";
-                                    await networkDataHelper.SendMessage(datosResponder, CommandConstants.ResponderChip);
-                                    break;
-                                case "NO":
-                                    PrintLoggedMenu();
-                                    break;
+                                    case "7": //VER Noficaciones
+                                        Console.WriteLine("Notificaciones:");
+                                        await networkDataHelper.SendMessage(usuLogin, CommandConstants.verNotif);
+                                        break;
+                                    case "8": //VER CHIPS DE UN USUARIO
+                                        Console.WriteLine("Ingrese el nombre de usuario:");
+                                        var nombreUsuario = Console.ReadLine();
+                                        await networkDataHelper.SendMessage(nombreUsuario, CommandConstants.VerChips);
+                                        break;
 
-                                default:
-                                    Console.WriteLine("Opcion invalida");
-                                    PrintLoggedMenu();
-                                    break;
+                                    case string s
+                                        when s.StartsWith("R"): //RECIBE R + NUMERO DE CHIP A CONTESTAR A usuAResponder
+                                        var numeroChip = opcion.Substring(1);
+                                        if (!int.TryParse(numeroChip, out int num))
+                                        {
+                                            Console.WriteLine("Debe escribir el numero de chip seguido de la R");
+                                            PrintLoggedMenu();
+                                            break;
+                                        }
+
+                                        Console.WriteLine("Ingrese su respuesta:");
+                                        var respuesta = Console.ReadLine();
+                                        var datosResponder = $"{usuLogin}?{usuAResponder}?{respuesta}?{numeroChip}";
+                                        usuAResponder = "";
+                                        await networkDataHelper.SendMessage(datosResponder, CommandConstants.ResponderChip);
+                                        break;
+                                    case "NO":
+                                        PrintLoggedMenu();
+                                        break;
+
+                                    default:
+                                        Console.WriteLine("Opcion invalida");
+                                        PrintLoggedMenu();
+                                        break;
+                                }
                             }
                         }
                     }
+                }
+                catch (SocketException e)
+                {
+                    Console.WriteLine($"The client connection was interrupted - Exception {e.Message}");
                 }
                 tcpClient.Close();
             }

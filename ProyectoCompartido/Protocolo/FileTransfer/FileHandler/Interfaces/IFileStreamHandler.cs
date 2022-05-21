@@ -2,7 +2,7 @@ namespace ProyectoCompartido.Protocolo.FileTransfer.FileHandler.Interfaces
 {
     public interface IFileStreamHandler
     {
-        byte[] Read(string path, long offset, int length);
-        void Write(string fileName, byte[] data);
+        Task<byte[]> Read(string path, long offset, int length);
+        Task Write(string fileName, byte[] data);
     }
 }
