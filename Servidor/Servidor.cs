@@ -14,7 +14,6 @@ namespace Servidor
         static bool _exit = false;
         static List<TcpClient> _clients = new List<TcpClient>();
         private static List<Usuario> _usuarios = new List<Usuario>();
-        private static NetworkDataHelper networkDataHelper;
         private static readonly object _lockUsuarios = new object();
 
         static async Task Main(string[] args)
@@ -242,8 +241,6 @@ namespace Servidor
                     var tcpClientSocket = await tcpListener.AcceptTcpClientAsync().ConfigureAwait(false);
                     _clients.Add(tcpClientSocket);
 
-                    networkDataHelper = new NetworkDataHelper(tcpClientSocket.GetStream());
-
                     Console.WriteLine("Nueva conexion aceptada...");
                     var task = Task.Run(async () => await HandleClient(tcpClientSocket).ConfigureAwait(false));
                 }
@@ -275,6 +272,7 @@ namespace Servidor
             {
                 await using (var networkStream = clientSocket.GetStream())
                 {
+                    NetworkDataHelper networkDataHelper = new NetworkDataHelper(networkStream);
                     while (clienteConectado)
                     {
                         var headerLength = HeaderConstants.Request.Length + HeaderConstants.CommandLength +
@@ -301,7 +299,7 @@ namespace Servidor
                                 var nombreUsuario = datosSeparados[0];
                                 var nombreReal = datosSeparados[1];
                                 var contraseña = datosSeparados[2];
-                                await ValidarRegistroUsuario(nombreUsuario, nombreReal, contraseña);
+                                await ValidarRegistroUsuario(networkDataHelper,nombreUsuario, nombreReal, contraseña);
                                 break;
 
                             case CommandConstants.Login:
@@ -316,20 +314,20 @@ namespace Servidor
                             case CommandConstants.BusquedaIncluyente:
                                 Console.WriteLine("El usuario inicio una busqueda de usuarios...");
                                 var datosBusquedaIncluyente = data;
-                                await BusquedaUsuarios(datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
+                                await BusquedaUsuarios(networkDataHelper, datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
                                 break;
 
                             case CommandConstants.BusquedaExcluyente:
                                 Console.WriteLine("El usuario inicio una busqueda de usuarios...");
                                 var datosBusquedaExcluyente = data;
-                                await BusquedaUsuarios(datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
+                                await BusquedaUsuarios(networkDataHelper, datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
                                 break;
 
                             case CommandConstants.SeguirUsuario:
                                 Console.WriteLine("El usuario quiere seguir a un usuario...");
                                 var datosSeguirUsuario = data;
                                 var seguidorYaSeguir = datosSeguirUsuario.Split("?");
-                                await SeguirUnUsuario(seguidorYaSeguir[0], seguidorYaSeguir[1]);
+                                await SeguirUnUsuario(networkDataHelper, seguidorYaSeguir[0], seguidorYaSeguir[1]);
                                 break;
                             case CommandConstants.chip:
                                 var dSeparados = data.Split("?");
@@ -361,13 +359,13 @@ namespace Servidor
                             case CommandConstants.VerChips:
                                 Console.WriteLine("Procesando solicitud de visualizacion de chips...");
                                 var nombreDeUsuario = data;
-                                await VerChipsDeUsuario(nombreDeUsuario);
+                                await VerChipsDeUsuario(networkDataHelper, nombreDeUsuario);
                                 break;
 
                             case CommandConstants.ResponderChip:
                                 Console.WriteLine("Procesando solicitud de respuesta de chip...");
                                 var datosRespuestaChip = data;
-                                await ResponderChip(datosRespuestaChip);
+                                await ResponderChip(networkDataHelper, datosRespuestaChip);
                                 break;
 
                             case CommandConstants.verNotif:
@@ -417,7 +415,7 @@ namespace Servidor
             return null;
         }
 
-        private static async Task ValidarRegistroUsuario(string nombreUsuario, string nombreReal, string contraseña)
+        private static async Task ValidarRegistroUsuario(NetworkDataHelper networkDataHelper, string nombreUsuario, string nombreReal, string contraseña)
         {
             if (nombreUsuario == "" || nombreReal == "" || contraseña == "")
             {
@@ -494,7 +492,7 @@ namespace Servidor
             return _usuarios.Any(us => us.Habilitado == false);
         }
 
-        private static async Task BusquedaUsuarios(string caracteres, int constante)
+        private static async Task BusquedaUsuarios(NetworkDataHelper networkDataHelper, string caracteres, int constante)
         {
             caracteres = caracteres.ToLower();
             var totalUsuarios = "";
@@ -568,7 +566,7 @@ namespace Servidor
             }
         }
 
-        private static async Task SeguirUnUsuario(string nombreUsuario, string aSeguir)
+        private static async Task SeguirUnUsuario(NetworkDataHelper networkDataHelper, string nombreUsuario, string aSeguir)
         {
             var existeUsuario = _usuarios.Any(u => u.PNomUsu == nombreUsuario);
             var existeASeguir = _usuarios.Any(u => u.PNomUsu == aSeguir);
@@ -624,7 +622,7 @@ namespace Servidor
             }
         }
 
-        private static async Task VerChipsDeUsuario(string nombreUsuario)
+        private static async Task VerChipsDeUsuario(NetworkDataHelper networkDataHelper, string nombreUsuario)
         {
             var usuarioElegido = _usuarios.Find(u => u.PNomUsu == nombreUsuario);
             if (usuarioElegido == null)
@@ -656,7 +654,7 @@ namespace Servidor
             Console.WriteLine("Funcionalidad ver chips finalizada.");
         }
 
-        private static async Task ResponderChip(string datosRespuestaChip)
+        private static async Task ResponderChip(NetworkDataHelper networkDataHelper, string datosRespuestaChip)
         {
             var datosRespuesta = datosRespuestaChip.Split("?");
             var usuarioLogueado = datosRespuesta[0];
