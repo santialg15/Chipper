@@ -558,7 +558,7 @@ namespace Servidor
                 // Actualizo lista de usuarios agregando norificación a los que siguen al usuario creador del chip
                 foreach (var usu in _usuarios)
                 {
-                    if (!usu.Equals(usuSeguidos))
+                    if (usu.Equals(usuSeguidos))
                     {
                         usu.AddNotif(chip);
                     }
