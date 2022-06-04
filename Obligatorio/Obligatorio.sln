@@ -9,11 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cliente", "..\Cliente\Clien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Servidor", "..\Servidor\Servidor.csproj", "{A474C526-8827-4776-84F8-E38A8586EBA3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CD04A49C-4F93-4FA5-981F-6DCEF40C5C0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logica", "..\Logica\Logica.csproj", "{6D51BE3D-456D-4576-AB84-04263BA96B0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logica", "..\Logica\Logica.csproj", "{6D51BE3D-456D-4576-AB84-04263BA96B0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProyectoCompartido", "..\ProyectoCompartido\ProyectoCompartido.csproj", "{C0F5B34F-7E81-4886-9BDB-EE38A87C6D9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProyectoCompartido", "..\ProyectoCompartido\ProyectoCompartido.csproj", "{C0F5B34F-7E81-4886-9BDB-EE38A87C6D9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogSender", "..\LogSender\LogSender.csproj", "{6BAB14B9-DEA7-43EB-AA48-AB45238B5150}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogServer", "..\LogServer\LogServer.csproj", "{F45950E2-147E-4DEC-B7BC-2690BCFEF901}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,14 @@ Global
 		{C0F5B34F-7E81-4886-9BDB-EE38A87C6D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0F5B34F-7E81-4886-9BDB-EE38A87C6D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0F5B34F-7E81-4886-9BDB-EE38A87C6D9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BAB14B9-DEA7-43EB-AA48-AB45238B5150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BAB14B9-DEA7-43EB-AA48-AB45238B5150}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BAB14B9-DEA7-43EB-AA48-AB45238B5150}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BAB14B9-DEA7-43EB-AA48-AB45238B5150}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

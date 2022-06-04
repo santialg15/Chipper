@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,8 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logica\Logica.csproj" />
-    <ProjectReference Include="..\LogSender\LogSender.csproj" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ProyectoCompartido\ProyectoCompartido.csproj" />
   </ItemGroup>
 

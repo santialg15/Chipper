@@ -5,6 +5,9 @@ using Logica;
 using ProyectoCompartido.Interfaces;
 using ProyectoCompartido.Protocolo;
 using ProyectoCompartido.Protocolo.FileTransfer;
+using LogSender;
+using ProyectoCompartido.Logs;
+
 
 namespace Servidor
 {
@@ -15,6 +18,7 @@ namespace Servidor
         static List<TcpClient> _clients = new List<TcpClient>();
         private static List<Usuario> _usuarios = new List<Usuario>();
         private static readonly object _lockUsuarios = new object();
+        private static readonly AsyncSenderQueue logSender = new AsyncSenderQueue();
 
         static async Task Main(string[] args)
         {
@@ -265,9 +269,16 @@ namespace Servidor
             Console.WriteLine("Ingrese el numero de la opcion deseada: ");
         }
 
+        private static async void setLog(string user, string action, string msg)
+        {
+            Log log = new Log(user, action,msg);
+            await logSender.sendLog(log);
+        }
+
         private static async Task HandleClient(TcpClient clientSocket)
         {
             var clienteConectado = true;
+            var usuLogueado = "";
             try
             {
                 await using (var networkStream = clientSocket.GetStream())
@@ -292,6 +303,7 @@ namespace Servidor
                             case CommandConstants.exit:
                                 clienteConectado = false;
                                 Console.WriteLine("Terminó la conexión de un cliente");
+                                setLog(usuLogueado, "exit", "El usuario salió del sistema");
                                 break;
                             case CommandConstants.Registro:
                                 Console.WriteLine("Validando registro de un usuario en el sistema");
@@ -309,18 +321,22 @@ namespace Servidor
                                 var nombreLogin = datosLoginSeparados[0];
                                 var contraseñaLogin = datosLoginSeparados[1];
                                 await ValidarLoginUsuario(networkDataHelper, nombreLogin, contraseñaLogin);
+                                usuLogueado = buscarUsuarioLogin(nombreLogin).PNomUsu;
+                                setLog(usuLogueado, "Login", "El usuario se logueo en el sistema");
                                 break;
 
                             case CommandConstants.BusquedaIncluyente:
                                 Console.WriteLine("El usuario inicio una busqueda de usuarios...");
                                 var datosBusquedaIncluyente = data;
                                 await BusquedaUsuarios(networkDataHelper, datosBusquedaIncluyente, CommandConstants.BusquedaIncluyente);
+                                setLog(usuLogueado, "Busqueda incluye", datosBusquedaIncluyente);
                                 break;
 
                             case CommandConstants.BusquedaExcluyente:
                                 Console.WriteLine("El usuario inicio una busqueda de usuarios...");
                                 var datosBusquedaExcluyente = data;
                                 await BusquedaUsuarios(networkDataHelper, datosBusquedaExcluyente, CommandConstants.BusquedaExcluyente);
+                                setLog(usuLogueado, "Busqueda excluye", data);
                                 break;
 
                             case CommandConstants.SeguirUsuario:
@@ -348,11 +364,15 @@ namespace Servidor
                                     }
                                     colFileName = colFileName.Remove(colFileName.Length - 1);
                                     nuevaPub = usuChip.nuevoChipConImg(chip, colFileName);
+                                    setLog(usuLogueado, "Nuevo chip", chip+" imagenes: "+ CntImg.ToString());
                                 }
                                 else
                                 {
                                     nuevaPub = usuChip.nuevoChip(chip);
+                                    setLog(usuLogueado, "Nuevo chip", chip);
                                 }
+                                
+
                                 Notificar(usuChip, nuevaPub);
                                 break;
 
@@ -360,6 +380,7 @@ namespace Servidor
                                 Console.WriteLine("Procesando solicitud de visualizacion de chips...");
                                 var nombreDeUsuario = data;
                                 await VerChipsDeUsuario(networkDataHelper, nombreDeUsuario);
+                                setLog(usuLogueado, "ver chips", "Chips de usuario: "+ nombreDeUsuario);
                                 break;
 
                             case CommandConstants.ResponderChip:
@@ -388,6 +409,7 @@ namespace Servidor
                                 {
                                     await networkDataHelper.SendMessage(totalNotif, CommandConstants.verNotif);
                                 }
+                                setLog(usuLogueado, "ver Notificaciones", "Notificaciones: " + totalNotif.ToString());
                                 usu.clearNotif();
                                 Console.WriteLine("Funcionalidad ver notificaciones finalizada.");
                                 break;
@@ -438,6 +460,7 @@ namespace Servidor
                         _usuarios.Add(nuevoUsuario);
                         Console.WriteLine($"Usuario {nombreUsuario} registrado con exito");
                         networkDataHelper.SendMessage("El usuario fue registrado con exito.", CommandConstants.Registro);
+                        setLog(nombreUsuario, "registo de usuario", "El usuario se registró en el sistema");
                     }
                 }
             }
@@ -590,6 +613,7 @@ namespace Servidor
                             var seguido = _usuarios.Find(u => u.PNomUsu == aSeguir);
                             usu.ColSeguidos.Add(seguido);
                             seguido.ColSeguidores.Add(usu);
+                            setLog(nombreUsuario, "Sigue a ", aSeguir);
                         }
                         else
                         {
@@ -671,6 +695,7 @@ namespace Servidor
                     {
                         var publicacion = usuario.ColPublicacion[numeroChip - 1];
                         publicacion.colRespuesta.Add(nuevaRespuesta);
+                        setLog(usuarioLogueado, "Responde chip", "Chip "+ numeroChip + " de usuario: " + usuarioDeChip);
                         break;
                     }
                     else
