@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using ProyectoCompartido.Logs;
 using RabbitMQ.Client;
 
@@ -23,7 +19,7 @@ namespace LogSender
             var stringLog = JsonSerializer.Serialize(log);
             var result = await sendMessage(channel, stringLog);
             Console.WriteLine(result ? "Message {0} sent successfully" : "Could not send {0}", stringLog);
-                 
+
         }
 
         private static Task<bool> sendMessage(IModel channel, string message)

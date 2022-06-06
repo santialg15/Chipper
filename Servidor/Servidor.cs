@@ -8,7 +8,6 @@ using ProyectoCompartido.Protocolo.FileTransfer;
 using LogSender;
 using ProyectoCompartido.Logs;
 
-
 namespace Servidor
 {
     internal static class Servidor
@@ -271,7 +270,7 @@ namespace Servidor
 
         private static async void setLog(string user, string action, string msg)
         {
-            Log log = new Log(user, action,msg);
+            Log log = new Log(user, action, msg);
             await logSender.sendLog(log);
         }
 

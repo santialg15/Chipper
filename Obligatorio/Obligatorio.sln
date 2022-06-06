@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logica", "..\Logica\Logica.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProyectoCompartido", "..\ProyectoCompartido\ProyectoCompartido.csproj", "{C0F5B34F-7E81-4886-9BDB-EE38A87C6D9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogSender", "..\LogSender\LogSender.csproj", "{6BAB14B9-DEA7-43EB-AA48-AB45238B5150}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogSender", "..\LogSender\LogSender.csproj", "{6BAB14B9-DEA7-43EB-AA48-AB45238B5150}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogServer", "..\LogServer\LogServer.csproj", "{F45950E2-147E-4DEC-B7BC-2690BCFEF901}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogServer", "..\LogServer\LogServer.csproj", "{F45950E2-147E-4DEC-B7BC-2690BCFEF901}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminServer", "..\AdminServer\AdminServer.csproj", "{49D46E35-2697-4904-8E84-CDDC281DCF06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49D46E35-2697-4904-8E84-CDDC281DCF06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49D46E35-2697-4904-8E84-CDDC281DCF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49D46E35-2697-4904-8E84-CDDC281DCF06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49D46E35-2697-4904-8E84-CDDC281DCF06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using ProyectoCompartido.Logs;
 using RabbitMQ.Client;
@@ -12,7 +11,6 @@ namespace LogServer
         static List<Log> _logs = new List<Log>();
         static void Main(string[] args)
         {
-
             using var channel = new ConnectionFactory() { HostName = "localhost" }.CreateConnection().CreateModel();
             channel.QueueDeclare(queue: "log_queue",
                 durable: false,
@@ -38,64 +36,65 @@ namespace LogServer
 
             printMenu();
             var exit = false;
-            while (!exit){
-            var op = Console.ReadLine();
-            var filtro = "";
-            switch (op)
+            while (!exit)
             {
-                case "1":
-                    Console.WriteLine("Ingrese el usuario:");
-                    filtro = Console.ReadLine();
-                    foreach (var l in _logs)
-                    {
-                        if (l.user.Equals(filtro))
+                var op = Console.ReadLine();
+                var filtro = "";
+                switch (op)
+                {
+                    case "1":
+                        Console.WriteLine("Ingrese el usuario:");
+                        filtro = Console.ReadLine();
+                        foreach (var l in _logs)
                         {
-                            Console.WriteLine(l.ToString());
+                            if (l.user.Equals(filtro))
+                            {
+                                Console.WriteLine(l.ToString());
+                            }
                         }
-                    }
-                    break;
-                case "2":
-                    Console.WriteLine("Ingrese palabra de chip:");
-                    filtro = Console.ReadLine();
-                    foreach (var l in _logs)
-                    {
-                        if (l.message.Equals(filtro) && l.action.Equals("Nuevo chip"))
+                        break;
+                    case "2":
+                        Console.WriteLine("Ingrese palabra de chip:");
+                        filtro = Console.ReadLine();
+                        foreach (var l in _logs)
                         {
-                            Console.WriteLine(l.ToString());
+                            if (l.message.Equals(filtro) && l.action.Equals("Nuevo chip"))
+                            {
+                                Console.WriteLine(l.ToString());
+                            }
                         }
-                    }
-                    break;
-                case "3":
-                    Console.WriteLine("Ingrese Fecha con formato dd/mm/yyyy:");
-                    filtro = Console.ReadLine();
-                    foreach (var l in _logs)
-                    {
-                        if (l.send.Contains(filtro.Trim()))
+                        break;
+                    case "3":
+                        Console.WriteLine("Ingrese Fecha con formato dd/mm/yyyy:");
+                        filtro = Console.ReadLine();
+                        foreach (var l in _logs)
                         {
-                            Console.WriteLine(l.ToString());
+                            if (l.send.Contains(filtro.Trim()))
+                            {
+                                Console.WriteLine(l.ToString());
+                            }
                         }
-                    }
-                    break;
-                case "4":
-                    Console.WriteLine("Ingrese acción:");
-                    filtro = Console.ReadLine();
-                    foreach (var l in _logs)
-                    {
-                        if (l.action.Equals(filtro.Trim()))
+                        break;
+                    case "4":
+                        Console.WriteLine("Ingrese acción:");
+                        filtro = Console.ReadLine();
+                        foreach (var l in _logs)
                         {
-                            Console.WriteLine(l.ToString());
+                            if (l.action.Equals(filtro.Trim()))
+                            {
+                                Console.WriteLine(l.ToString());
+                            }
                         }
-                    }
-                    break;
-                case "exit":
-                    exit = true;
-                    break;
-                default:
-                    Console.WriteLine("Opción invalida");
-                    break;
+                        break;
+                    case "exit":
+                        exit = true;
+                        break;
+                    default:
+                        Console.WriteLine("Opción invalida");
+                        break;
 
-            }
-            printMenu();
+                }
+                printMenu();
             }
         }
 
@@ -108,7 +107,5 @@ namespace LogServer
             Console.WriteLine("3 -> Fecha");
             Console.WriteLine("4 -> Acción");
         }
-
-
     }
 }
