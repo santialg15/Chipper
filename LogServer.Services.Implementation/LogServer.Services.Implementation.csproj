@@ -1,18 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RabbitMQ.Client" Version="6.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\LogServer.Models\LogServer.Models.csproj" />
+    <ProjectReference Include="..\LogServer.Repository.Interfaces\LogServer.Repository.Interfaces.csproj" />
+    <ProjectReference Include="..\LogServer.Services.Interfaces\LogServer.Services.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

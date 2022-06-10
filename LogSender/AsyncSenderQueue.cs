@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ProyectoCompartido.Logs;
+using LogServer.Models;
 using RabbitMQ.Client;
 
 namespace LogSender

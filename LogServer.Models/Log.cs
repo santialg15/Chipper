@@ -1,7 +1,8 @@
-﻿namespace ProyectoCompartido.Logs
+﻿namespace LogServer.Models
 {
     public class Log
     {
+        public int id { get; set; }
         public string user { get; set; }
         public string action { get; set; }
         public string message { get; set; }

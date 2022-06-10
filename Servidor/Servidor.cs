@@ -6,7 +6,7 @@ using ProyectoCompartido.Interfaces;
 using ProyectoCompartido.Protocolo;
 using ProyectoCompartido.Protocolo.FileTransfer;
 using LogSender;
-using ProyectoCompartido.Logs;
+using LogServer.Models;
 
 
 namespace Servidor
