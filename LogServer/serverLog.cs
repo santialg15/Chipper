@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
-using ProyectoCompartido.Logs;
+using LogServer.Models;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
