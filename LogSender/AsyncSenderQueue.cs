@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using LogServer.Models;
 using RabbitMQ.Client;
 
@@ -8,14 +7,19 @@ namespace LogSender
 {
     public class AsyncSenderQueue
     {
+        private IModel channel = null;
+
         public async Task sendLog(Log log)
         {
-            var channel = new ConnectionFactory() { HostName = "localhost" }.CreateConnection().CreateModel();
-            channel.QueueDeclare(queue: "log_queue",
-                durable: false,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null);
+            if (channel == null){
+                channel = new ConnectionFactory() { HostName = "localhost" }.CreateConnection().CreateModel();
+            
+                channel.QueueDeclare(queue: "log_queue",
+                    durable: false,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null);
+            }
 
             var stringLog = JsonSerializer.Serialize(log);
             var result = await sendMessage(channel, stringLog);

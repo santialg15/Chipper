@@ -1,7 +1,6 @@
 ﻿using LogServer.Exceptions;
 using LogServer.ServiceAdapter.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace LogServer.Controllers
 {
@@ -17,37 +16,31 @@ namespace LogServer.Controllers
              _logServiceAdapter = logServiceAdapter;
          }
 
-        /*
-         * GetLogByUser
-         * GetLogByChipKey
-         * GetLogByDate
-         * GetLogByAction
-         */
-
-        [HttpGet("GetLogByUser/{user}")]
+        [HttpGet]
+        [Route("GetLogByUser/{user}")]
         public IActionResult GetLogByUser(string user)
          {
-             try
-             {
-                 return new OkObjectResult(_logServiceAdapter.GetLogByUser(user)); // 200
-             }
-             catch (ArgumentException e)
-             {
-                 return BadRequest(e.Message); // 400
-             }
+            try
+            {
+                return new OkObjectResult(_logServiceAdapter.GetLogByUser(user)); // 200
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message); // 400
+            }
             catch (LogDoesNotExistException e)
             {
                 return NotFound(e.Message); // 404
             }
          }
 
-        [HttpGet("GetLogByChipKey/{Key}")]
-        //[Route("{key}", Name = "GetLogByChipKey")]
-        public IActionResult GetLogByChipKey(string Key)
+        [HttpGet]
+        [Route("GetLogByChipKey/{key}")]
+        public IActionResult GetLogByChipKey(string key)
         {
             try
             {
-                return new OkObjectResult(_logServiceAdapter.GetLogByChipKey(Key)); // 200
+                return new OkObjectResult(_logServiceAdapter.GetLogByChipKey(key)); // 200
             }
             catch (ArgumentException e)
             {
@@ -60,8 +53,8 @@ namespace LogServer.Controllers
         }
 
 
-        [HttpGet("GetLogByDate/{date}")]
-        //[Route("{date}", Name = "GetLogByDate")]
+        [HttpGet]
+        [Route("GetLogByDate/{date}")]
         public IActionResult GetLogByDate(string date)
         {
             try
@@ -79,8 +72,8 @@ namespace LogServer.Controllers
         }
 
 
-        [HttpGet("GetLogByAction/{action}")]
-        //[Route("{action}", Name = "GetLogByAction")]
+        [HttpGet]
+        [Route("GetLogByAction/{action}")]
         public IActionResult GetLogByAction(string action)
         {
             try
