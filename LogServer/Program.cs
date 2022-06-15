@@ -2,6 +2,7 @@ using LogServer.Repository.Implementation;
 using LogServer.Repository.Interfaces;
 using LogServer.ServiceAdapter.Implementation;
 using LogServer.ServiceAdapter.Interfaces;
+using LogServer.Services;
 using LogServer.Services.Implementation;
 using LogServer.Services.Interfaces;
 
@@ -18,6 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ILogRepository, LogRepository>();
 builder.Services.AddScoped<ILogService, LogService>();
 builder.Services.AddScoped<ILogServiceAdapter, LogServiceAdapter>();
+builder.Services.AddHostedService<Worker>();
 
 
 
@@ -35,5 +37,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapControllerRoute(name: "logs",
+    pattern: "{controller=logs}/{action=Index}/{id?}");
 
 app.Run();

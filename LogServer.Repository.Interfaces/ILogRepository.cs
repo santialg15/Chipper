@@ -8,6 +8,7 @@ namespace LogServer.Repository.Interfaces
         List<Log> GetLogByChipKey(string key);
         List<Log> GetLogByDate(string date);
         List<Log> GetLogByAction(string action);
-        
+        void AddLog(Log log);
+
     }
 }

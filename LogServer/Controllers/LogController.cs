@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LogServer.Controllers
 {
-    [Route("[controller]")]
+    [Route("logs")]
     [ApiController]
     
     public class LogController : ControllerBase
@@ -16,9 +16,10 @@ namespace LogServer.Controllers
              _logServiceAdapter = logServiceAdapter;
          }
 
+
         [HttpGet]
-        [Route("GetLogByUser/{user}")]
-        public IActionResult GetLogByUser(string user)
+        [Route("User")]
+        public IActionResult GetLogByUser([FromQuery]string user)
          {
             try
             {
@@ -35,8 +36,8 @@ namespace LogServer.Controllers
          }
 
         [HttpGet]
-        [Route("GetLogByChipKey/{key}")]
-        public IActionResult GetLogByChipKey(string key)
+        [Route("Chip")]
+        public IActionResult GetLogByChipKey([FromQuery] string key)
         {
             try
             {
@@ -54,8 +55,8 @@ namespace LogServer.Controllers
 
 
         [HttpGet]
-        [Route("GetLogByDate/{date}")]
-        public IActionResult GetLogByDate(string date)
+        [Route("Date")]
+        public IActionResult GetLogByDate([FromQuery] string date)
         {
             try
             {
@@ -73,8 +74,8 @@ namespace LogServer.Controllers
 
 
         [HttpGet]
-        [Route("GetLogByAction/{action}")]
-        public IActionResult GetLogByAction(string action)
+        [Route("Action")]
+        public IActionResult GetLogByAction([FromQuery] string action)
         {
             try
             {

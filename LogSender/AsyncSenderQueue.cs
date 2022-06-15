@@ -12,7 +12,8 @@ namespace LogSender
         public async Task sendLog(Log log)
         {
             if (channel == null){
-                channel = new ConnectionFactory() { HostName = "localhost" }.CreateConnection().CreateModel();
+                Uri u = new Uri("amqps://arefvfdf:ez6JGlDGbYumDMT2TFiifmmNRVkHSA_o@beaver.rmq.cloudamqp.com/arefvfdf");
+                channel = new ConnectionFactory() { Uri = u }.CreateConnection().CreateModel();
             
                 channel.QueueDeclare(queue: "log_queue",
                     durable: false,
