@@ -1,5 +1,4 @@
 ﻿using LogServer.Models;
-using LogServer.Requests;
 using LogServer.Responses;
 using LogServer.ServiceAdapter.Interfaces;
 using LogServer.Services.Interfaces;
