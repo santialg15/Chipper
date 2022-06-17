@@ -14,7 +14,6 @@
     <ProjectReference Include="..\LogServer.Exceptions\LogServer.Exceptions.csproj" />
     <ProjectReference Include="..\LogServer.Repository.Implementation\LogServer.Repository.Implementation.csproj" />
     <ProjectReference Include="..\LogServer.Repository.Interfaces\LogServer.Repository.Interfaces.csproj" />
-    <ProjectReference Include="..\LogServer.Requests\LogServer.Requests.csproj" />
     <ProjectReference Include="..\LogServer.Responses\LogServer.Responses.csproj" />
     <ProjectReference Include="..\LogServer.ServiceAdapter.Implementation\LogServer.ServiceAdapter.Implementation.csproj" />
     <ProjectReference Include="..\LogServer.ServiceAdapter.Interfaces\LogServer.ServiceAdapter.Interfaces.csproj" />

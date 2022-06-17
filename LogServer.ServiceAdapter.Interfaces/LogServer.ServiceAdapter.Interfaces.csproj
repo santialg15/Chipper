@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LogServer.Models\LogServer.Models.csproj" />
-    <ProjectReference Include="..\LogServer.Requests\LogServer.Requests.csproj" />
     <ProjectReference Include="..\LogServer.Responses\LogServer.Responses.csproj" />
   </ItemGroup>
 
