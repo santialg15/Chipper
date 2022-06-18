@@ -7,21 +7,22 @@ namespace LogSender
 {
     public class AsyncSenderQueue
     {
-        private IModel channel = null;
+        private IModel channel;
+
+        public AsyncSenderQueue()
+        {
+            Uri u = new Uri("amqps://arefvfdf:ez6JGlDGbYumDMT2TFiifmmNRVkHSA_o@beaver.rmq.cloudamqp.com/arefvfdf");
+            channel = new ConnectionFactory() { Uri = u }.CreateConnection().CreateModel();
+
+            channel.QueueDeclare(queue: "log_queue",
+                durable: false,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+        }
 
         public async Task sendLog(Log log)
         {
-            if (channel == null){
-                Uri u = new Uri("amqps://arefvfdf:ez6JGlDGbYumDMT2TFiifmmNRVkHSA_o@beaver.rmq.cloudamqp.com/arefvfdf");
-                channel = new ConnectionFactory() { Uri = u }.CreateConnection().CreateModel();
-            
-                channel.QueueDeclare(queue: "log_queue",
-                    durable: false,
-                    exclusive: false,
-                    autoDelete: false,
-                    arguments: null);
-            }
-
             var stringLog = JsonSerializer.Serialize(log);
             var result = await sendMessage(channel, stringLog);
             Console.WriteLine(result ? "Message {0} sent successfully" : "Could not send {0}", stringLog);

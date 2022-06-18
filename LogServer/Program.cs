@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ILogRepository, LogRepository>();
 builder.Services.AddScoped<ILogService, LogService>();
 builder.Services.AddScoped<ILogServiceAdapter, LogServiceAdapter>();
-builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<Worker>(); //Rabbit
 
 
 
