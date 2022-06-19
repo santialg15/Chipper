@@ -32,5 +32,10 @@ namespace LogServer.Services.Implementation
         {
             return _LogRepository.GetLogByAction(action);
         }
+
+        public List<Log> GetAllLogs()
+        {
+            return _LogRepository.GetAllLogs();
+        }
     }
 }

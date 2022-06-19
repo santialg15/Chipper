@@ -9,6 +9,7 @@ namespace LogServer.Repository.Interfaces
         List<Log> GetLogByDate(string date);
         List<Log> GetLogByAction(string action);
         void AddLog(Log log);
+        List<Log> GetAllLogs();
 
     }
 }

@@ -77,7 +77,50 @@ namespace LogServer.ServiceAdapter.Implementation
             };
         }
 
-            //BORRAR CREO QUE NO HAY REQUEST YA QUE NO ES UN CRUD, SOLO READ
+        public List<LogResponse> GetLogByParameters(Parametros parametros)
+        {
+            var nombreUsuario = parametros.usuario;
+            var fecha = parametros.fecha;
+            var accion = parametros.accion;
+            var palabra = parametros.palabraChip;
+            List<Log> logs = new List<Log>();
+            List<LogResponse> logsARetornar = new List<LogResponse>();
+            if(nombreUsuario == null && fecha == null && accion == null && palabra == null)
+            {
+                foreach (Log Log in _LogService.GetAllLogs())
+                {
+                    logsARetornar.Add(MapModelToResponse(Log));
+                }
+                return logsARetornar;
+            }
+            if (nombreUsuario != null)
+            {
+                List<Log> logsDeUsuario = _LogService.GetLogByUser(nombreUsuario);
+                logs.AddRange(logsDeUsuario);
+            }
+            if(fecha != null)
+            {
+                List<Log> logsDeFecha = _LogService.GetLogByDate(fecha);
+                logs.AddRange(logsDeFecha);
+            }
+            if(accion != null)
+            {
+                List<Log> logsDeAccion = _LogService.GetLogByAction(accion);
+                logs.AddRange(logsDeAccion);
+            }
+            if(palabra != null)
+            {
+                List<Log> logsDePalabra = _LogService.GetLogByAction(palabra);
+                logs.AddRange(logsDePalabra);
+            }
+            foreach (Log Log in logs.Distinct())
+            {
+                logsARetornar.Add(MapModelToResponse(Log));
+            }
+            return logsARetornar;
+        }
+
+        //BORRAR CREO QUE NO HAY REQUEST YA QUE NO ES UN CRUD, SOLO READ
         //private Log MapRequestToModel(LogRequest logRequest)
         //{
         //    return new Log()

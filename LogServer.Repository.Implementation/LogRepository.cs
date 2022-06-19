@@ -75,5 +75,10 @@ namespace LogServer.Repository.Implementation
             }
             return ret;
         }
+
+        public List<Log> GetAllLogs()
+        {
+            return _logs;
+        }
     }
 }

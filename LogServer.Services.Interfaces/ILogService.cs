@@ -8,5 +8,6 @@ namespace LogServer.Services.Interfaces
         List<Log> GetLogByChipKey(string key);
         List<Log> GetLogByDate(string date);
         List<Log> GetLogByAction(string action);
+        List<Log> GetAllLogs();
     }
 }

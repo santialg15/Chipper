@@ -1,4 +1,5 @@
 ﻿using LogServer.Exceptions;
+using LogServer.Models;
 using LogServer.ServiceAdapter.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,12 @@ namespace LogServer.Controllers
              _logServiceAdapter = logServiceAdapter;
          }
 
+        [HttpGet]
+        public IActionResult GetLogByParameters([FromQuery] Parametros parametros)
+        {
+            _logServiceAdapter.GetLogByParameters(parametros);
+            return Ok();
+        }
 
         [HttpGet]
         [Route("User")]
