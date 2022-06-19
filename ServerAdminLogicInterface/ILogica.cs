@@ -9,7 +9,7 @@ namespace ServerAdminLogicInterface
 {
     public interface ILogica<T,K>
     {
-        IEnumerable<T> GetAll();
+        Task GetAll();
         T GetById(K id);
         T Insert(T entity);
         T Update(T entity);
@@ -18,7 +18,7 @@ namespace ServerAdminLogicInterface
 
     public interface ILogicaUsuario : ILogica<Usuario,Guid> 
     {
-        bool Exist(string nombre);
+       bool Exist(string nombre);
     }
     public interface ILogicaPublicaciones : ILogica<Publicacion, Guid> 
     {

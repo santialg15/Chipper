@@ -23,9 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerAdminLogicInterface",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerAdminLogic", "..\ServerAdminLogic\ServerAdminLogic.csproj", "{805CF0ED-3706-45B8-A0B0-FE555ADE14E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerAdminLogicDataAccessInterface", "..\ServerAdminLogicDataAccessInterface\ServerAdminLogicDataAccessInterface.csproj", "{C9F4344F-DFD2-4FC1-BF85-E3AD37104A68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerAdminLogicDataAccessInterface", "..\ServerAdminLogicDataAccessInterface\ServerAdminLogicDataAccessInterface.csproj", "{C9F4344F-DFD2-4FC1-BF85-E3AD37104A68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerAdminDataAccess", "..\ServerAdminDataAccess\ServerAdminDataAccess.csproj", "{74D58F51-3D37-4888-B22D-AFCB9C409C18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerAdminDataAccess", "..\ServerAdminDataAccess\ServerAdminDataAccess.csproj", "{74D58F51-3D37-4888-B22D-AFCB9C409C18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

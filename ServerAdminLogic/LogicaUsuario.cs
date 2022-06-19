@@ -30,9 +30,19 @@ namespace ServerAdminLogic
             return usuarioAObtener;
         }
 
-        public IEnumerable<Usuario> GetAll()
+        public async Task GetAll()
         {
-            return userRepository.GetAll();
+            // The port number must match the port of the gRPC server.
+            using var channel = GrpcChannel.ForAddress("http://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var reply =  await client.SayHelloAsync(
+                              new HelloRequest { Name = "GreeterClient" });
+            var prueba = reply;
+            Console.WriteLine("Greeting: " + reply.Message);
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
+            //
+            throw new Exception();//return userRepository.GetAll();
         }
 
         public Usuario Insert(Usuario usuario)

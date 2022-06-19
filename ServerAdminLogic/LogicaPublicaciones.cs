@@ -36,9 +36,9 @@ namespace ServerAdminLogic
             return chipAObtener;
         }
 
-        public IEnumerable<Publicacion> GetAll()
+        public Task GetAll()
         {
-            return chipsRepository.GetAll();
+            throw new Exception();//return chipsRepository.GetAll();
         }
 
         public Publicacion Insert(Publicacion chip)
