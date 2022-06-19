@@ -7,6 +7,9 @@ using ProyectoCompartido.Protocolo;
 using ProyectoCompartido.Protocolo.FileTransfer;
 using LogSender;
 using ProyectoCompartido.Logs;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace Servidor
 {
@@ -31,6 +34,7 @@ namespace Servidor
 
             Task escucharConexiones = Task.Run(async () => await ListenForConnections(tcpListener));
 
+            CreateHostBuilder(args);
             Console.WriteLine("Bienvenido al Sistema Server");
             printMenu();
             while (!_exit)
@@ -394,7 +398,7 @@ namespace Servidor
                                 var usu = _usuarios.Find(u => u.PNomUsu == nomUsu);
                                 var totalNotif = "";
 
-                                var notif = usu.getColNotif;
+                                var notif = usu.ColNotif;
                                 for (int i = 0; i < notif.Count; i++)
                                 {
                                     totalNotif += notif[i].ToString() + "?";
@@ -575,7 +579,7 @@ namespace Servidor
         private static void Notificar(Usuario usuChip, Publicacion chip)
         {
             // Busco en usuarios seguidos del usuario que crea chip (usuChip)
-            foreach (var usuSeguidos in usuChip.getColSeguidores)
+            foreach (var usuSeguidos in usuChip.ColSeguidores)
             {
                 // Actualizo lista de usuarios agregando norificación a los que siguen al usuario creador del chip
                 foreach (var usu in _usuarios)
@@ -707,6 +711,21 @@ namespace Servidor
             await networkDataHelper.SendMessage("Respuesta creada correctamente.", CommandConstants.ResponderChip);
             Console.WriteLine("Finalizo funcionalidad de responder chip.");
         }
-    } 
+
+
+        // Additional configuration is required to successfully run gRPC on macOS.
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
+                Host.CreateDefaultBuilder(args)
+                    .ConfigureWebHostDefaults(webBuilder =>
+                    {
+                        webBuilder.ConfigureKestrel(options =>
+                        {
+                            // Setup a HTTP/2 endpoint without TLS.
+                            options.ListenLocalhost(7132, o => o.Protocols =
+                                HttpProtocols.Http2);
+                        });
+                        webBuilder.UseStartup<Startup>();
+                    });
+    }
 }
 

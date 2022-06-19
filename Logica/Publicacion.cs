@@ -11,6 +11,16 @@ namespace Logica
         public List<Respuesta> colRespuesta;
         public List<string> colFile;
 
+        public Guid IdUsuario { get; set; }
+        public Guid Id { get; set; }
+        public DateTime PFch { get => pFch; set => pFch = value; }
+        public string Contenido { get => pContenido; set => pContenido = value; }
+        public List<Respuesta> ColRespuesta { get => colRespuesta; set => colRespuesta = value; }
+
+        public Publicacion()
+        {
+        }
+
         public Publicacion(string _contenido, int idPublicacion)
         {
             id = idPublicacion+1;

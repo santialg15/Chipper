@@ -1,6 +1,6 @@
-{
+﻿{
   "profiles": {
-    "Servidor": {
+    "SERVIDOREJEMPLO": {
       "commandName": "Project",
       "launchBrowser": false,
       "applicationUrl": "http://localhost:7132",

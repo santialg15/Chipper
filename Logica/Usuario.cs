@@ -2,7 +2,6 @@
 {
     public class Usuario
     {
-
         private const int TmpMostrarPub = 10;
         private string pNomReal;
         private string pNomUsu;
@@ -15,23 +14,49 @@
         private List<Publicacion> colPublicacion;
         private List<Publicacion> colNotif;
 
-        public string PNomUsu { get => pNomUsu; }
+        public string PNomUsu { get => pNomUsu; set
+            {
+                if (value == null || value == "")
+                    throw new NullReferenceException("El nombre de usuario no puede ser vacio.");
+                pNomUsu = value;
+            }
+        }
 
-        public string PNomReal { get => pNomReal; }
-        public string Pass { get => pass; }
+        public string PNomReal
+        {
+            get => pNomReal; set
+            {
+                if (value == null || value == "")
+                    throw new NullReferenceException("El nombre real de usuario no puede ser vacio.");
+                pNomReal = value;
+            }
+        }
+
+        public string Pass
+        {
+            get => pass; set
+            {
+                if (value == null || value == "")
+                    throw new NullReferenceException("La contraseña del usuario no puede ser vacia.");
+                pass = value;
+            }
+        }
 
         public bool Habilitado { get => habilitado; set => habilitado = value; }
 
-        public List<Usuario> getColSeguidores { get => colSeguidores; }
+        public List<Usuario> ColSeguidores { get => colSeguidores; set => colSeguidores = value; }
 
-        public List<Publicacion> getColNotif { get => colNotif; }
+        public List<Publicacion> ColNotif { get => colNotif; set => colNotif = value; }
 
-        public List<Publicacion> ColPublicacion { get => colPublicacion; }
+        public List<Publicacion> ColPublicacion { get => colPublicacion; set => colPublicacion = value; }
 
-        public List<Usuario> ColSeguidores { get => colSeguidores; }
+        public List<Usuario> ColSeguidos { get => colSeguidos; set => colSeguidos = value; }
 
-        public List<Usuario> ColSeguidos { get => colSeguidos; }
+        public Guid Id { get; set; }
 
+        public Usuario()
+        {
+        }
 
         public Usuario(string _NomReal, string _NomUsu, string _pass, string _imgPerfil)
         {
