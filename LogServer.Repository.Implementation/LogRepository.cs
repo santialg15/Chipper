@@ -12,10 +12,18 @@ namespace LogServer.Repository.Implementation
     public class LogRepository : ILogRepository
     {
         private List<Log> _logs = new List<Log>();
+        private int logId = 0;
+        private readonly object lockId = new object();
 
         public void AddLog(Log log)
         {
-            _logs.Add(log);
+            lock (lockId)
+            {
+                logId++;
+                log.id = logId;
+                _logs.Add(log);
+            }
+           
         }
 
         public List<Log> GetLogByUser(string user)

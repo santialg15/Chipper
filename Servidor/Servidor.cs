@@ -418,6 +418,7 @@ namespace Servidor
             }
             catch (SocketException e)
             {
+                setLog(usuLogueado, "Exit", "El usuario saló del sistema");
                 Console.WriteLine($"The client connection was interrupted - Exception {e.Message}");
             }
         }
