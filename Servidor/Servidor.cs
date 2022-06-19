@@ -35,6 +35,7 @@ namespace Servidor
             Task escucharConexiones = Task.Run(async () => await ListenForConnections(tcpListener));
 
             CreateHostBuilder(args);
+
             Console.WriteLine("Bienvenido al Sistema Server");
             printMenu();
             while (!_exit)
@@ -199,6 +200,8 @@ namespace Servidor
                         break;
                 }
             }
+
+
         }
 
         private static void agregarDatos()
