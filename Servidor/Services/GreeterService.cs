@@ -23,10 +23,29 @@ namespace Servidor.Services
 
         public override Task<GetUsersReply> GetUsers(GetUsersRequest request, ServerCallContext context)
         {
-            IEnumerable<Usuario> usuarios = Servidor.ReturnUsers();
-            var reply = new GetUsersReply();
-            reply.Users.AddRange((IEnumerable<User>)usuarios);
+            List<Usuario> usuarios = Servidor.ReturnUsers();
+            var reply = CreateUser(usuarios);//new GetUsersReply();
+            //reply.Users.AddRange((IEnumerable<User>)usuarios);
             return Task.FromResult(reply);
+        }
+
+        private static GetUsersReply CreateUser(List<Usuario> usuarios)
+        {
+            GetUsersReply getUsersReply = new GetUsersReply();
+            var users = getUsersReply.Users;
+            foreach (var usuario in usuarios)
+            {
+                users.Add(new User
+                {
+                    PNomUsu = usuario.PNomUsu,
+                    PNomReal = usuario.PNomReal,
+                    Pass = usuario.Pass,
+                    ImgPerfil = "",
+                    EstaLogueado = usuario.estaLogueado,
+                    Habilitado = usuario.Habilitado
+                });
+            }
+            return getUsersReply;
         }
 
         //public override Task<PostUserReply> PostUser(PostUserRequest request, ServerCallContext context)

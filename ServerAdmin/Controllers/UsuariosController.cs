@@ -16,9 +16,9 @@ namespace ServerAdmin.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_userLogic.GetAll());
+            return Ok(_userLogic.GetAll().Result);
         }
 
         [HttpGet("{id}")]

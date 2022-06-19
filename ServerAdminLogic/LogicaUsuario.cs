@@ -31,26 +31,15 @@ namespace ServerAdminLogic
             return usuarioAObtener;
         }
 
-        public async Task GetAll()
+        public async Task<List<Usuario>> GetAll()
         {
-            try
-            {
-            // The port number must match the port of the gRPC server.
             using var channel = GrpcChannel.ForAddress("https://localhost:5001");
             var client = new Greeter.GreeterClient(channel);
-                //var reply =  await client.SayHelloAsync(
-                //                  new HelloRequest { Name = "GreeterClient" });
-                var request = new GetUsersRequest();
-                var reply = await client.GetUsersAsync(request);
-            var prueba = reply;
-
+            var request = new GetUsersRequest();
+            var reply = await client.GetUsersAsync(request);
+            var usuarios = CreateUsers(reply);
+            return usuarios;
             //return userRepository.GetAll();
-            }
-            catch (Exception e)
-            {
-                var m = e.Message;
-                Console.WriteLine(m);
-            }
         }
 
         public Usuario Insert(Usuario usuario)
@@ -76,6 +65,27 @@ namespace ServerAdminLogic
                     throw new ArgumentException("El nombre del usuario no puede ser modificado.");
             }
             return userRepository.Update(usuario);
+        }
+
+        private List<Usuario> CreateUsers(GetUsersReply usersReply)
+        {
+            List<Usuario> usuarios = new List<Usuario>();
+            foreach (var user in usersReply.Users)
+            {
+                usuarios.Add(new Usuario()
+                {
+                    PNomUsu = user.PNomUsu,
+                    PNomReal = user.PNomReal,
+                    Pass = user.Pass,
+                    estaLogueado = user.EstaLogueado,
+                    Habilitado = user.Habilitado,
+                    ColNotif = new List<Publicacion>(),
+                    ColPublicacion = new List<Publicacion>(),
+                    ColSeguidores = new List<Usuario>(),
+                    ColSeguidos = new List<Usuario>()
+                }) ;
+            }
+            return usuarios;
         }
     }
 }

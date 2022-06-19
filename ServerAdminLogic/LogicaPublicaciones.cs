@@ -36,7 +36,7 @@ namespace ServerAdminLogic
             return chipAObtener;
         }
 
-        public Task GetAll()
+        public Task<List<Publicacion>> GetAll()
         {
             throw new Exception();//return chipsRepository.GetAll();
         }

@@ -9,7 +9,7 @@ namespace ServerAdminLogicInterface
 {
     public interface ILogica<T,K>
     {
-        Task GetAll();
+        Task<List<T>> GetAll();
         T GetById(K id);
         T Insert(T entity);
         T Update(T entity);
