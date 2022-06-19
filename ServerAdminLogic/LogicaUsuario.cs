@@ -1,4 +1,5 @@
-﻿using Grpc.Net.Client;
+﻿using System.Linq.Expressions;
+using Grpc.Net.Client;
 using Logica;
 using ServerAdminLogicDataAccessInterface;
 using ServerAdminLogicInterface;
@@ -32,8 +33,10 @@ namespace ServerAdminLogic
 
         public async Task GetAll()
         {
+            try
+            {
             // The port number must match the port of the gRPC server.
-            using var channel = GrpcChannel.ForAddress("http://localhost:5001");
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
             var client = new Greeter.GreeterClient(channel);
             var reply =  await client.SayHelloAsync(
                               new HelloRequest { Name = "GreeterClient" });
@@ -41,8 +44,14 @@ namespace ServerAdminLogic
             Console.WriteLine("Greeting: " + reply.Message);
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
-            //
-            throw new Exception();//return userRepository.GetAll();
+                //
+                //throw new Exception();//return userRepository.GetAll();
+            }
+            catch (Exception e)
+            {
+                var m = e.Message;
+                Console.WriteLine(m);
+            }
         }
 
         public Usuario Insert(Usuario usuario)
