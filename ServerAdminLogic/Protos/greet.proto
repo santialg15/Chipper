@@ -8,6 +8,9 @@ package greet;
 service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply);
+  rpc PostUser (PostUserRequest) returns (PostUserReply);
+  rpc GetUsers (GetUsersRequest) returns (GetUsersReply);
+
 }
 
 // The request message containing the user's name.
@@ -19,3 +22,31 @@ message HelloRequest {
 message HelloReply {
   string message = 1;
 }
+
+//Post de usuario
+message PostUserRequest {
+	User user = 1;
+}
+
+message PostUserReply{
+	User user = 1;
+}
+
+message User {
+  string pNomUsu = 1;
+  string pNomReal = 2;
+  string pass = 3;
+  string imgPerfil = 4;
+  bool habilitado = 5;
+  bool estaLogueado = 6;
+}
+//Fin post usuario
+
+//GetUsers 
+message GetUsersRequest{
+
+}
+message GetUsersReply{
+	repeated User users = 1;
+}
+//Fin GetUsers

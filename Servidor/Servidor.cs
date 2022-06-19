@@ -723,6 +723,13 @@ namespace Servidor
                     {
                         webBuilder.UseStartup<Program>();
                     });
+
+        public static List<Usuario> ReturnUsers()
+        {
+            Usuario _usu1 = new Usuario("Denis", "dpena", "inicio", "img");
+            _usuarios.Add(_usu1);
+            return _usuarios;
+        }
     }
 }
 
