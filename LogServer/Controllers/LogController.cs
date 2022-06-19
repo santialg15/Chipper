@@ -20,35 +20,9 @@ namespace LogServer.Controllers
         [HttpGet]
         public IActionResult GetLogByParameters([FromQuery] Parametros parametros)
         {
-            _logServiceAdapter.GetLogByParameters(parametros);
-            return Ok();
-        }
-
-        [HttpGet]
-        [Route("User")]
-        public IActionResult GetLogByUser([FromQuery]string user)
-         {
             try
             {
-                return new OkObjectResult(_logServiceAdapter.GetLogByUser(user)); // 200
-            }
-            catch (ArgumentException e)
-            {
-                return BadRequest(e.Message); // 400
-            }
-            catch (LogDoesNotExistException e)
-            {
-                return NotFound(e.Message); // 404
-            }
-         }
-
-        [HttpGet]
-        [Route("Chip")]
-        public IActionResult GetLogByChipKey([FromQuery] string key)
-        {
-            try
-            {
-                return new OkObjectResult(_logServiceAdapter.GetLogByChipKey(key)); // 200
+                return new OkObjectResult(_logServiceAdapter.GetLogByParameters(parametros)); // 200
             }
             catch (ArgumentException e)
             {
@@ -59,44 +33,5 @@ namespace LogServer.Controllers
                 return NotFound(e.Message); // 404
             }
         }
-
-
-        [HttpGet]
-        [Route("Date")]
-        public IActionResult GetLogByDate([FromQuery] string date)
-        {
-            try
-            {
-                return new OkObjectResult(_logServiceAdapter.GetLogByDate(date)); // 200
-            }
-            catch (ArgumentException e)
-            {
-                return BadRequest(e.Message); // 400
-            }
-            catch (LogDoesNotExistException e)
-            {
-                return NotFound(e.Message); // 404
-            }
-        }
-
-
-        [HttpGet]
-        [Route("Action")]
-        public IActionResult GetLogByAction([FromQuery] string action)
-        {
-            try
-            {
-                return new OkObjectResult(_logServiceAdapter.GetLogByAction(action)); // 200
-            }
-            catch (ArgumentException e)
-            {
-                return BadRequest(e.Message); // 400
-            }
-            catch (LogDoesNotExistException e)
-            {
-                return NotFound(e.Message); // 404
-            }
-        }
-
     }
 }
