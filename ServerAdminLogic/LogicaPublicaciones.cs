@@ -1,4 +1,5 @@
-﻿using Grpc.Net.Client;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Net.Client;
 using Logica;
 using ServerAdminLogicDataAccessInterface;
 using ServerAdminLogicInterface;
@@ -23,9 +24,15 @@ namespace ServerAdminLogic
             mapper = new Mapper();
         }
 
-        public Task Delete(string idChip)
+        public async Task Delete(Guid idChip)
         {
-            throw new Exception();
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new DeleteChipRequest()
+            {
+                Id = idChip.ToString()
+            };
+            var reply = await client.DeleteChipAsync(request);
         }
 
         public async Task<Publicacion> GetById(Guid idChip)
@@ -92,6 +99,10 @@ namespace ServerAdminLogic
         }
 
         public Task<Publicacion> GetById(string key)
+        {
+            throw new NotImplementedException();
+        }
+        public Task Delete(string name)
         {
             throw new NotImplementedException();
         }

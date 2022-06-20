@@ -81,6 +81,13 @@ namespace Servidor.Services
             reply.Response = Servidor.ModificarPublicacion(mapper.CreatePublicacion(request.Chip));
             return Task.FromResult(reply);
         }
+
+        public override Task<DeleteChipReply> DeleteChip(DeleteChipRequest request, ServerCallContext context)
+        {
+            Servidor.BorrarPublicacion(Guid.Parse(request.Id));
+            DeleteChipReply reply = new DeleteChipReply();
+            return Task.FromResult(reply);
+        }
     }
 }
 

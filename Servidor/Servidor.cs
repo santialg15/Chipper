@@ -873,6 +873,21 @@ namespace Servidor
             }
             return "No existe la publicacion a modificar.";
         }
+
+        public static void BorrarPublicacion(Guid id)
+        {
+            foreach (var usuario in _usuarios.ToList())
+            {
+                foreach (var publicacion in usuario.ColPublicacion.ToList())
+                {
+                    if(publicacion.Id == id)
+                    {
+                        usuario.ColPublicacion.Remove(publicacion);
+                        return;
+                    }
+                }
+            }
+        }
     }
 }
 

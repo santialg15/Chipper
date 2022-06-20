@@ -46,7 +46,7 @@ namespace ServerAdmin.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] Guid id)
         {
-            _chipsLogic.Delete("string");
+            _chipsLogic.Delete(id);
             return Ok();
         }
 
