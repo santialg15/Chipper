@@ -21,6 +21,7 @@ namespace LogServer.Repository.Implementation
             {
                 logId++;
                 log.id = logId;
+                log.receive = DateTime.Now.ToString();
                 _logs.Add(log);
             }
            

@@ -7,16 +7,18 @@ namespace ServerAdminLogic
     public class LogicaUsuario : ILogicaUsuario 
     {
         private readonly Mapper mapper;
+        GrpcChannel channel;
+        Greeter.GreeterClient client;
 
         public LogicaUsuario()
         {
             mapper = new Mapper();
+            channel = GrpcChannel.ForAddress("https://localhost:5001");
+            client = new Greeter.GreeterClient(channel);
         }
 
         public async Task Delete(string name)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new DeleteUserRequest()
             {
                 PNomUsu = name
@@ -26,8 +28,6 @@ namespace ServerAdminLogic
 
         public async Task<Usuario> GetById(string name)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new GetUserRequest()
             {
                 PNomUsu = name
@@ -39,8 +39,6 @@ namespace ServerAdminLogic
 
         public async Task<List<Usuario>> GetAll()
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new GetUsersRequest();
             var reply = await client.GetUsersAsync(request);
             var usuarios = mapper.CrearUsuarios(reply);
@@ -49,8 +47,6 @@ namespace ServerAdminLogic
 
         public async Task<string> Insert(Usuario usuario)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new PostUserRequest()
             {
                 User = mapper.CrearUser(usuario)
@@ -61,8 +57,6 @@ namespace ServerAdminLogic
 
         public async Task<string> Update(Usuario usuario)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new PutUserRequest()
             {
                 User = mapper.CrearUser(usuario)
@@ -73,8 +67,6 @@ namespace ServerAdminLogic
 
         public async Task ChangePermission(string name)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new ChangeEnableUserRequest()
             {
                 UserName = name

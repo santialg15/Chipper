@@ -7,16 +7,18 @@ namespace ServerAdminLogic
     public class LogicaPublicaciones : ILogicaPublicaciones
     {
         private readonly Mapper mapper;
+        GrpcChannel channel;
+        Greeter.GreeterClient client;
 
         public LogicaPublicaciones()
         {
             mapper = new Mapper();
+            channel = GrpcChannel.ForAddress("https://localhost:5001");
+            client = new Greeter.GreeterClient(channel);
         }
 
         public async Task Delete(Guid idChip)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new DeleteChipRequest()
             {
                 Id = idChip.ToString()
@@ -26,8 +28,6 @@ namespace ServerAdminLogic
 
         public async Task<Publicacion> GetById(Guid idChip)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new GetChipRequest();
             request.GuidId = idChip.ToString();
             var reply = await client.GetChipAsync(request);
@@ -36,8 +36,6 @@ namespace ServerAdminLogic
 
         public async Task<List<Publicacion>> GetAll()
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new GetChipsRequest();
             var reply = await client.GetChipsAsync(request);
             return mapper.CrearPublicaciones(reply.Chips);
@@ -45,8 +43,6 @@ namespace ServerAdminLogic
 
         public async Task<string> Insert(Publicacion publicacion)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new PostChipRequest()
             {
                 Chip = mapper.CrearChip(publicacion)
@@ -57,8 +53,6 @@ namespace ServerAdminLogic
 
         public async Task<string> Update(Publicacion publicacion)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new PutChipRequest()
             {
                 Chip = mapper.CrearChip(publicacion)
@@ -69,8 +63,6 @@ namespace ServerAdminLogic
 
         public async Task<string> CreateAnswer(Guid idPublicacion, Respuesta respuesta)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new PostAnswerRequest()
             {
                 IdPublicacion = idPublicacion.ToString(),
@@ -82,8 +74,6 @@ namespace ServerAdminLogic
 
         public async void DeleteAnswer(Guid idPublicacion, Guid idRespuesta)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
             var request = new DeleteAnswerRequest()
             {
                 IdPublicacion = idPublicacion.ToString(),

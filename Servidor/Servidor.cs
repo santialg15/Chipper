@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.Eventing.Reader;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Logica;
@@ -760,7 +761,7 @@ namespace Servidor
                 else
                 {
                     _usuarios.Add(usuario);
-                    setLog(nombreUsuario, "registo de usuario", "El usuario se registró en el sistema");
+                    setLog(nombreUsuario, "registo de usuario", "El usuario "+ nombreUsuario+" se registró en el sistema");
                     return $"Usuario {nombreUsuario} registrado con exito";
                 }
             }
@@ -775,11 +776,13 @@ namespace Servidor
             var usuarioDeServidor = _usuarios.FirstOrDefault(u => u.PNomUsu == usuario.PNomUsu);
             usuarioDeServidor.PNomReal = usuario.PNomReal;
             usuarioDeServidor.Pass = usuario.Pass;
+            setLog(usuario.PNomUsu, "Modificación de usuario", "El usuario "+usuario.PNomUsu+" se modificó");
             return $"El usuario {usuarioDeServidor.PNomUsu} se modifico correctamente.";
         }
 
         public static Usuario RetornarUsuario(string name)
         {
+            setLog(name, "Buscó usuario", "Buscó el usuario " + name);
             return _usuarios.FirstOrDefault(u => u.PNomUsu == name);
         }
 
@@ -808,6 +811,7 @@ namespace Servidor
                     _usuarios.Remove(usuarioABorrar);
                 }
             }
+            setLog(name, "usuario eliminado", "El usuario "+name+" se borró");
         }
 
         public static List<Publicacion> RetornarChips()
@@ -821,6 +825,7 @@ namespace Servidor
                     chips.Add(publicacion);
                 }
             }
+            setLog("admin", "chips todos", "Buscó todos los chips");
             return chips;
         }
 
@@ -830,8 +835,12 @@ namespace Servidor
             foreach (var usu in _usuarios)
             {
                 publicacion = usu.ColPublicacion.FirstOrDefault(p => p.Id == idPublicacion);
-                if(publicacion != null)
+                if (publicacion != null)
+                {
+                    setLog(usu.PNomUsu, "buscó publicación", "Buscó la publicación: "+publicacion.id.ToString() +"del usuario"+ usu.PNomUsu);
                     return publicacion;
+                }
+                    
             }
             return publicacion;
         }
@@ -849,6 +858,7 @@ namespace Servidor
                     break;
                 }
             }
+            setLog(nombreUsuario, "nuevo chip", "Creó un nuevo chip para el usuario "+nombreUsuario);
             return $"La publicacion del usuario {publicacion.NombreUsuario} a sido creada.";
         }
 
@@ -862,6 +872,7 @@ namespace Servidor
                     {
                         pub.pFch = publicacion.PFch;
                         pub.Contenido = publicacion.Contenido;
+                        setLog(usuario.PNomUsu, "modificó chip", "Modificó el chip "+ pub.Id.ToString()+" del usuario: "+ usuario.PNomUsu);
                         return $"La publicacion del usuario {usuario.PNomUsu} ha sido modificada.";
                     }
                 }
@@ -877,6 +888,7 @@ namespace Servidor
                 {
                     if(publicacion.Id == id)
                     {
+                        setLog(usuario.PNomUsu, "Borró chip", "El usuario borró un chip: "+publicacion.Id.ToString());
                         usuario.ColPublicacion.Remove(publicacion);
                         return;
                     }
@@ -895,6 +907,7 @@ namespace Servidor
                     if(publicacion.Id == idPublicacion)
                     {
                         publicacion.ColRespuesta.Add(respuesta);
+                        setLog(usuario.PNomUsu, "Respondió chip", "El usuario tiene una nueva respuesta en el chip: "+ publicacion.Id.ToString());
                         return $"La respuesta para la publicacion del usuario {usuario.PNomUsu} fue creada.";
                     }
                 }
@@ -914,6 +927,7 @@ namespace Servidor
                         {
                             if(respuesta.Id == idRespuesta)
                             {
+                                setLog(usuario.PNomUsu, "borró respuesta", "El usuario borró una respuesta en publicación: "+ publicacion.Id.ToString()+" del usuario "+ usuario.PNomUsu);
                                 publicacion.colRespuesta.Remove(respuesta);
                                 return;
                             }
@@ -927,7 +941,17 @@ namespace Servidor
         {
             var usuario = _usuarios.FirstOrDefault(u => u.PNomUsu == nombreUsuario);
             if (usuario != null)
+            {
                 usuario.Habilitado = !usuario.Habilitado;
+                var sts = "";
+                if (usuario.Habilitado)
+                    sts = "Habilitado";
+                else
+                    sts = "Deshabilitado";
+
+                setLog(usuario.PNomUsu, "cambió estado", "El usuario fue "+sts);
+            }
+               
         }
     }
 }
