@@ -24,7 +24,7 @@ namespace ServerAdmin.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById([FromRoute] Guid id)
         {
-            var chip = _chipsLogic.GetById(id);
+            var chip = _chipsLogic.GetById("string");
             return Ok(chip);
         }
 
@@ -45,7 +45,7 @@ namespace ServerAdmin.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] Guid id)
         {
-            _chipsLogic.Delete(id);
+            _chipsLogic.Delete("string");
             return Ok();
         }
 

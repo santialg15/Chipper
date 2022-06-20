@@ -20,20 +20,22 @@ namespace ServerAdminLogic
             chipsRepository = chipsRepo;
         }
 
-        public void Delete(Guid idChip)
+        public Task Delete(string idChip)
         {
-            Publicacion chipABorrar = GetById(idChip);
-            if (chipABorrar == null)
-                throw new NullReferenceException("El chip a borrar no existe.");
-            chipsRepository.Delete(chipABorrar);
+            throw new Exception();
+            //Publicacion chipABorrar = GetById(idChip);
+            //if (chipABorrar == null)
+            //    throw new NullReferenceException("El chip a borrar no existe.");
+            //chipsRepository.Delete(chipABorrar);
         }
 
-        public Publicacion GetById(Guid idChip)
+        public Task<Publicacion> GetById(string idChip)
         {
-            var chipAObtener = chipsRepository.GetById(idChip);
-            if (chipAObtener == null)
-                throw new NullReferenceException("El chip a obtener no existe.");
-            return chipAObtener;
+            throw new Exception();
+            //var chipAObtener = chipsRepository.GetById(idChip);
+            //if (chipAObtener == null)
+            //    throw new NullReferenceException("El chip a obtener no existe.");
+            //return chipAObtener;
         }
 
         public Task<List<Publicacion>> GetAll()
@@ -52,19 +54,22 @@ namespace ServerAdminLogic
             //return chipsRepository.Insert(chip);
         }
 
-        public Publicacion Update(Publicacion chip)
+        public Task<string> /*Publicacion*/ Update(Publicacion chip)
         {
-            var chipAModificar = GetById(chip.Id);
-            if (chipAModificar == null)
-                throw new NullReferenceException("El chip a modificar no existe.");
-            if (chipAModificar.IdUsuario != chip.IdUsuario)
-                throw new ArgumentException("No se puede modificar el usuario del chip.");
-            var usuarioDeChip = userRepository.GetById(chip.IdUsuario);
-            if(usuarioDeChip == null)
-                throw new NullReferenceException("El usuario del chip ingresado no existe.");
-            if(!usuarioDeChip.ColPublicacion.Any(p => p.Id == chip.Id))
-                throw new ArgumentException("El usuario no tiene el chip a modificar.");
-            return chipsRepository.Update(chip);
+
+            throw new Exception();
+            //var chipAModificar = GetById(chip.Id);
+            //if (chipAModificar == null)
+            //    throw new NullReferenceException("El chip a modificar no existe.");
+            //if (chipAModificar.IdUsuario != chip.IdUsuario)
+            //    throw new ArgumentException("No se puede modificar el usuario del chip.");
+            //var usuarioDeChip = userRepository.GetById(chip.IdUsuario);
+            //if(usuarioDeChip == null)
+            //    throw new NullReferenceException("El usuario del chip ingresado no existe.");
+            //if(!usuarioDeChip.ColPublicacion.Any(p => p.Id == chip.Id))
+            //    throw new ArgumentException("El usuario no tiene el chip a modificar.");
+            //throw new Exception();
+            //return chipsRepository.Update(chip);
         }
 
         public Respuesta CreateAnswer(Guid idPublicacion, Respuesta respuesta)

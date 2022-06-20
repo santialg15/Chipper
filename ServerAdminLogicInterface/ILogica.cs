@@ -10,17 +10,17 @@ namespace ServerAdminLogicInterface
     public interface ILogica<T,K>
     {
         Task<List<T>> GetAll();
-        T GetById(K id);
-        Task<string> Insert(T entity);
-        T Update(T entity);
-        void Delete(K id);
+        Task<T> GetById(K name);
+        Task<K> Insert(T entity);
+        Task<K> Update(T entity);
+        Task Delete(K name);
     }
 
-    public interface ILogicaUsuario : ILogica<Usuario,Guid> 
+    public interface ILogicaUsuario : ILogica<Usuario,string> 
     {
        bool Exist(string nombre);
     }
-    public interface ILogicaPublicaciones : ILogica<Publicacion, Guid> 
+    public interface ILogicaPublicaciones : ILogica<Publicacion, string> 
     {
         Respuesta CreateAnswer(Guid idPublicacion, Respuesta respuesta);
         void DeleteAnswer(Guid idPublicacion, Guid idRespuesta);

@@ -726,7 +726,7 @@ namespace Servidor
 
         public static List<Usuario> RetornarUsuarios()
         {
-            agregarDatos();
+            //agregarDatos();
             return _usuarios;
         }
 
@@ -750,6 +750,52 @@ namespace Servidor
                     _usuarios.Add(usuario);
                     setLog(nombreUsuario, "registo de usuario", "El usuario se registró en el sistema");
                     return $"Usuario {nombreUsuario} registrado con exito";
+                }
+            }
+        }
+
+        public static string ModificarUsuario(Usuario usuario)
+        {
+            Usuario _usu1 = new Usuario("Denis", "dpena", "inicio", "img");
+            _usuarios.Add(_usu1);
+            if (!_usuarios.Exists(u => u.PNomUsu == usuario.PNomUsu))
+                return "No existe el usuario a modificar.";
+            var usuarioDeServidor = _usuarios.FirstOrDefault(u => u.PNomUsu == usuario.PNomUsu);
+            usuarioDeServidor.PNomReal = usuario.PNomReal;
+            usuarioDeServidor.Pass = usuario.Pass;
+            return $"El usuario {usuarioDeServidor.PNomUsu} se modifico correctamente.";
+        }
+
+        public static Usuario RetornarUsuario(string name)
+        {
+            //agregarDatos();
+            return _usuarios.FirstOrDefault(u => u.PNomUsu == name);
+        }
+
+        public static void BorrarUsuario(string name)
+        {
+            //agregarDatos();
+            var usuarioABorrar = _usuarios.FirstOrDefault(u => u.PNomUsu == name);
+            if (usuarioABorrar == null)
+                throw new NullReferenceException("El usuario a borrar no existe");
+            foreach (var usuario in _usuarios.ToList())
+            {
+                if(usuario.PNomUsu != name)
+                {
+                    foreach (var seguido in usuario.ColSeguidos.ToList())
+                    {
+                        if(seguido.PNomUsu == name)
+                            usuario.ColSeguidos.Remove(seguido);
+                    }
+                    foreach (var seguidor in usuario.ColSeguidores.ToList())
+                    {
+                        if (seguidor.PNomUsu == name)
+                            usuario.ColSeguidores.Remove(seguidor);
+                    }
+                }
+                else
+                {
+                    _usuarios.Remove(usuarioABorrar);
                 }
             }
         }

@@ -22,10 +22,17 @@ namespace ServerAdmin.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById([FromRoute] Guid id)
+        public IActionResult GetById([FromRoute] string id)
         {
-            var user = _userLogic.GetById(id);
-            return Ok(user);
+            try
+            {
+                var usuario = _userLogic.GetById(id).Result;
+                return Ok(usuario);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -35,15 +42,16 @@ namespace ServerAdmin.Controllers
             return Content(_userLogic.Insert(usuario).Result);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] Usuario usuario)
+        [HttpPut("{name}")]
+        public IActionResult Put([FromRoute] string name, [FromBody] UsuarioDTO usuarioDTO)
         {
-            usuario.Id = id;
-            return Ok(_userLogic.Update(usuario));
+            usuarioDTO.PNomUsu = name;
+            var usuario = usuarioDTO.CrearUsuario();
+            return Content(_userLogic.Update(usuario).Result);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete([FromRoute] Guid id)
+        public IActionResult Delete([FromRoute] string id)
         {
             _userLogic.Delete(id);
             return Ok();

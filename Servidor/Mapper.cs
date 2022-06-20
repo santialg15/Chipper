@@ -17,14 +17,14 @@ namespace Servidor
             foreach (var usuario in usuarios)
             {
                 User user = CreateUser(usuario);
-                foreach (var seguido in usuario.ColSeguidos)
-                {
-                    user.ColSeguidos.Add(CreateUser(seguido));
-                }
-                foreach (var seguidor in usuario.ColSeguidores)
-                {
-                    user.ColSeguidores.Add(CreateUser(seguidor));
-                }
+                //foreach (var seguido in usuario.ColSeguidos)
+                //{
+                //    user.ColSeguidos.Add(CreateUser(seguido));
+                //}
+                //foreach (var seguidor in usuario.ColSeguidores)
+                //{
+                //    user.ColSeguidores.Add(CreateUser(seguidor));
+                //}
                 users.Add(user);
             }
             return users;
@@ -32,6 +32,8 @@ namespace Servidor
 
         public User CreateUser(Usuario usuario)
         {
+            if(usuario == null)
+                throw new NullReferenceException("El usuario a obtener no existe.");
             User user = new User()
             {
                 PNomUsu = usuario.PNomUsu,
@@ -40,6 +42,30 @@ namespace Servidor
                 EstaLogueado = usuario.estaLogueado,
                 Habilitado = usuario.Habilitado
             };
+            foreach (var seguido in usuario.ColSeguidos)
+            {
+                User userSeguido = new User()
+                {
+                    PNomUsu = seguido.PNomUsu,
+                    PNomReal = seguido.PNomReal,
+                    //Pass = seguido.Pass,
+                    //EstaLogueado = seguido.estaLogueado,
+                    //Habilitado = seguido.Habilitado
+                };
+                user.ColSeguidos.Add(userSeguido);
+            }
+            foreach (var seguidor in usuario.ColSeguidores)
+            {
+                User userSeguidor = new User()
+                {
+                    PNomUsu = seguidor.PNomUsu,
+                    PNomReal = seguidor.PNomReal,
+                    //Pass = seguidor.Pass,
+                    //EstaLogueado = seguido.estaLogueado,
+                    //Habilitado = seguido.Habilitado
+                };
+                user.ColSeguidores.Add(userSeguidor);
+            }
             user.Chips.AddRange(CreateChipsOfUser(usuario.ColPublicacion));
             user.ColNotif.AddRange(CreateChipsOfUser(usuario.ColNotif));
             return user;

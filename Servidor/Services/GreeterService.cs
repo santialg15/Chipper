@@ -28,7 +28,6 @@ namespace Servidor.Services
         public override Task<GetUsersReply> GetUsers(GetUsersRequest request, ServerCallContext context)
         {
             List<Usuario> usuarios = Servidor.RetornarUsuarios();
-
             GetUsersReply reply = new GetUsersReply();
             reply.Users.AddRange(mapper.CreateUsers(usuarios));
             return Task.FromResult(reply);
@@ -41,6 +40,26 @@ namespace Servidor.Services
             return Task.FromResult(reply);
         }
 
+        public override Task<PutUserReply> PutUser(PutUserRequest request, ServerCallContext context)
+        {
+            PutUserReply reply = new PutUserReply();
+            reply.Response = Servidor.ModificarUsuario(mapper.CreateUsuario(request.User));
+            return Task.FromResult(reply);
+        }
+
+        public override Task<GetUserReply> GetUser(GetUserRequest request, ServerCallContext context)
+        {
+            GetUserReply reply = new GetUserReply();
+            reply.User = mapper.CreateUser(Servidor.RetornarUsuario(request.PNomUsu));
+            return Task.FromResult(reply);
+        }
+
+        public override Task<DeleteUserReply> DeleteUser(DeleteUserRequest request, ServerCallContext context)
+        {
+            Servidor.BorrarUsuario(request.PNomUsu);
+            DeleteUserReply reply = new DeleteUserReply();
+            return Task.FromResult(reply);
+        }
     }
 }
 

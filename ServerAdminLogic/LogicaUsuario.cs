@@ -16,20 +16,37 @@ namespace ServerAdminLogic
             mapper = new Mapper();
         }
 
-        public void Delete(Guid idUsuario)
+        public async Task Delete(string name)
         {
-            Usuario usuarioABorrar = GetById(idUsuario);
-            if (usuarioABorrar == null)
-                throw new NullReferenceException("El usuario a borrar no existe.");
-            userRepository.Delete(usuarioABorrar);
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new DeleteUserRequest()
+            {
+                PNomUsu = name
+            };
+            var reply = await client.DeleteUserAsync(request);
+            //Usuario usuarioABorrar = GetById(idUsuario);
+            //if (usuarioABorrar == null)
+            //    throw new NullReferenceException("El usuario a borrar no existe.");
+            //userRepository.Delete(usuarioABorrar);
+            //throw new Exception(); 
         }
 
-        public Usuario GetById(Guid idUsuario)
+        public async Task<Usuario> GetById(string name)
         {
-            var usuarioAObtener = userRepository.GetById(idUsuario);
-            if(usuarioAObtener == null)
-                throw new NullReferenceException("El usuario a obtener no existe.");
-            return usuarioAObtener;
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new GetUserRequest()
+            {
+                PNomUsu = name
+            };
+            var reply = await client.GetUserAsync(request);
+            var usuario = mapper.CrearUsuario(reply.User);
+            return usuario;
+            //var usuarioAObtener = userRepository.GetById(name);
+            //if(usuarioAObtener == null)
+            //    throw new NullReferenceException("El usuario a obtener no existe.");
+            //return usuarioAObtener;
         }
 
         public async Task<List<Usuario>> GetAll()
@@ -63,17 +80,25 @@ namespace ServerAdminLogic
             return userRepository.Exist(nombreUsuario);
         }
 
-        public Usuario Update(Usuario usuario)
+        public async Task<string> Update(Usuario usuario)
         {
-            var usuarioAModificar = GetById(usuario.Id);
-            if (usuarioAModificar == null)
-                throw new NullReferenceException("El usuario a modificar no existe.");
-            else
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new PutUserRequest()
             {
-                if(usuario.PNomUsu != usuarioAModificar.PNomUsu)
-                    throw new ArgumentException("El nombre del usuario no puede ser modificado.");
-            }
-            return userRepository.Update(usuario);
+                User = mapper.CrearUser(usuario)
+            };
+            var reply = await client.PutUserAsync(request);
+            return reply.Response;
+            //var usuarioAModificar = GetById(usuario.Id);
+            //if (usuarioAModificar == null)
+            //    throw new NullReferenceException("El usuario a modificar no existe.");
+            //else
+            //{
+            //    if(usuario.PNomUsu != usuarioAModificar.PNomUsu)
+            //        throw new ArgumentException("El nombre del usuario no puede ser modificado.");
+            //}
+            //return userRepository.Update(usuario);
         }
     }
 }

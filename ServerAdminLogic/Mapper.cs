@@ -11,14 +11,14 @@ namespace ServerAdminLogic
             foreach (var user in usersReply.Users)
             {
                 Usuario usuario = CrearUsuario(user);
-                foreach (var seguido in user.ColSeguidos)
-                {
-                    usuario.ColSeguidos.Add(CrearUsuario(seguido));
-                }
-                foreach (var seguidor in user.ColSeguidores)
-                {
-                    usuario.ColSeguidores.Add(CrearUsuario(seguidor));
-                }
+                //foreach (var seguido in user.ColSeguidos)
+                //{
+                //    usuario.ColSeguidos.Add(CrearUsuario(seguido));
+                //}
+                //foreach (var seguidor in user.ColSeguidores)
+                //{
+                //    usuario.ColSeguidores.Add(CrearUsuario(seguidor));
+                //}
                 usuarios.Add(usuario);
             }
             return usuarios;
@@ -34,6 +34,30 @@ namespace ServerAdminLogic
                 estaLogueado = user.EstaLogueado,
                 Habilitado = user.Habilitado,
             };
+            foreach (var seguido in user.ColSeguidos)
+            {
+                Usuario usuarioSeguido = new Usuario()
+                {
+                    PNomUsu = seguido.PNomUsu,
+                    PNomReal = seguido.PNomReal,
+                    //Pass = user.Pass,
+                    //estaLogueado = user.EstaLogueado,
+                    //Habilitado = user.Habilitado,
+                };
+                usuario.ColSeguidos.Add(usuarioSeguido);
+            }
+            foreach (var seguidor in user.ColSeguidores)
+            {
+                Usuario usuarioSeguidor = new Usuario()
+                {
+                    PNomUsu = seguidor.PNomUsu,
+                    PNomReal = seguidor.PNomReal,
+                    //Pass = user.Pass,
+                    //estaLogueado = user.EstaLogueado,
+                    //Habilitado = user.Habilitado,
+                };
+                usuario.ColSeguidores.Add(usuarioSeguidor);
+            }
             usuario.ColPublicacion = CrearPublicacionesDeUsuario(user.Chips);
             usuario.ColNotif = CrearPublicacionesDeUsuario(user.ColNotif);
             return usuario;

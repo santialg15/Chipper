@@ -12,6 +12,9 @@ service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply);
   rpc PostUser (PostUserRequest) returns (PostUserReply);
   rpc GetUsers (GetUsersRequest) returns (GetUsersReply);
+  rpc PutUser (PutUserRequest) returns (PutUserReply);
+  rpc GetUser (GetUserRequest) returns (GetUserReply);
+  rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply);
 }
 
 // The request message containing the user's name.
@@ -43,6 +46,36 @@ message GetUsersReply{
 	repeated User users = 1;
 }
 //Fin GetUsers
+
+//GetUser
+message GetUserRequest{
+	string pNomUsu = 1;
+}
+
+message GetUserReply{
+	User user = 1;
+}
+//Fin GetUser
+
+//Put User
+message PutUserRequest{
+	User user = 1;
+}
+
+message PutUserReply{
+	string response = 1;
+}
+//Fin Put User
+
+//Delete User
+message DeleteUserRequest{
+	string pNomUsu = 1;
+}
+
+message DeleteUserReply{
+
+}
+//Fin Delete User
 
 //Inicio Modelos
 message User {
