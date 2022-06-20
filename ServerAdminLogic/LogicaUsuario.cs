@@ -70,5 +70,16 @@ namespace ServerAdminLogic
             var reply = await client.PutUserAsync(request);
             return reply.Response;
         }
+
+        public async Task ChangePermission(string name)
+        {
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new ChangeEnableUserRequest()
+            {
+                UserName = name
+            };
+            var reply = await client.ChangeEnableUserAsync(request);
+        }
     }
 }

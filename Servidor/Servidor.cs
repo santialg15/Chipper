@@ -927,6 +927,13 @@ namespace Servidor
                 }
             }
         }
+
+        public static void CambiarEstado(string nombreUsuario)
+        {
+            var usuario = _usuarios.FirstOrDefault(u => u.PNomUsu == nombreUsuario);
+            if (usuario != null)
+                usuario.Habilitado = !usuario.Habilitado;
+        }
     }
 }
 

@@ -14,6 +14,7 @@ service Greeter {
   rpc PutUser (PutUserRequest) returns (PutUserReply);
   rpc GetUser (GetUserRequest) returns (GetUserReply);
   rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply);
+  rpc ChangeEnableUser (ChangeEnableUserRequest) returns (ChangeEnableUserReply);
   //Chips
   rpc GetChips (GetChipsRequest) returns (GetChipsReply);
   rpc GetChip (GetChipRequest) returns (GetChipReply);
@@ -73,6 +74,16 @@ message DeleteUserReply{
 
 }
 //Fin Delete User
+
+//Inicio ChangeEnableUser
+message ChangeEnableUserRequest{
+	string userName = 1;
+}
+
+message ChangeEnableUserReply{
+
+}
+//Fin ChangeEnableUser
 
 //Get Chips
 message GetChipsRequest{

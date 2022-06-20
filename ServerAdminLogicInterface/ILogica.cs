@@ -11,7 +11,10 @@ namespace ServerAdminLogicInterface
         Task Delete(K name);
     }
 
-    public interface ILogicaUsuario : ILogica<Usuario,string> {}
+    public interface ILogicaUsuario : ILogica<Usuario,string> 
+    {
+        Task ChangePermission(string name);
+    }
     public interface ILogicaPublicaciones : ILogica<Publicacion, string> 
     {
         Task<Publicacion> GetById(Guid id);

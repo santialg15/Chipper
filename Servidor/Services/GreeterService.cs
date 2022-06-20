@@ -53,6 +53,13 @@ namespace Servidor.Services
             return Task.FromResult(reply);
         }
 
+        public override Task<ChangeEnableUserReply> ChangeEnableUser(ChangeEnableUserRequest request, ServerCallContext context)
+        {
+            Servidor.CambiarEstado(request.UserName);
+            ChangeEnableUserReply reply = new ChangeEnableUserReply();
+            return Task.FromResult(reply);
+        }
+
         public override Task<GetChipsReply> GetChips(GetChipsRequest request, ServerCallContext context)
         {
             GetChipsReply reply = new GetChipsReply();

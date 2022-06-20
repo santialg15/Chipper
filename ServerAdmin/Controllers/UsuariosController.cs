@@ -55,5 +55,12 @@ namespace ServerAdmin.Controllers
             _userLogic.Delete(id);
             return Ok();
         }
+
+        [HttpPut("{name}/Permission")]
+        public IActionResult ChangePermission([FromRoute] string name)
+        {
+            _userLogic.ChangePermission(name);
+            return Ok();
+        }
     }
 }
