@@ -10,7 +10,7 @@ namespace ServerAdminLogic
     public class LogicaUsuario : ILogicaUsuario
     {
         private IUsersRepository userRepository;
-        private Mapper mapper;
+        private readonly Mapper mapper;
 
         public LogicaUsuario(IUsersRepository usrRepository)
         {

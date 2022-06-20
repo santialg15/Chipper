@@ -9,10 +9,12 @@ namespace Servidor.Services
     public class GreeterService : Greeter.GreeterBase
     {
         private readonly ILogger<GreeterService> _logger;
+        private readonly Mapper mapper;
 
         public GreeterService(ILogger<GreeterService> logger)
         {
             _logger = logger;
+            mapper = new Mapper();
         }
 
         public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
@@ -28,76 +30,8 @@ namespace Servidor.Services
             List<Usuario> usuarios = Servidor.ReturnUsers();
 
             GetUsersReply reply = new GetUsersReply();
-            reply.Users.AddRange(CreateUsers(usuarios));
+            reply.Users.AddRange(mapper.CreateUsers(usuarios));
             return Task.FromResult(reply);
-        }
-
-        private static RepeatedField<User> CreateUsers(List<Usuario> usuarios)
-        {
-            RepeatedField<User> users = new RepeatedField<User>();
-            foreach (var usuario in usuarios)
-            {
-                User user = CreateUser(usuario);
-                foreach(var seguido in usuario.ColSeguidos)
-                {
-                    user.ColSeguidos.Add(CreateUser(seguido));
-                }
-                foreach (var seguidor in usuario.ColSeguidores)
-                {
-                    user.ColSeguidores.Add(CreateUser(seguidor));
-                }
-                users.Add(user);
-            }
-            return users;
-        }
-
-        private static User CreateUser(Usuario usuario)
-        {
-            User user = new User()
-            {
-                PNomUsu = usuario.PNomUsu,
-                PNomReal = usuario.PNomReal,
-                Pass = usuario.Pass,
-                EstaLogueado = usuario.estaLogueado,
-                Habilitado = usuario.Habilitado
-            };
-            user.Chips.AddRange(CreateChipsOfUser(usuario.ColPublicacion));
-            user.ColNotif.AddRange(CreateChipsOfUser(usuario.ColNotif));
-            return user;
-        }
-
-
-        private static RepeatedField<Chip> CreateChipsOfUser(List<Publicacion> publicaciones)
-        {
-            RepeatedField<Chip> chips = new RepeatedField<Chip>();
-            foreach (var publicacion in publicaciones)
-            {
-                Chip chip = new Chip()
-                {
-                    Id = publicacion.id,
-                    PFch = Timestamp.FromDateTime(publicacion.PFch),
-                    PContenido = publicacion.Contenido,
-                };
-                chip.ColRespuesta.AddRange(CreateAnswersOfChips(publicacion.ColRespuesta));
-                chips.Add(chip);
-            }
-            return chips;
-        }
-
-        private static RepeatedField<Answer> CreateAnswersOfChips(List<Respuesta> respuestas)
-        {
-            RepeatedField<Answer> answers = new RepeatedField<Answer>();
-            foreach (var respuesta in respuestas)
-            {
-                Answer answer = new Answer()
-                {
-                    PNomUsu = respuesta.PNomUsu,
-                    PFch = Timestamp.FromDateTime(respuesta.PFch),
-                    PContenido = respuesta.PContenido
-                };
-                answers.Add(answer);
-            }
-            return answers;
         }
     }
 }
