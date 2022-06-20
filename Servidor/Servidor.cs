@@ -906,6 +906,27 @@ namespace Servidor
             }
             return "No existe la publicacion a responder";
         }
+
+        public static void BorrarRespuesta(Guid idPublicacion, Guid idRespuesta)
+        {
+            foreach (var usuario in _usuarios.ToList())
+            {
+                foreach (var publicacion in usuario.ColPublicacion.ToList())
+                {
+                    if(publicacion.Id == idPublicacion)
+                    {
+                        foreach (var respuesta in publicacion.ColRespuesta.ToList())
+                        {
+                            if(respuesta.Id == idRespuesta)
+                            {
+                                publicacion.colRespuesta.Remove(respuesta);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

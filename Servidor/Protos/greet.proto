@@ -21,6 +21,7 @@ service Greeter {
   rpc PutChip (PutChipRequest) returns (PutChipReply);
   rpc DeleteChip (DeleteChipRequest) returns (DeleteChipReply);
   rpc PostAnswer (PostAnswerRequest) returns (PostAnswerReply);
+  rpc DeleteAnswer (DeleteAnswerRequest) returns (DeleteAnswerReply);
 }
 
 //Post de usuario
@@ -133,6 +134,16 @@ message PostAnswerReply{
 }
 //Fin Post Answer
 
+//Delete Answer
+message DeleteAnswerRequest{
+	string idPublicacion = 1;
+	string idRespuesta = 2;
+}
+message DeleteAnswerReply{
+
+}
+//Fin Delete Answer
+
 //Inicio Modelos
 message User {
   string pNomUsu = 1;
@@ -158,5 +169,6 @@ message Answer{
 	string pNomUsu = 1;
     google.protobuf.Timestamp pFch = 2;
     string pContenido = 3;
+	string id = 4;
 }
 //Fin Modelos

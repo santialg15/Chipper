@@ -88,6 +88,7 @@ namespace Servidor
             {
                 Answer answer = new Answer()
                 {
+                    Id = respuesta.Id.ToString(),
                     PNomUsu = respuesta.PNomUsu,
                     PFch = Timestamp.FromDateTime(respuesta.PFch),
                     PContenido = respuesta.PContenido
@@ -136,6 +137,7 @@ namespace Servidor
         {
             Respuesta respuesta = new Respuesta()
             {
+                Id = Guid.Parse(answer.Id),
                 PNomUsu = answer.PNomUsu,
                 PFch = answer.PFch.ToDateTime(),
                 PContenido = answer.PContenido

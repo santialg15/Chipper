@@ -91,15 +91,16 @@ namespace ServerAdminLogic
             return reply.Response;
         }
 
-        public void DeleteAnswer(Guid idPublicacion, Guid idRespuesta)
+        public async void DeleteAnswer(Guid idPublicacion, Guid idRespuesta)
         {
-            var chip = chipsRepository.GetById(idPublicacion);
-            if (chip == null)
-                throw new NullReferenceException("El chip a de la respuesta a borrar no existe.");
-            var respuesta = chip.ColRespuesta.FirstOrDefault(r => r.Id == idRespuesta);
-            if (respuesta == null)
-                throw new NullReferenceException("La respuesta del chip no existe.");
-            chipsRepository.DeleteAnswer(idPublicacion, respuesta);
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new DeleteAnswerRequest()
+            {
+                IdPublicacion = idPublicacion.ToString(),
+                IdRespuesta = idRespuesta.ToString()
+            };
+            var reply = await client.DeleteAnswerAsync(request);
         }
 
         public Task<Publicacion> GetById(string key)

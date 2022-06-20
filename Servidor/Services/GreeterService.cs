@@ -95,6 +95,13 @@ namespace Servidor.Services
             reply.Response = Servidor.CrearRespuesta(Guid.Parse(request.IdPublicacion), mapper.CreateRespuesta(request.Answer));
             return Task.FromResult(reply);
         }
+
+        public override Task<DeleteAnswerReply> DeleteAnswer(DeleteAnswerRequest request, ServerCallContext context)
+        {
+            Servidor.BorrarRespuesta(Guid.Parse(request.IdPublicacion),Guid.Parse(request.IdRespuesta));
+            DeleteAnswerReply reply = new DeleteAnswerReply();
+            return Task.FromResult(reply);
+        }
     }
 }
 
