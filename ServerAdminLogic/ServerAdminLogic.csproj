@@ -7,7 +7,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Protobuf Include="Protos\greet.proto"/>
+		<Protobuf Include="Protos\greet.proto" />
 	</ItemGroup>
 
   <ItemGroup>
@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ServerAdminLogicDataAccessInterface\ServerAdminLogicDataAccessInterface.csproj" />
     <ProjectReference Include="..\ServerAdminLogicInterface\ServerAdminLogicInterface.csproj" />
   </ItemGroup>
 

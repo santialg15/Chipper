@@ -1,18 +1,15 @@
 ﻿using Grpc.Net.Client;
 using Logica;
-using ServerAdminLogicDataAccessInterface;
 using ServerAdminLogicInterface;
 
 namespace ServerAdminLogic
 {
     public class LogicaUsuario : ILogicaUsuario 
     {
-        private IUsersRepository userRepository;
         private readonly Mapper mapper;
 
-        public LogicaUsuario(IUsersRepository usrRepository)
+        public LogicaUsuario()
         {
-            userRepository = usrRepository;
             mapper = new Mapper();
         }
 
@@ -60,11 +57,6 @@ namespace ServerAdminLogic
             };
             var reply = await client.PostUserAsync(request);
             return reply.Response;
-        }
-
-        public bool Exist(string nombreUsuario)
-        {
-            return userRepository.Exist(nombreUsuario);
         }
 
         public async Task<string> Update(Usuario usuario)

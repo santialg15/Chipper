@@ -1,26 +1,15 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Grpc.Net.Client;
+﻿using Grpc.Net.Client;
 using Logica;
-using ServerAdminLogicDataAccessInterface;
 using ServerAdminLogicInterface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServerAdminLogic
 {
     public class LogicaPublicaciones : ILogicaPublicaciones
     {
-        private readonly IUsersRepository userRepository;
-        private readonly IPublicacionesRepository chipsRepository;
         private readonly Mapper mapper;
 
-        public LogicaPublicaciones(IPublicacionesRepository chipsRepo, IUsersRepository usersRepo)
+        public LogicaPublicaciones()
         {
-            userRepository = usersRepo;
-            chipsRepository = chipsRepo;
             mapper = new Mapper();
         }
 

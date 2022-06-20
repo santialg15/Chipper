@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ServerAdminDataAccess\ServerAdminDataAccess.csproj" />
     <ProjectReference Include="..\ServerAdminLogicInterface\ServerAdminLogicInterface.csproj" />
     <ProjectReference Include="..\ServerAdminLogic\ServerAdminLogic.csproj" />
   </ItemGroup>
