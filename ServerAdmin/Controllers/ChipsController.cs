@@ -36,10 +36,11 @@ namespace ServerAdmin.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] Publicacion chip)
+        public IActionResult Put([FromRoute] Guid id, [FromBody] PublicacionDTO publicacionDTO)
         {
-            chip.Id = id;
-            return Content(_chipsLogic.Update(chip).Result);
+            var publicacion = publicacionDTO.CrearPublicacion();
+            publicacion.Id = id;
+            return Content(_chipsLogic.Update(publicacion).Result);
         }
 
         [HttpDelete("{id}")]

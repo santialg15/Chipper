@@ -59,10 +59,16 @@ namespace ServerAdminLogic
             return reply.Response;
         }
 
-        public Task<string> Update(Publicacion chip)
+        public async Task<string> Update(Publicacion publicacion)
         {
-
-            throw new Exception();
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new PutChipRequest()
+            {
+                Chip = mapper.CrearChip(publicacion)
+            };
+            var reply = await client.PutChipAsync(request);
+            return reply.Response;
         }
 
         public Respuesta CreateAnswer(Guid idPublicacion, Respuesta respuesta)

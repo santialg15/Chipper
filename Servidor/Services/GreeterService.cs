@@ -74,6 +74,13 @@ namespace Servidor.Services
             reply.Response = Servidor.CrearPublicacion(mapper.CreatePublicacion(request.Chip));
             return Task.FromResult(reply);
         }
+
+        public override Task<PutChipReply> PutChip(PutChipRequest request, ServerCallContext context)
+        {
+            PutChipReply reply = new PutChipReply();
+            reply.Response = Servidor.ModificarPublicacion(mapper.CreatePublicacion(request.Chip));
+            return Task.FromResult(reply);
+        }
     }
 }
 

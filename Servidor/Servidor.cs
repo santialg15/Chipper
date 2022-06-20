@@ -856,6 +856,23 @@ namespace Servidor
             }
             return $"La publicacion del usuario {publicacion.NombreUsuario} a sido creada.";
         }
+
+        public static string ModificarPublicacion(Publicacion publicacion)
+        {
+            foreach (var usuario in _usuarios.ToList())
+            {
+                foreach (var pub in usuario.ColPublicacion.ToList())
+                {
+                    if(pub.Id == publicacion.Id)
+                    {
+                        pub.pFch = publicacion.PFch;
+                        pub.Contenido = publicacion.Contenido;
+                        return $"La publicacion del usuario {usuario.PNomUsu} ha sido modificada.";
+                    }
+                }
+            }
+            return "No existe la publicacion a modificar.";
+        }
     }
 }
 
