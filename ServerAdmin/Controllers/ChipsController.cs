@@ -54,7 +54,7 @@ namespace ServerAdmin.Controllers
         public IActionResult CreateAnswer([FromRoute] Guid id, [FromBody] RespuestaDTO respuestaDTO)
         {
             var respuesta = respuestaDTO.CrearRespuesta();
-            return Ok(_chipsLogic.CreateAnswer(id,respuesta));
+            return Content(_chipsLogic.CreateAnswer(id,respuesta).Result);
         }
 
         [HttpDelete("{id}/Respuestas")]

@@ -20,7 +20,7 @@ namespace Logica
         public Publicacion()
         {
             Id = Guid.NewGuid();
-            pFch = DateTime.UtcNow;
+            PFch = DateTime.UtcNow;
             ColRespuesta = new List<Respuesta>();
             colFile = new List<string>();
         }
@@ -29,7 +29,8 @@ namespace Logica
         {
             id = idPublicacion+1;
             Id = Guid.NewGuid();
-            pFch = DateTime.UtcNow;
+            PFch = DateTime.UtcNow;
+            PFch = DateTime.UtcNow;
             pContenido = _contenido.Trim();
             colRespuesta = new List<Respuesta>();
             colFile = new List<string>();

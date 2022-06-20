@@ -24,7 +24,7 @@ namespace ServerAdminLogicInterface
     {
         Task<Publicacion> GetById(Guid id);
         Task Delete(Guid idChip);
-        Respuesta CreateAnswer(Guid idPublicacion, Respuesta respuesta);
+        Task<string> CreateAnswer(Guid idPublicacion, Respuesta respuesta);
         void DeleteAnswer(Guid idPublicacion, Guid idRespuesta);
 
     }

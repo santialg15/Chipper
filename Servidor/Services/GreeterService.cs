@@ -88,6 +88,13 @@ namespace Servidor.Services
             DeleteChipReply reply = new DeleteChipReply();
             return Task.FromResult(reply);
         }
+
+        public override Task<PostAnswerReply> PostAnswer(PostAnswerRequest request, ServerCallContext context)
+        {
+            PostAnswerReply reply = new PostAnswerReply();
+            reply.Response = Servidor.CrearRespuesta(Guid.Parse(request.IdPublicacion), mapper.CreateRespuesta(request.Answer));
+            return Task.FromResult(reply);
+        }
     }
 }
 

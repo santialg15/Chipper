@@ -18,6 +18,8 @@ namespace Logica
 
         public Respuesta()
         {
+            Id = Guid.NewGuid();
+            PFch = DateTime.UtcNow;
         }
 
         public string PNomUsu { get => pNomUsu; set => pNomUsu = value;}

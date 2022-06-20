@@ -20,6 +20,7 @@ service Greeter {
   rpc PostChip (PostChipRequest) returns (PostChipReply);
   rpc PutChip (PutChipRequest) returns (PutChipReply);
   rpc DeleteChip (DeleteChipRequest) returns (DeleteChipReply);
+  rpc PostAnswer (PostAnswerRequest) returns (PostAnswerReply);
 }
 
 //Post de usuario
@@ -121,6 +122,16 @@ message DeleteChipReply{
 
 }
 //Fin Delete Chip
+
+//Post Answer
+message PostAnswerRequest{
+	string idPublicacion = 1;
+	Answer answer = 2;
+}
+message PostAnswerReply{
+	string response = 1;
+}
+//Fin Post Answer
 
 //Inicio Modelos
 message User {

@@ -888,6 +888,24 @@ namespace Servidor
                 }
             }
         }
+
+        public static string CrearRespuesta(Guid idPublicacion, Respuesta respuesta)
+        {
+            if (!_usuarios.Any(u => u.PNomUsu == respuesta.PNomUsu))
+                return "El usuario creador de la respuesta no existe";
+            foreach (var usuario in _usuarios.ToList())
+            {
+                foreach (var publicacion in usuario.ColPublicacion.ToList())
+                {
+                    if(publicacion.Id == idPublicacion)
+                    {
+                        publicacion.ColRespuesta.Add(respuesta);
+                        return $"La respuesta para la publicacion del usuario {usuario.PNomUsu} fue creada.";
+                    }
+                }
+            }
+            return "No existe la publicacion a responder";
+        }
     }
 }
 

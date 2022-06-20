@@ -78,13 +78,17 @@ namespace ServerAdminLogic
             return reply.Response;
         }
 
-        public Respuesta CreateAnswer(Guid idPublicacion, Respuesta respuesta)
+        public async Task<string> CreateAnswer(Guid idPublicacion, Respuesta respuesta)
         {
-            var chip = chipsRepository.GetById(idPublicacion);
-            if (chip == null)
-                throw new NullReferenceException("El chip a responder no existe.");
-            chipsRepository.AddAnswer(idPublicacion, respuesta);
-            return respuesta;
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new PostAnswerRequest()
+            {
+                IdPublicacion = idPublicacion.ToString(),
+                Answer = mapper.CrearAnswer(respuesta)
+            };
+            var reply = await client.PostAnswerAsync(request);
+            return reply.Response;
         }
 
         public void DeleteAnswer(Guid idPublicacion, Guid idRespuesta)

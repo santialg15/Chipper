@@ -120,15 +120,21 @@ namespace ServerAdminLogic
             RepeatedField<Answer> answers = new RepeatedField<Answer>();
             foreach (var respuesta in respuestas)
             {
-                Answer answer = new Answer()
-                {
-                    PNomUsu = respuesta.PNomUsu,
-                    PFch = Timestamp.FromDateTime(respuesta.PFch),
-                    PContenido = respuesta.PContenido
-                };
+                Answer answer = CrearAnswer(respuesta);
                 answers.Add(answer);
             }
             return answers;
+        }
+
+        public Answer CrearAnswer(Respuesta respuesta)
+        {
+            Answer answer = new Answer()
+            {
+                PNomUsu = respuesta.PNomUsu,
+                PFch = Timestamp.FromDateTime(respuesta.PFch),
+                PContenido = respuesta.PContenido
+            };
+            return answer;
         }
     }
 }

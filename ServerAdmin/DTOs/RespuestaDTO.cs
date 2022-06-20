@@ -12,7 +12,6 @@ namespace ServerAdmin.DTOs
             Respuesta respuesta = new Respuesta()
             {
                 PContenido = Contenido,
-                PFch = DateTime.Now,
                 PNomUsu = NombreUsuario,
             };
             return respuesta;

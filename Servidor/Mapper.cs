@@ -126,15 +126,21 @@ namespace Servidor
             List<Respuesta> respuestas = new List<Respuesta>();
             foreach (var answer in answers)
             {
-                Respuesta respuesta = new Respuesta()
-                {
-                    PNomUsu = answer.PNomUsu,
-                    PFch = answer.PFch.ToDateTime(),
-                    PContenido = answer.PContenido
-                };
+                Respuesta respuesta = CreateRespuesta(answer);
                 respuestas.Add(respuesta);
             }
             return respuestas;
+        }
+
+        public Respuesta CreateRespuesta(Answer answer)
+        {
+            Respuesta respuesta = new Respuesta()
+            {
+                PNomUsu = answer.PNomUsu,
+                PFch = answer.PFch.ToDateTime(),
+                PContenido = answer.PContenido
+            };
+            return respuesta;
         }
 
     }
