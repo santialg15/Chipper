@@ -2,7 +2,7 @@
 
 import "google/protobuf/timestamp.proto";
 
-option csharp_namespace = "Servidor";
+option csharp_namespace = "ServerAdminLogic";
 
 package greet;
 

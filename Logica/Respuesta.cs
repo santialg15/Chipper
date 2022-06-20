@@ -7,11 +7,19 @@ namespace Logica
         public DateTime pFch;
         public string pContenido;
 
+        public Guid Id { get; set; }
+
         public Respuesta(string nombreUsuario, string contenido)
         {
             pNomUsu = nombreUsuario;
-            pFch = DateTime.Now;
+            pFch = DateTime.UtcNow;
             pContenido = contenido;
+        }
+
+        public Respuesta()
+        {
+            Id = Guid.NewGuid();
+            PFch = DateTime.UtcNow;
         }
 
         public string PNomUsu { get => pNomUsu; set => pNomUsu = value;}

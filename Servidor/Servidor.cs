@@ -6,6 +6,10 @@ using ProyectoCompartido.Interfaces;
 using ProyectoCompartido.Protocolo;
 using ProyectoCompartido.Protocolo.FileTransfer;
 using LogSender;
+using ProyectoCompartido.Logs;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Servidor.Services;
 using LogServer.Models;
 
 namespace Servidor
@@ -30,6 +34,8 @@ namespace Servidor
             tcpListener.Start(100); //Acepta 100 clientes encolados sin tener que ser procesados.
 
             Task escucharConexiones = Task.Run(async () => await ListenForConnections(tcpListener));
+
+            Task grpcServer = Task.Run(async () => await CreateHostBuilder(args));
 
             Console.WriteLine("Bienvenido al Sistema Server");
             printMenu();
@@ -195,6 +201,8 @@ namespace Servidor
                         break;
                 }
             }
+
+
         }
 
         private static void agregarDatos()
@@ -213,12 +221,12 @@ namespace Servidor
             SeguirUnUsuarioParaTest("salvarez", "dpena");
 
             //Notificaciones
-            Publicacion p1 = new Publicacion("Publicacion 1", _usu2.ColPublicacion.Count);
-            Publicacion p2 = new Publicacion("Publicacion 2", _usu2.ColPublicacion.Count);
-            Publicacion p3 = new Publicacion("Publicacion 3", _usu2.ColPublicacion.Count);
-            Publicacion p4 = new Publicacion("Publicacion 4", _usu2.ColPublicacion.Count);
-            Publicacion p5 = new Publicacion("Publicacion 5", _usu2.ColPublicacion.Count);
-            Publicacion p6 = new Publicacion("Publicacion 6", _usu2.ColPublicacion.Count);
+            Publicacion p1 = new Publicacion("Publicacion 1", _usu2.ColPublicacion.Count,_usu2.PNomUsu);
+            Publicacion p2 = new Publicacion("Publicacion 2", _usu2.ColPublicacion.Count,_usu2.PNomUsu);
+            Publicacion p3 = new Publicacion("Publicacion 3", _usu2.ColPublicacion.Count,_usu2.PNomUsu);
+            Publicacion p4 = new Publicacion("Publicacion 4", _usu2.ColPublicacion.Count,_usu2.PNomUsu);
+            Publicacion p5 = new Publicacion("Publicacion 5", _usu2.ColPublicacion.Count,_usu2.PNomUsu);
+            Publicacion p6 = new Publicacion("Publicacion 6", _usu1.ColPublicacion.Count,_usu1.PNomUsu);
 
             _usu2.nuevoChip("Publicacion 1");
             _usu2.nuevoChip("Publicacion 2");
@@ -394,7 +402,7 @@ namespace Servidor
                                 var usu = _usuarios.Find(u => u.PNomUsu == nomUsu);
                                 var totalNotif = "";
 
-                                var notif = usu.getColNotif;
+                                var notif = usu.ColNotif;
                                 for (int i = 0; i < notif.Count; i++)
                                 {
                                     totalNotif += notif[i].ToString() + "?";
@@ -576,7 +584,7 @@ namespace Servidor
         private static void Notificar(Usuario usuChip, Publicacion chip)
         {
             // Busco en usuarios seguidos del usuario que crea chip (usuChip)
-            foreach (var usuSeguidos in usuChip.getColSeguidores)
+            foreach (var usuSeguidos in usuChip.ColSeguidores)
             {
                 // Actualizo lista de usuarios agregando norificación a los que siguen al usuario creador del chip
                 foreach (var usu in _usuarios)
@@ -708,6 +716,220 @@ namespace Servidor
             await networkDataHelper.SendMessage("Respuesta creada correctamente.", CommandConstants.ResponderChip);
             Console.WriteLine("Finalizo funcionalidad de responder chip.");
         }
-    } 
+
+
+        // Additional configuration is required to successfully run gRPC on macOS.
+        private static async Task CreateHostBuilder(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Additional configuration is required to successfully run gRPC on macOS.
+            // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
+
+            // Add services to the container.
+            builder.Services.AddGrpc();
+
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            app.MapGrpcService<GreeterService>();
+            app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+
+            app.Run();
+        }
+
+        public static List<Usuario> RetornarUsuarios()
+        {
+            return _usuarios;
+        }
+
+        public static string CrearUsuario(Usuario usuario)
+        {
+            var nombreUsuario = usuario.PNomUsu;
+            var nombreReal = usuario.PNomReal;
+            var contraseña = usuario.Pass;
+            if (nombreUsuario == "" || nombreReal == "" || contraseña == "")
+            {
+               return "No se realizo el registro de usuario.";
+            }
+            else
+            {
+                if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
+                {
+                    return("No se realizo el registro de usuario.");
+                }
+                else
+                {
+                    _usuarios.Add(usuario);
+                    setLog(nombreUsuario, "registo de usuario", "El usuario se registró en el sistema");
+                    return $"Usuario {nombreUsuario} registrado con exito";
+                }
+            }
+        }
+
+        public static string ModificarUsuario(Usuario usuario)
+        {
+            Usuario _usu1 = new Usuario("Denis", "dpena", "inicio", "img");
+            _usuarios.Add(_usu1);
+            if (!_usuarios.Exists(u => u.PNomUsu == usuario.PNomUsu))
+                return "No existe el usuario a modificar.";
+            var usuarioDeServidor = _usuarios.FirstOrDefault(u => u.PNomUsu == usuario.PNomUsu);
+            usuarioDeServidor.PNomReal = usuario.PNomReal;
+            usuarioDeServidor.Pass = usuario.Pass;
+            return $"El usuario {usuarioDeServidor.PNomUsu} se modifico correctamente.";
+        }
+
+        public static Usuario RetornarUsuario(string name)
+        {
+            return _usuarios.FirstOrDefault(u => u.PNomUsu == name);
+        }
+
+        public static void BorrarUsuario(string name)
+        {
+            var usuarioABorrar = _usuarios.FirstOrDefault(u => u.PNomUsu == name);
+            if (usuarioABorrar == null)
+                throw new NullReferenceException("El usuario a borrar no existe");
+            foreach (var usuario in _usuarios.ToList())
+            {
+                if(usuario.PNomUsu != name)
+                {
+                    foreach (var seguido in usuario.ColSeguidos.ToList())
+                    {
+                        if(seguido.PNomUsu == name)
+                            usuario.ColSeguidos.Remove(seguido);
+                    }
+                    foreach (var seguidor in usuario.ColSeguidores.ToList())
+                    {
+                        if (seguidor.PNomUsu == name)
+                            usuario.ColSeguidores.Remove(seguidor);
+                    }
+                }
+                else
+                {
+                    _usuarios.Remove(usuarioABorrar);
+                }
+            }
+        }
+
+        public static List<Publicacion> RetornarChips()
+        {
+            List<Publicacion> chips = new List<Publicacion>();
+            foreach (var usuario in _usuarios)
+            {
+                foreach (var publicacion in usuario.ColPublicacion.ToList())
+                {
+                    publicacion.NombreUsuario = usuario.PNomUsu;
+                    chips.Add(publicacion);
+                }
+            }
+            return chips;
+        }
+
+        public static Publicacion RetornarPublicacion(Guid idPublicacion)
+        {
+            var publicacion = new Publicacion();
+            foreach (var usu in _usuarios)
+            {
+                publicacion = usu.ColPublicacion.FirstOrDefault(p => p.Id == idPublicacion);
+                if(publicacion != null)
+                    return publicacion;
+            }
+            return publicacion;
+        }
+
+        public static string CrearPublicacion(Publicacion publicacion)
+        {
+            var nombreUsuario = publicacion.NombreUsuario;
+            if (!_usuarios.Any(u => u.PNomUsu == nombreUsuario))
+                return "El usuario de la publicacion no existe";
+            foreach (var usuario in _usuarios.ToList())
+            {
+                if (usuario.PNomUsu == nombreUsuario)
+                {
+                    usuario.ColPublicacion.Add(publicacion);
+                    break;
+                }
+            }
+            return $"La publicacion del usuario {publicacion.NombreUsuario} a sido creada.";
+        }
+
+        public static string ModificarPublicacion(Publicacion publicacion)
+        {
+            foreach (var usuario in _usuarios.ToList())
+            {
+                foreach (var pub in usuario.ColPublicacion.ToList())
+                {
+                    if(pub.Id == publicacion.Id)
+                    {
+                        pub.pFch = publicacion.PFch;
+                        pub.Contenido = publicacion.Contenido;
+                        return $"La publicacion del usuario {usuario.PNomUsu} ha sido modificada.";
+                    }
+                }
+            }
+            return "No existe la publicacion a modificar.";
+        }
+
+        public static void BorrarPublicacion(Guid id)
+        {
+            foreach (var usuario in _usuarios.ToList())
+            {
+                foreach (var publicacion in usuario.ColPublicacion.ToList())
+                {
+                    if(publicacion.Id == id)
+                    {
+                        usuario.ColPublicacion.Remove(publicacion);
+                        return;
+                    }
+                }
+            }
+        }
+
+        public static string CrearRespuesta(Guid idPublicacion, Respuesta respuesta)
+        {
+            if (!_usuarios.Any(u => u.PNomUsu == respuesta.PNomUsu))
+                return "El usuario creador de la respuesta no existe";
+            foreach (var usuario in _usuarios.ToList())
+            {
+                foreach (var publicacion in usuario.ColPublicacion.ToList())
+                {
+                    if(publicacion.Id == idPublicacion)
+                    {
+                        publicacion.ColRespuesta.Add(respuesta);
+                        return $"La respuesta para la publicacion del usuario {usuario.PNomUsu} fue creada.";
+                    }
+                }
+            }
+            return "No existe la publicacion a responder";
+        }
+
+        public static void BorrarRespuesta(Guid idPublicacion, Guid idRespuesta)
+        {
+            foreach (var usuario in _usuarios.ToList())
+            {
+                foreach (var publicacion in usuario.ColPublicacion.ToList())
+                {
+                    if(publicacion.Id == idPublicacion)
+                    {
+                        foreach (var respuesta in publicacion.ColRespuesta.ToList())
+                        {
+                            if(respuesta.Id == idRespuesta)
+                            {
+                                publicacion.colRespuesta.Remove(respuesta);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void CambiarEstado(string nombreUsuario)
+        {
+            var usuario = _usuarios.FirstOrDefault(u => u.PNomUsu == nombreUsuario);
+            if (usuario != null)
+                usuario.Habilitado = !usuario.Habilitado;
+        }
+    }
 }
 

@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogServer", "..\LogServer\L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogServer.Repository.Implementation", "..\LogServer.Repository.Implementation\LogServer.Repository.Implementation.csproj", "{E9480F6F-F4E0-415C-8EA7-09090A86B4D0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerAdmin", "..\ServerAdmin\ServerAdmin.csproj", "{DF5172BA-D83A-45D4-A326-A635D62438B7}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogServer.Repository.Interfaces", "..\LogServer.Repository.Interfaces\LogServer.Repository.Interfaces.csproj", "{16A825D1-3B39-4836-83AF-DE9932CE2FE8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogServer.Services.Implementation", "..\LogServer.Services.Implementation\LogServer.Services.Implementation.csproj", "{8399F004-9985-45CD-8629-85E49143A562}"
@@ -34,6 +36,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogServer.Responses", "..\LogServer.Responses\LogServer.Responses.csproj", "{BE5670EE-E081-4440-BF34-D27BCF4D1EFB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogServer.Exceptions", "..\LogServer.Exceptions\LogServer.Exceptions.csproj", "{2FA7C37C-FF7C-49C8-9A47-4D65C10BA8CA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerAdminLogicInterface", "..\ServerAdminLogicInterface\ServerAdminLogicInterface.csproj", "{CA1AACCA-055D-4909-A29C-A378F18045A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerAdminLogic", "..\ServerAdminLogic\ServerAdminLogic.csproj", "{805CF0ED-3706-45B8-A0B0-FE555ADE14E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +111,22 @@ Global
 		{2FA7C37C-FF7C-49C8-9A47-4D65C10BA8CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FA7C37C-FF7C-49C8-9A47-4D65C10BA8CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FA7C37C-FF7C-49C8-9A47-4D65C10BA8CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F45950E2-147E-4DEC-B7BC-2690BCFEF901}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF5172BA-D83A-45D4-A326-A635D62438B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF5172BA-D83A-45D4-A326-A635D62438B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF5172BA-D83A-45D4-A326-A635D62438B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF5172BA-D83A-45D4-A326-A635D62438B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA1AACCA-055D-4909-A29C-A378F18045A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA1AACCA-055D-4909-A29C-A378F18045A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA1AACCA-055D-4909-A29C-A378F18045A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA1AACCA-055D-4909-A29C-A378F18045A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{805CF0ED-3706-45B8-A0B0-FE555ADE14E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{805CF0ED-3706-45B8-A0B0-FE555ADE14E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{805CF0ED-3706-45B8-A0B0-FE555ADE14E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{805CF0ED-3706-45B8-A0B0-FE555ADE14E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,10 +1,10 @@
-{
+﻿{
   "profiles": {
-    "Servidor": {
+    "ServerAdminGrpcService": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "https://localhost:5001",
+      "applicationUrl": "http://localhost:5265;https://localhost:7265",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
