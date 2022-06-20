@@ -7,9 +7,9 @@ using ProyectoCompartido.Protocolo;
 using ProyectoCompartido.Protocolo.FileTransfer;
 using LogSender;
 using ProyectoCompartido.Logs;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Servidor.Services;
 
 namespace Servidor
 {
@@ -34,7 +34,7 @@ namespace Servidor
 
             Task escucharConexiones = Task.Run(async () => await ListenForConnections(tcpListener));
 
-            CreateHostBuilder(args);
+            Task grpcServer = Task.Run(async () => await CreateHostBuilder(args));
 
             Console.WriteLine("Bienvenido al Sistema Server");
             printMenu();
@@ -717,12 +717,24 @@ namespace Servidor
 
 
         // Additional configuration is required to successfully run gRPC on macOS.
-        private static IHostBuilder CreateHostBuilder(string[] args) =>
-                Host.CreateDefaultBuilder(args)
-                    .ConfigureWebHostDefaults(webBuilder =>
-                    {
-                        webBuilder.UseStartup<Program>();
-                    });
+        private static async Task CreateHostBuilder(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Additional configuration is required to successfully run gRPC on macOS.
+            // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
+
+            // Add services to the container.
+            builder.Services.AddGrpc();
+
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            app.MapGrpcService<GreeterService>();
+            app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+
+            app.Run();
+        }
 
         public static List<Usuario> RetornarUsuarios()
         {
