@@ -1,13 +1,11 @@
-﻿using System.Linq.Expressions;
-using Google.Protobuf.Collections;
-using Grpc.Net.Client;
+﻿using Grpc.Net.Client;
 using Logica;
 using ServerAdminLogicDataAccessInterface;
 using ServerAdminLogicInterface;
 
 namespace ServerAdminLogic
 {
-    public class LogicaUsuario : ILogicaUsuario
+    public class LogicaUsuario : ILogicaUsuario 
     {
         private IUsersRepository userRepository;
         private readonly Mapper mapper;
@@ -40,16 +38,24 @@ namespace ServerAdminLogic
             var client = new Greeter.GreeterClient(channel);
             var request = new GetUsersRequest();
             var reply = await client.GetUsersAsync(request);
-            var usuarios = mapper.CreateUsers(reply);
+            var usuarios = mapper.CrearUsuarios(reply);
             return usuarios;
             //return userRepository.GetAll();
         }
 
-        public Usuario Insert(Usuario usuario)
+        public async Task<string> Insert(Usuario usuario)
         {
-            if (userRepository.Exist(usuario.PNomUsu))
-                throw new ArgumentException("Ya existe un usuario con ese nombre.");
-            return userRepository.Insert(usuario);
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new PostUserRequest()
+            {
+                User = mapper.CrearUser(usuario)
+            };
+            var reply = await client.PostUserAsync(request);
+            return reply.Response;
+            //if (userRepository.Exist(usuario.PNomUsu))
+            //    throw new ArgumentException("Ya existe un usuario con ese nombre.");
+            //return userRepository.Insert(usuario);
         }
 
         public bool Exist(string nombreUsuario)

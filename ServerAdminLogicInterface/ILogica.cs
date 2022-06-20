@@ -11,7 +11,7 @@ namespace ServerAdminLogicInterface
     {
         Task<List<T>> GetAll();
         T GetById(K id);
-        T Insert(T entity);
+        Task<string> Insert(T entity);
         T Update(T entity);
         void Delete(K id);
     }

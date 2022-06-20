@@ -724,15 +724,34 @@ namespace Servidor
                         webBuilder.UseStartup<Program>();
                     });
 
-        public static List<Usuario> ReturnUsers()
+        public static List<Usuario> RetornarUsuarios()
         {
             agregarDatos();
-            Usuario _usuX = new Usuario("XXX", "XXX", "XXX", "XXX");
-            Publicacion pX = new Publicacion("Publicacion X", _usuX.ColPublicacion.Count);
-            pX.ColRespuesta.Add(new Respuesta(_usuX.PNomUsu, "contenido de respuesta"));
-            _usuX.ColPublicacion.Add(pX);
-            _usuarios.Add(_usuX);
             return _usuarios;
+        }
+
+        public static string CrearUsuario(Usuario usuario)
+        {
+            var nombreUsuario = usuario.PNomUsu;
+            var nombreReal = usuario.PNomReal;
+            var contraseña = usuario.Pass;
+            if (nombreUsuario == "" || nombreReal == "" || contraseña == "")
+            {
+               return "No se realizo el registro de usuario.";
+            }
+            else
+            {
+                if (_usuarios.Exists(u => u.PNomUsu == nombreUsuario))
+                {
+                    return("No se realizo el registro de usuario.");
+                }
+                else
+                {
+                    _usuarios.Add(usuario);
+                    setLog(nombreUsuario, "registo de usuario", "El usuario se registró en el sistema");
+                    return $"Usuario {nombreUsuario} registrado con exito";
+                }
+            }
         }
     }
 }

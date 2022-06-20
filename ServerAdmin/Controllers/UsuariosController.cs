@@ -1,7 +1,7 @@
 using Logica;
 using Microsoft.AspNetCore.Mvc;
-using ServerAdmin.DTOs;
 using ServerAdminLogicInterface;
+using ServerAdmin.DTOs;
 
 namespace ServerAdmin.Controllers
 {
@@ -16,7 +16,7 @@ namespace ServerAdmin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public IActionResult GetAll()
         {
             return Ok(_userLogic.GetAll().Result);
         }
@@ -32,7 +32,7 @@ namespace ServerAdmin.Controllers
         public IActionResult Post([FromBody] UsuarioDTO usuarioDTO)
         {
             var usuario = usuarioDTO.CrearUsuario();
-            return Ok(_userLogic.Insert(usuario));
+            return Content(_userLogic.Insert(usuario).Result);
         }
 
         [HttpPut("{id}")]

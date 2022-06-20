@@ -27,12 +27,20 @@ namespace Servidor.Services
 
         public override Task<GetUsersReply> GetUsers(GetUsersRequest request, ServerCallContext context)
         {
-            List<Usuario> usuarios = Servidor.ReturnUsers();
+            List<Usuario> usuarios = Servidor.RetornarUsuarios();
 
             GetUsersReply reply = new GetUsersReply();
             reply.Users.AddRange(mapper.CreateUsers(usuarios));
             return Task.FromResult(reply);
         }
+
+        public override Task<PostUserReply> PostUser(PostUserRequest request, ServerCallContext context)
+        {
+            PostUserReply reply = new PostUserReply();
+            reply.Response = Servidor.CrearUsuario(mapper.CreateUsuario(request.User));
+            return Task.FromResult(reply);
+        }
+
     }
 }
 

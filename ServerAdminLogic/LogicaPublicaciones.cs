@@ -41,14 +41,15 @@ namespace ServerAdminLogic
             throw new Exception();//return chipsRepository.GetAll();
         }
 
-        public Publicacion Insert(Publicacion chip)
+        public Task<string>/*Publicacion*/ Insert(Publicacion chip)
         {
             var usuarioDeChip = userRepository.GetById(chip.IdUsuario);
             if (usuarioDeChip == null)
                 throw new NullReferenceException("El usuario del chip ingresado no existe.");
             usuarioDeChip.ColPublicacion.Add(chip);
             userRepository.Update(usuarioDeChip);
-            return chipsRepository.Insert(chip);
+            throw new Exception();
+            //return chipsRepository.Insert(chip);
         }
 
         public Publicacion Update(Publicacion chip)

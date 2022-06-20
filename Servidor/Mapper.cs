@@ -45,7 +45,6 @@ namespace Servidor
             return user;
         }
 
-
         public RepeatedField<Chip> CreateChipsOfUser(List<Publicacion> publicaciones)
         {
             RepeatedField<Chip> chips = new RepeatedField<Chip>();
@@ -77,6 +76,17 @@ namespace Servidor
                 answers.Add(answer);
             }
             return answers;
+        }
+
+        public Usuario CreateUsuario(User user)
+        {
+            Usuario usuario = new Usuario()
+            {
+                PNomUsu = user.PNomUsu,
+                PNomReal = user.PNomReal,
+                Pass = user.Pass
+            };
+            return usuario;
         }
     }
 }
