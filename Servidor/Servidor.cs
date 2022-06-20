@@ -738,7 +738,6 @@ namespace Servidor
 
         public static List<Usuario> RetornarUsuarios()
         {
-            //agregarDatos();
             return _usuarios;
         }
 
@@ -780,13 +779,11 @@ namespace Servidor
 
         public static Usuario RetornarUsuario(string name)
         {
-            //agregarDatos();
             return _usuarios.FirstOrDefault(u => u.PNomUsu == name);
         }
 
         public static void BorrarUsuario(string name)
         {
-            //agregarDatos();
             var usuarioABorrar = _usuarios.FirstOrDefault(u => u.PNomUsu == name);
             if (usuarioABorrar == null)
                 throw new NullReferenceException("El usuario a borrar no existe");
@@ -814,7 +811,6 @@ namespace Servidor
 
         public static List<Publicacion> RetornarChips()
         {
-            //agregarDatos();
             List<Publicacion> chips = new List<Publicacion>();
             foreach (var usuario in _usuarios)
             {
@@ -829,7 +825,6 @@ namespace Servidor
 
         public static Publicacion RetornarPublicacion(Guid idPublicacion)
         {
-            //agregarDatos();
             var publicacion = new Publicacion();
             foreach (var usu in _usuarios)
             {
@@ -842,7 +837,6 @@ namespace Servidor
 
         public static string CrearPublicacion(Publicacion publicacion)
         {
-            //agregarDatos();
             var nombreUsuario = publicacion.NombreUsuario;
             if (!_usuarios.Any(u => u.PNomUsu == nombreUsuario))
                 return "El usuario de la publicacion no existe";

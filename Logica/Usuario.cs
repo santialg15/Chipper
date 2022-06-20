@@ -112,7 +112,6 @@
         public Publicacion nuevoChip(string chip)
         {
             Publicacion nuevaPub = new Publicacion(chip, colPublicacion.Count,PNomUsu);
-            //nuevaPub.NombreUsuario = PNomUsu;
             colPublicacion.Add(nuevaPub);
             return nuevaPub;
         }
