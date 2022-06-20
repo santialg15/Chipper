@@ -56,6 +56,10 @@
 
         public Usuario()
         {
+            ColSeguidores = new List<Usuario>();
+            ColNotif = new List<Publicacion>();
+            ColPublicacion = new List<Publicacion>();
+            ColSeguidos = new List<Usuario>();
         }
 
         public Usuario(string _NomReal, string _NomUsu, string _pass, string _imgPerfil)

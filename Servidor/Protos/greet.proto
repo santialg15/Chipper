@@ -1,5 +1,7 @@
 ﻿syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 option csharp_namespace = "Servidor";
 
 package greet;
@@ -35,9 +37,24 @@ message User {
   string pNomUsu = 1;
   string pNomReal = 2;
   string pass = 3;
-  string imgPerfil = 4;
   bool habilitado = 5;
   bool estaLogueado = 6;
+  repeated Chip chips = 7;
+  repeated User colSeguidos = 8;
+}
+
+message Chip{
+	int32 id = 1;
+    google.protobuf.Timestamp pFch = 2;
+    string pContenido = 3;
+    repeated Answer colRespuesta = 4;
+    //repeated string colFile = 5;
+}
+
+message Answer{
+	string pNomUsu = 1;
+    google.protobuf.Timestamp pFch = 2;
+    string pContenido = 3;
 }
 //Fin post usuario
 

@@ -13,18 +13,20 @@ namespace Logica
 
         public Guid IdUsuario { get; set; }
         public Guid Id { get; set; }
+        public int IdP { get; set; }
         public DateTime PFch { get => pFch; set => pFch = value; }
         public string Contenido { get => pContenido; set => pContenido = value; }
         public List<Respuesta> ColRespuesta { get => colRespuesta; set => colRespuesta = value; }
 
         public Publicacion()
         {
+            ColRespuesta = new List<Respuesta>();
         }
 
         public Publicacion(string _contenido, int idPublicacion)
         {
             id = idPublicacion+1;
-            pFch = DateTime.Now;
+            pFch = DateTime.UtcNow;
             pContenido = _contenido.Trim();
             colRespuesta = new List<Respuesta>();
             colFile = new List<string>();

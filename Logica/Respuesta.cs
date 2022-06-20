@@ -12,7 +12,7 @@ namespace Logica
         public Respuesta(string nombreUsuario, string contenido)
         {
             pNomUsu = nombreUsuario;
-            pFch = DateTime.Now;
+            pFch = DateTime.UtcNow;
             pContenido = contenido;
         }
 

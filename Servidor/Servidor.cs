@@ -726,8 +726,12 @@ namespace Servidor
 
         public static List<Usuario> ReturnUsers()
         {
-            Usuario _usu1 = new Usuario("Denis", "dpena", "inicio", "img");
-            _usuarios.Add(_usu1);
+            agregarDatos();
+            Usuario _usuX = new Usuario("XXX", "XXX", "XXX", "XXX");
+            Publicacion pX = new Publicacion("Publicacion X", _usuX.ColPublicacion.Count);
+            pX.ColRespuesta.Add(new Respuesta(_usuX.PNomUsu, "contenido de respuesta"));
+            _usuX.ColPublicacion.Add(pX);
+            _usuarios.Add(_usuX);
             return _usuarios;
         }
     }

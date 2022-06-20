@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Google.Protobuf.Collections;
 using Grpc.Net.Client;
 using Logica;
 using ServerAdminLogicDataAccessInterface;
@@ -72,20 +73,64 @@ namespace ServerAdminLogic
             List<Usuario> usuarios = new List<Usuario>();
             foreach (var user in usersReply.Users)
             {
-                usuarios.Add(new Usuario()
+                Usuario usuario = CreateUser(user);
+                foreach (var seguido in user.ColSeguidos)
                 {
-                    PNomUsu = user.PNomUsu,
-                    PNomReal = user.PNomReal,
-                    Pass = user.Pass,
-                    estaLogueado = user.EstaLogueado,
-                    Habilitado = user.Habilitado,
-                    ColNotif = new List<Publicacion>(),
-                    ColPublicacion = new List<Publicacion>(),
-                    ColSeguidores = new List<Usuario>(),
-                    ColSeguidos = new List<Usuario>()
-                }) ;
+                    usuario.ColSeguidos.Add(CreateUser(seguido));
+                }
+                usuario.ColPublicacion = CreateChipsOfUser(user.Chips);
+                usuarios.Add(usuario);
             }
             return usuarios;
+        }
+
+        private static Usuario CreateUser(User user)
+        {
+            Usuario usuario = new Usuario()
+            {
+                PNomUsu = user.PNomUsu,
+                PNomReal = user.PNomReal,
+                Pass = user.Pass,
+                estaLogueado = user.EstaLogueado,
+                Habilitado = user.Habilitado,
+                ColNotif = new List<Publicacion>(),
+                ColPublicacion = new List<Publicacion>(),
+                ColSeguidores = new List<Usuario>(),
+            };
+            return usuario;
+        }
+
+        private List<Publicacion> CreateChipsOfUser(RepeatedField<Chip> chips)
+        {
+            List<Publicacion> publicaciones = new List<Publicacion>();
+            foreach (var chip in chips)
+            {
+                Publicacion publicacion = new Publicacion()
+                {
+                    IdP = chip.Id,
+                    PFch = chip.PFch.ToDateTime(),
+                    Contenido = chip.PContenido,
+                };
+                publicacion.ColRespuesta.AddRange(CreateAnswersOfChips(chip.ColRespuesta));
+                publicaciones.Add(publicacion);
+            }
+            return publicaciones;
+        }
+
+        private List<Respuesta> CreateAnswersOfChips(RepeatedField<Answer> answers)
+        {
+            List<Respuesta> respuestas = new List<Respuesta>();
+            foreach (var answer in answers)
+            {
+                Respuesta respuesta = new Respuesta()
+                {
+                    PNomUsu = answer.PNomUsu,
+                    PFch = answer.PFch.ToDateTime(),
+                    PContenido = answer.PContenido
+                };
+                respuestas.Add(respuesta);
+            }
+            return respuestas;
         }
     }
 }
