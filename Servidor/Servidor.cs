@@ -6,7 +6,6 @@ using ProyectoCompartido.Interfaces;
 using ProyectoCompartido.Protocolo;
 using ProyectoCompartido.Protocolo.FileTransfer;
 using LogSender;
-using ProyectoCompartido.Logs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Servidor.Services;
