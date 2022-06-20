@@ -66,26 +66,34 @@ namespace Servidor
                 };
                 user.ColSeguidores.Add(userSeguidor);
             }
-            user.Chips.AddRange(CreateChipsOfUser(usuario.ColPublicacion));
-            user.ColNotif.AddRange(CreateChipsOfUser(usuario.ColNotif));
+            user.Chips.AddRange(CreateChips(usuario.ColPublicacion));
+            user.ColNotif.AddRange(CreateChips(usuario.ColNotif));
             return user;
         }
 
-        public RepeatedField<Chip> CreateChipsOfUser(List<Publicacion> publicaciones)
+        public RepeatedField<Chip> CreateChips(List<Publicacion> publicaciones)
         {
             RepeatedField<Chip> chips = new RepeatedField<Chip>();
             foreach (var publicacion in publicaciones)
             {
-                Chip chip = new Chip()
-                {
-                    Id = publicacion.id,
-                    PFch = Timestamp.FromDateTime(publicacion.PFch),
-                    PContenido = publicacion.Contenido,
-                };
-                chip.ColRespuesta.AddRange(CreateAnswersOfChips(publicacion.ColRespuesta));
+                Chip chip = CreateChip(publicacion);
+                //chip.ColRespuesta.AddRange(CreateAnswersOfChips(publicacion.ColRespuesta));
                 chips.Add(chip);
             }
             return chips;
+        }
+
+        public Chip CreateChip(Publicacion publicacion)
+        {
+            Chip chip = new Chip()
+            {
+                Id = publicacion.Id.ToString(),
+                UserName = publicacion.NombreUsuario,
+                PFch = Timestamp.FromDateTime(publicacion.PFch),
+                PContenido = publicacion.Contenido,
+            };
+            chip.ColRespuesta.AddRange(CreateAnswersOfChips(publicacion.ColRespuesta));
+            return chip;
         }
 
         public RepeatedField<Answer> CreateAnswersOfChips(List<Respuesta> respuestas)

@@ -22,6 +22,7 @@ namespace ServerAdminLogicInterface
     }
     public interface ILogicaPublicaciones : ILogica<Publicacion, string> 
     {
+        Task<Publicacion> GetById(Guid id);
         Respuesta CreateAnswer(Guid idPublicacion, Respuesta respuesta);
         void DeleteAnswer(Guid idPublicacion, Guid idRespuesta);
 

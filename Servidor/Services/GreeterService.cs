@@ -17,14 +17,6 @@ namespace Servidor.Services
             mapper = new Mapper();
         }
 
-        public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
-        {
-            return Task.FromResult(new HelloReply
-            {
-                Message = "Hello " + request.Name
-            });
-        }
-
         public override Task<GetUsersReply> GetUsers(GetUsersRequest request, ServerCallContext context)
         {
             List<Usuario> usuarios = Servidor.RetornarUsuarios();
@@ -58,6 +50,21 @@ namespace Servidor.Services
         {
             Servidor.BorrarUsuario(request.PNomUsu);
             DeleteUserReply reply = new DeleteUserReply();
+            return Task.FromResult(reply);
+        }
+
+        public override Task<GetChipsReply> GetChips(GetChipsRequest request, ServerCallContext context)
+        {
+            GetChipsReply reply = new GetChipsReply();
+            reply.Chips.AddRange(mapper.CreateChips(Servidor.RetornarChips()));
+            return Task.FromResult(reply);
+        }
+
+        public override Task<GetChipReply> GetChip(GetChipRequest request, ServerCallContext context)
+        {
+            GetChipReply reply = new GetChipReply();
+            var chip = Servidor.RetornarPublicacion(Guid.Parse(request.GuidId));
+            reply.Chip = mapper.CreateChip(chip);
             return Task.FromResult(reply);
         }
     }

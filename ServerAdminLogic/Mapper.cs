@@ -58,26 +58,34 @@ namespace ServerAdminLogic
                 };
                 usuario.ColSeguidores.Add(usuarioSeguidor);
             }
-            usuario.ColPublicacion = CrearPublicacionesDeUsuario(user.Chips);
-            usuario.ColNotif = CrearPublicacionesDeUsuario(user.ColNotif);
+            usuario.ColPublicacion = CrearPublicaciones(user.Chips);
+            usuario.ColNotif = CrearPublicaciones(user.ColNotif);
             return usuario;
         }
 
-        public List<Publicacion> CrearPublicacionesDeUsuario(RepeatedField<Chip> chips)
+        public List<Publicacion> CrearPublicaciones(RepeatedField<Chip> chips)
         {
             List<Publicacion> publicaciones = new List<Publicacion>();
             foreach (var chip in chips)
             {
-                Publicacion publicacion = new Publicacion()
-                {
-                    IdP = chip.Id,
-                    PFch = chip.PFch.ToDateTime(),
-                    Contenido = chip.PContenido,
-                };
-                publicacion.ColRespuesta.AddRange(CrearRespuestasDeChip(chip.ColRespuesta));
+                Publicacion publicacion = CrearPublicacion(chip);
+                //publicacion.ColRespuesta.AddRange(CrearRespuestasDeChip(chip.ColRespuesta));
                 publicaciones.Add(publicacion);
             }
             return publicaciones;
+        }
+
+        public Publicacion CrearPublicacion(Chip chip)
+        {
+            Publicacion publicacion = new Publicacion()
+            {
+                Id = Guid.Parse(chip.Id),
+                NombreUsuario = chip.UserName,
+                PFch = chip.PFch.ToDateTime(),
+                Contenido = chip.PContenido,
+            };
+            publicacion.ColRespuesta.AddRange(CrearRespuestasDeChip(chip.ColRespuesta));
+            return publicacion;
         }
 
         public List<Respuesta> CrearRespuestasDeChip(RepeatedField<Answer> answers)

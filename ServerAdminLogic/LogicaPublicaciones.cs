@@ -1,4 +1,5 @@
-﻿using Logica;
+﻿using Grpc.Net.Client;
+using Logica;
 using ServerAdminLogicDataAccessInterface;
 using ServerAdminLogicInterface;
 using System;
@@ -13,11 +14,13 @@ namespace ServerAdminLogic
     {
         private readonly IUsersRepository userRepository;
         private readonly IPublicacionesRepository chipsRepository;
+        private readonly Mapper mapper;
 
         public LogicaPublicaciones(IPublicacionesRepository chipsRepo, IUsersRepository usersRepo)
         {
             userRepository = usersRepo;
             chipsRepository = chipsRepo;
+            mapper = new Mapper();
         }
 
         public Task Delete(string idChip)
@@ -29,27 +32,33 @@ namespace ServerAdminLogic
             //chipsRepository.Delete(chipABorrar);
         }
 
-        public Task<Publicacion> GetById(string idChip)
+        public async Task<Publicacion> GetById(Guid idChip)
         {
-            throw new Exception();
-            //var chipAObtener = chipsRepository.GetById(idChip);
-            //if (chipAObtener == null)
-            //    throw new NullReferenceException("El chip a obtener no existe.");
-            //return chipAObtener;
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new GetChipRequest();
+            request.GuidId = idChip.ToString();
+            var reply = await client.GetChipAsync(request);
+            return mapper.CrearPublicacion(reply.Chip);
         }
 
-        public Task<List<Publicacion>> GetAll()
+        public async Task<List<Publicacion>> GetAll()
         {
-            throw new Exception();//return chipsRepository.GetAll();
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new GetChipsRequest();
+            var reply = await client.GetChipsAsync(request);
+            return mapper.CrearPublicaciones(reply.Chips);
+            //return chipsRepository.GetAll();
         }
 
         public Task<string>/*Publicacion*/ Insert(Publicacion chip)
         {
-            var usuarioDeChip = userRepository.GetById(chip.IdUsuario);
-            if (usuarioDeChip == null)
-                throw new NullReferenceException("El usuario del chip ingresado no existe.");
-            usuarioDeChip.ColPublicacion.Add(chip);
-            userRepository.Update(usuarioDeChip);
+            //var usuarioDeChip = userRepository.GetById(chip.IdUsuario);
+            //if (usuarioDeChip == null)
+            //    throw new NullReferenceException("El usuario del chip ingresado no existe.");
+            //usuarioDeChip.ColPublicacion.Add(chip);
+            //userRepository.Update(usuarioDeChip);
             throw new Exception();
             //return chipsRepository.Insert(chip);
         }
@@ -90,6 +99,11 @@ namespace ServerAdminLogic
             if (respuesta == null)
                 throw new NullReferenceException("La respuesta del chip no existe.");
             chipsRepository.DeleteAnswer(idPublicacion, respuesta);
+        }
+
+        public Task<Publicacion> GetById(string key)
+        {
+            throw new NotImplementedException();
         }
     }
 }
