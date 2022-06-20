@@ -10,10 +10,12 @@ namespace ServerAdminLogic
     public class LogicaUsuario : ILogicaUsuario
     {
         private IUsersRepository userRepository;
+        private Mapper mapper;
 
         public LogicaUsuario(IUsersRepository usrRepository)
         {
             userRepository = usrRepository;
+            mapper = new Mapper();
         }
 
         public void Delete(Guid idUsuario)
@@ -38,7 +40,7 @@ namespace ServerAdminLogic
             var client = new Greeter.GreeterClient(channel);
             var request = new GetUsersRequest();
             var reply = await client.GetUsersAsync(request);
-            var usuarios = CreateUsers(reply);
+            var usuarios = mapper.CreateUsers(reply);
             return usuarios;
             //return userRepository.GetAll();
         }
@@ -66,73 +68,6 @@ namespace ServerAdminLogic
                     throw new ArgumentException("El nombre del usuario no puede ser modificado.");
             }
             return userRepository.Update(usuario);
-        }
-
-        private List<Usuario> CreateUsers(GetUsersReply usersReply)
-        {
-            List<Usuario> usuarios = new List<Usuario>();
-            foreach (var user in usersReply.Users)
-            {
-                Usuario usuario = CreateUser(user);
-                foreach (var seguido in user.ColSeguidos)
-                {
-                    usuario.ColSeguidos.Add(CreateUser(seguido));
-                }
-                foreach (var seguidor in user.ColSeguidores)
-                {
-                    usuario.ColSeguidores.Add(CreateUser(seguidor));
-                }
-                usuarios.Add(usuario);
-            }
-            return usuarios;
-        }
-
-        private Usuario CreateUser(User user)
-        {
-            Usuario usuario = new Usuario()
-            {
-                PNomUsu = user.PNomUsu,
-                PNomReal = user.PNomReal,
-                Pass = user.Pass,
-                estaLogueado = user.EstaLogueado,
-                Habilitado = user.Habilitado,
-            };
-            usuario.ColPublicacion = CreateChipsOfUser(user.Chips);
-            usuario.ColNotif = CreateChipsOfUser(user.ColNotif);
-            return usuario;
-        }
-
-        private List<Publicacion> CreateChipsOfUser(RepeatedField<Chip> chips)
-        {
-            List<Publicacion> publicaciones = new List<Publicacion>();
-            foreach (var chip in chips)
-            {
-                Publicacion publicacion = new Publicacion()
-                {
-                    IdP = chip.Id,
-                    PFch = chip.PFch.ToDateTime(),
-                    Contenido = chip.PContenido,
-                };
-                publicacion.ColRespuesta.AddRange(CreateAnswersOfChips(chip.ColRespuesta));
-                publicaciones.Add(publicacion);
-            }
-            return publicaciones;
-        }
-
-        private List<Respuesta> CreateAnswersOfChips(RepeatedField<Answer> answers)
-        {
-            List<Respuesta> respuestas = new List<Respuesta>();
-            foreach (var answer in answers)
-            {
-                Respuesta respuesta = new Respuesta()
-                {
-                    PNomUsu = answer.PNomUsu,
-                    PFch = answer.PFch.ToDateTime(),
-                    PContenido = answer.PContenido
-                };
-                respuestas.Add(respuesta);
-            }
-            return respuestas;
         }
     }
 }
