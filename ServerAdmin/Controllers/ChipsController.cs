@@ -18,13 +18,13 @@ namespace ServerAdmin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_chipsLogic.GetAll());
+            return Ok(_chipsLogic.GetAll().Result);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById([FromRoute] Guid id)
         {
-            var chip = _chipsLogic.GetById("string");
+            var chip = _chipsLogic.GetById(id).Result;
             return Ok(chip);
         }
 
@@ -32,7 +32,7 @@ namespace ServerAdmin.Controllers
         public IActionResult Post([FromBody] PublicacionDTO publicacionDTO)
         {
             var publicacion = publicacionDTO.CrearPublicacion();
-            return Ok(_chipsLogic.Insert(publicacion));
+            return Content(_chipsLogic.Insert(publicacion).Result);
         }
 
         [HttpPut("{id}")]

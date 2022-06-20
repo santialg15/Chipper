@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.Collections;
+using Google.Protobuf.WellKnownTypes;
 using Logica;
 
 namespace ServerAdminLogic
@@ -11,14 +12,6 @@ namespace ServerAdminLogic
             foreach (var user in usersReply.Users)
             {
                 Usuario usuario = CrearUsuario(user);
-                //foreach (var seguido in user.ColSeguidos)
-                //{
-                //    usuario.ColSeguidos.Add(CrearUsuario(seguido));
-                //}
-                //foreach (var seguidor in user.ColSeguidores)
-                //{
-                //    usuario.ColSeguidores.Add(CrearUsuario(seguidor));
-                //}
                 usuarios.Add(usuario);
             }
             return usuarios;
@@ -40,9 +33,6 @@ namespace ServerAdminLogic
                 {
                     PNomUsu = seguido.PNomUsu,
                     PNomReal = seguido.PNomReal,
-                    //Pass = user.Pass,
-                    //estaLogueado = user.EstaLogueado,
-                    //Habilitado = user.Habilitado,
                 };
                 usuario.ColSeguidos.Add(usuarioSeguido);
             }
@@ -52,32 +42,36 @@ namespace ServerAdminLogic
                 {
                     PNomUsu = seguidor.PNomUsu,
                     PNomReal = seguidor.PNomReal,
-                    //Pass = user.Pass,
-                    //estaLogueado = user.EstaLogueado,
-                    //Habilitado = user.Habilitado,
                 };
                 usuario.ColSeguidores.Add(usuarioSeguidor);
             }
-            usuario.ColPublicacion = CrearPublicacionesDeUsuario(user.Chips);
-            usuario.ColNotif = CrearPublicacionesDeUsuario(user.ColNotif);
+            usuario.ColPublicacion = CrearPublicaciones(user.Chips);
+            usuario.ColNotif = CrearPublicaciones(user.ColNotif);
             return usuario;
         }
 
-        public List<Publicacion> CrearPublicacionesDeUsuario(RepeatedField<Chip> chips)
+        public List<Publicacion> CrearPublicaciones(RepeatedField<Chip> chips)
         {
             List<Publicacion> publicaciones = new List<Publicacion>();
             foreach (var chip in chips)
             {
-                Publicacion publicacion = new Publicacion()
-                {
-                    IdP = chip.Id,
-                    PFch = chip.PFch.ToDateTime(),
-                    Contenido = chip.PContenido,
-                };
-                publicacion.ColRespuesta.AddRange(CrearRespuestasDeChip(chip.ColRespuesta));
+                Publicacion publicacion = CrearPublicacion(chip);
                 publicaciones.Add(publicacion);
             }
             return publicaciones;
+        }
+
+        public Publicacion CrearPublicacion(Chip chip)
+        {
+            Publicacion publicacion = new Publicacion()
+            {
+                Id = Guid.Parse(chip.Id),
+                NombreUsuario = chip.UserName,
+                PFch = chip.PFch.ToDateTime(),
+                Contenido = chip.PContenido,
+            };
+            publicacion.ColRespuesta.AddRange(CrearRespuestasDeChip(chip.ColRespuesta));
+            return publicacion;
         }
 
         public List<Respuesta> CrearRespuestasDeChip(RepeatedField<Answer> answers)
@@ -106,6 +100,35 @@ namespace ServerAdminLogic
                 Habilitado = true,
             };
             return user;
+        }
+
+        public Chip CrearChip(Publicacion publicacion)
+        {
+            Chip chip = new Chip()
+            {
+                Id = publicacion.Id.ToString(),
+                UserName = publicacion.NombreUsuario,
+                PFch = Timestamp.FromDateTime(publicacion.PFch),
+                PContenido = publicacion.Contenido,
+            };
+            chip.ColRespuesta.AddRange(CrearAnswersOfChips(publicacion.ColRespuesta));
+            return chip;
+        }
+
+        public RepeatedField<Answer> CrearAnswersOfChips(List<Respuesta> respuestas)
+        {
+            RepeatedField<Answer> answers = new RepeatedField<Answer>();
+            foreach (var respuesta in respuestas)
+            {
+                Answer answer = new Answer()
+                {
+                    PNomUsu = respuesta.PNomUsu,
+                    PFch = Timestamp.FromDateTime(respuesta.PFch),
+                    PContenido = respuesta.PContenido
+                };
+                answers.Add(answer);
+            }
+            return answers;
         }
     }
 }

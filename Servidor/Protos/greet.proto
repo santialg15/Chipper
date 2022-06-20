@@ -8,23 +8,16 @@ package greet;
 
 // The greeting service definition.
 service Greeter {
-  // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply);
+  //User
   rpc PostUser (PostUserRequest) returns (PostUserReply);
   rpc GetUsers (GetUsersRequest) returns (GetUsersReply);
   rpc PutUser (PutUserRequest) returns (PutUserReply);
   rpc GetUser (GetUserRequest) returns (GetUserReply);
   rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply);
-}
-
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
-}
-
-// The response message containing the greetings.
-message HelloReply {
-  string message = 1;
+  //Chips
+  rpc GetChips (GetChipsRequest) returns (GetChipsReply);
+  rpc GetChip (GetChipRequest) returns (GetChipReply);
+  rpc PostChip (PostChipRequest) returns (PostChipReply);
 }
 
 //Post de usuario
@@ -77,6 +70,36 @@ message DeleteUserReply{
 }
 //Fin Delete User
 
+//Get Chips
+message GetChipsRequest{
+
+}
+
+message GetChipsReply{
+	repeated Chip chips = 1;
+}
+//Fin Get Chips
+
+//Get Chip
+message GetChipRequest{
+	string GuidId = 1;
+}
+
+message GetChipReply{
+	Chip chip = 1;
+}
+//Fin Get Chip
+
+//Post chip
+message PostChipRequest{
+	Chip chip = 1;
+}
+
+message PostChipReply{
+	string response = 1;
+}
+//Fin Post Chip
+
 //Inicio Modelos
 message User {
   string pNomUsu = 1;
@@ -91,10 +114,11 @@ message User {
 }
 
 message Chip{
-	int32 id = 1;
+	string id = 1;
     google.protobuf.Timestamp pFch = 2;
     string pContenido = 3;
     repeated Answer colRespuesta = 4;
+	string userName = 5;
 }
 
 message Answer{

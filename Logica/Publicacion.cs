@@ -11,21 +11,24 @@ namespace Logica
         public List<Respuesta> colRespuesta;
         public List<string> colFile;
 
-        public Guid IdUsuario { get; set; }
+        public string NombreUsuario { get; set; }
         public Guid Id { get; set; }
-        public int IdP { get; set; }
         public DateTime PFch { get => pFch; set => pFch = value; }
         public string Contenido { get => pContenido; set => pContenido = value; }
         public List<Respuesta> ColRespuesta { get => colRespuesta; set => colRespuesta = value; }
 
         public Publicacion()
         {
+            Id = Guid.NewGuid();
+            pFch = DateTime.UtcNow;
             ColRespuesta = new List<Respuesta>();
+            colFile = new List<string>();
         }
 
         public Publicacion(string _contenido, int idPublicacion)
         {
             id = idPublicacion+1;
+            Id = Guid.NewGuid();
             pFch = DateTime.UtcNow;
             pContenido = _contenido.Trim();
             colRespuesta = new List<Respuesta>();

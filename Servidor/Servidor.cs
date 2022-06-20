@@ -811,6 +811,51 @@ namespace Servidor
                 }
             }
         }
+
+        public static List<Publicacion> RetornarChips()
+        {
+            agregarDatos();
+            List<Publicacion> chips = new List<Publicacion>();
+            foreach (var usuario in _usuarios)
+            {
+                foreach (var publicacion in usuario.ColPublicacion.ToList())
+                {
+                    publicacion.NombreUsuario = usuario.PNomUsu;
+                    chips.Add(publicacion);
+                }
+            }
+            return chips;
+        }
+
+        public static Publicacion RetornarPublicacion(Guid idPublicacion)
+        {
+            //agregarDatos();
+            var publicacion = new Publicacion();
+            foreach (var usu in _usuarios)
+            {
+                publicacion = usu.ColPublicacion.FirstOrDefault(p => p.Id == idPublicacion);
+                if(publicacion != null)
+                    return publicacion;
+            }
+            return publicacion;
+        }
+
+        public static string CrearPublicacion(Publicacion publicacion)
+        {
+            agregarDatos();
+            var nombreUsuario = publicacion.NombreUsuario;
+            if (!_usuarios.Any(u => u.PNomUsu == nombreUsuario))
+                return "El usuario de la publicacion no existe";
+            foreach (var usuario in _usuarios.ToList())
+            {
+                if (usuario.PNomUsu == nombreUsuario)
+                {
+                    usuario.ColPublicacion.Add(publicacion);
+                    break;
+                }
+            }
+            return $"La publicacion del usuario {publicacion.NombreUsuario} a sido creada.";
+        }
     }
 }
 
