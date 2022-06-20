@@ -111,14 +111,15 @@
 
         public Publicacion nuevoChip(string chip)
         {
-            Publicacion nuevaPub = new Publicacion(chip, colPublicacion.Count);
+            Publicacion nuevaPub = new Publicacion(chip, colPublicacion.Count,PNomUsu);
+            //nuevaPub.NombreUsuario = PNomUsu;
             colPublicacion.Add(nuevaPub);
             return nuevaPub;
         }
 
         public Publicacion nuevoChipConImg(string chip,string img)
         {
-            Publicacion nuevaPub = new Publicacion(chip, colPublicacion.Count);
+            Publicacion nuevaPub = new Publicacion(chip, colPublicacion.Count,PNomUsu);
             var archivos = img.Split("?");
             foreach (var a in archivos)
             {

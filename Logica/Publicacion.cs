@@ -25,7 +25,7 @@ namespace Logica
             colFile = new List<string>();
         }
 
-        public Publicacion(string _contenido, int idPublicacion)
+        public Publicacion(string _contenido, int idPublicacion, string nombreUsuario)
         {
             id = idPublicacion+1;
             Id = Guid.NewGuid();
@@ -33,6 +33,7 @@ namespace Logica
             pContenido = _contenido.Trim();
             colRespuesta = new List<Respuesta>();
             colFile = new List<string>();
+            NombreUsuario = nombreUsuario;
         }
 
         public override string ToString()

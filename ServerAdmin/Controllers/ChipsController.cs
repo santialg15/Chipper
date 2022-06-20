@@ -39,7 +39,7 @@ namespace ServerAdmin.Controllers
         public IActionResult Put([FromRoute] Guid id, [FromBody] Publicacion chip)
         {
             chip.Id = id;
-            return Ok(_chipsLogic.Update(chip));
+            return Content(_chipsLogic.Update(chip).Result);
         }
 
         [HttpDelete("{id}")]

@@ -220,12 +220,12 @@ namespace Servidor
             SeguirUnUsuarioParaTest("salvarez", "dpena");
 
             //Notificaciones
-            Publicacion p1 = new Publicacion("Publicacion 1", _usu2.ColPublicacion.Count);
-            Publicacion p2 = new Publicacion("Publicacion 2", _usu2.ColPublicacion.Count);
-            Publicacion p3 = new Publicacion("Publicacion 3", _usu2.ColPublicacion.Count);
-            Publicacion p4 = new Publicacion("Publicacion 4", _usu2.ColPublicacion.Count);
-            Publicacion p5 = new Publicacion("Publicacion 5", _usu2.ColPublicacion.Count);
-            Publicacion p6 = new Publicacion("Publicacion 6", _usu2.ColPublicacion.Count);
+            Publicacion p1 = new Publicacion("Publicacion 1", _usu2.ColPublicacion.Count,_usu2.PNomUsu);
+            Publicacion p2 = new Publicacion("Publicacion 2", _usu2.ColPublicacion.Count,_usu2.PNomUsu);
+            Publicacion p3 = new Publicacion("Publicacion 3", _usu2.ColPublicacion.Count,_usu2.PNomUsu);
+            Publicacion p4 = new Publicacion("Publicacion 4", _usu2.ColPublicacion.Count,_usu2.PNomUsu);
+            Publicacion p5 = new Publicacion("Publicacion 5", _usu2.ColPublicacion.Count,_usu2.PNomUsu);
+            Publicacion p6 = new Publicacion("Publicacion 6", _usu1.ColPublicacion.Count,_usu1.PNomUsu);
 
             _usu2.nuevoChip("Publicacion 1");
             _usu2.nuevoChip("Publicacion 2");
@@ -814,7 +814,7 @@ namespace Servidor
 
         public static List<Publicacion> RetornarChips()
         {
-            agregarDatos();
+            //agregarDatos();
             List<Publicacion> chips = new List<Publicacion>();
             foreach (var usuario in _usuarios)
             {
@@ -842,7 +842,7 @@ namespace Servidor
 
         public static string CrearPublicacion(Publicacion publicacion)
         {
-            agregarDatos();
+            //agregarDatos();
             var nombreUsuario = publicacion.NombreUsuario;
             if (!_usuarios.Any(u => u.PNomUsu == nombreUsuario))
                 return "El usuario de la publicacion no existe";
