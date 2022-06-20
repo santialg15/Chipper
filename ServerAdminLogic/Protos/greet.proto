@@ -32,30 +32,6 @@ message PostUserRequest {
 message PostUserReply{
 	User user = 1;
 }
-
-message User {
-  string pNomUsu = 1;
-  string pNomReal = 2;
-  string pass = 3;
-  bool habilitado = 5;
-  bool estaLogueado = 6;
-  repeated Chip chips = 7;
-  repeated User colSeguidos = 8;
-}
-
-message Chip{
-	int32 id = 1;
-    google.protobuf.Timestamp pFch = 2;
-    string pContenido = 3;
-    repeated Answer colRespuesta = 4;
-    //repeated string colFile = 5;
-}
-
-message Answer{
-	string pNomUsu = 1;
-    google.protobuf.Timestamp pFch = 2;
-    string pContenido = 3;
-}
 //Fin post usuario
 
 //GetUsers 
@@ -66,3 +42,30 @@ message GetUsersReply{
 	repeated User users = 1;
 }
 //Fin GetUsers
+
+//Inicio Modelos
+message User {
+  string pNomUsu = 1;
+  string pNomReal = 2;
+  string pass = 3;
+  bool habilitado = 5;
+  bool estaLogueado = 6;
+  repeated Chip chips = 7;
+  repeated User colSeguidos = 8;
+  repeated User colSeguidores = 9;
+  repeated Chip colNotif = 10;
+}
+
+message Chip{
+	int32 id = 1;
+    google.protobuf.Timestamp pFch = 2;
+    string pContenido = 3;
+    repeated Answer colRespuesta = 4;
+}
+
+message Answer{
+	string pNomUsu = 1;
+    google.protobuf.Timestamp pFch = 2;
+    string pContenido = 3;
+}
+//Fin Modelos

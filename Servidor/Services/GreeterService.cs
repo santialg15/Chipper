@@ -26,16 +26,10 @@ namespace Servidor.Services
         public override Task<GetUsersReply> GetUsers(GetUsersRequest request, ServerCallContext context)
         {
             List<Usuario> usuarios = Servidor.ReturnUsers();
-            var reply = CreateGetUsersReply(usuarios);
-            return Task.FromResult(reply);
-        }
 
-        private static GetUsersReply CreateGetUsersReply(List<Usuario> usuarios)
-        {
-            GetUsersReply getUsersReply = new GetUsersReply();
-            var users = getUsersReply.Users;
-            users.AddRange(CreateUsers(usuarios));
-            return getUsersReply;
+            GetUsersReply reply = new GetUsersReply();
+            reply.Users.AddRange(CreateUsers(usuarios));
+            return Task.FromResult(reply);
         }
 
         private static RepeatedField<User> CreateUsers(List<Usuario> usuarios)
@@ -48,7 +42,10 @@ namespace Servidor.Services
                 {
                     user.ColSeguidos.Add(CreateUser(seguido));
                 }
-                user.Chips.AddRange(CreateChipsOfUser(usuario.ColPublicacion));
+                foreach (var seguidor in usuario.ColSeguidores)
+                {
+                    user.ColSeguidores.Add(CreateUser(seguidor));
+                }
                 users.Add(user);
             }
             return users;
@@ -64,6 +61,8 @@ namespace Servidor.Services
                 EstaLogueado = usuario.estaLogueado,
                 Habilitado = usuario.Habilitado
             };
+            user.Chips.AddRange(CreateChipsOfUser(usuario.ColPublicacion));
+            user.ColNotif.AddRange(CreateChipsOfUser(usuario.ColNotif));
             return user;
         }
 

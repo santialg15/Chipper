@@ -78,13 +78,16 @@ namespace ServerAdminLogic
                 {
                     usuario.ColSeguidos.Add(CreateUser(seguido));
                 }
-                usuario.ColPublicacion = CreateChipsOfUser(user.Chips);
+                foreach (var seguidor in user.ColSeguidores)
+                {
+                    usuario.ColSeguidores.Add(CreateUser(seguidor));
+                }
                 usuarios.Add(usuario);
             }
             return usuarios;
         }
 
-        private static Usuario CreateUser(User user)
+        private Usuario CreateUser(User user)
         {
             Usuario usuario = new Usuario()
             {
@@ -93,10 +96,9 @@ namespace ServerAdminLogic
                 Pass = user.Pass,
                 estaLogueado = user.EstaLogueado,
                 Habilitado = user.Habilitado,
-                ColNotif = new List<Publicacion>(),
-                ColPublicacion = new List<Publicacion>(),
-                ColSeguidores = new List<Usuario>(),
             };
+            usuario.ColPublicacion = CreateChipsOfUser(user.Chips);
+            usuario.ColNotif = CreateChipsOfUser(user.ColNotif);
             return usuario;
         }
 
