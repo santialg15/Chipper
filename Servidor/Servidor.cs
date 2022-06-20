@@ -827,6 +827,23 @@ namespace Servidor
             }
             return publicacion;
         }
+
+        public static string CrearPublicacion(Publicacion publicacion)
+        {
+            agregarDatos();
+            var nombreUsuario = publicacion.NombreUsuario;
+            if (!_usuarios.Any(u => u.PNomUsu == nombreUsuario))
+                return "El usuario de la publicacion no existe";
+            foreach (var usuario in _usuarios.ToList())
+            {
+                if (usuario.PNomUsu == nombreUsuario)
+                {
+                    usuario.ColPublicacion.Add(publicacion);
+                    break;
+                }
+            }
+            return $"La publicacion del usuario {publicacion.NombreUsuario} a sido creada.";
+        }
     }
 }
 

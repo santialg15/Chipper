@@ -11,12 +11,8 @@ namespace ServerAdmin.DTOs
         {
             var publicacion = new Publicacion()
             {
-                Id = Guid.NewGuid(),
                 NombreUsuario = NombreUsuario,
                 pContenido = Contenido,
-                pFch = DateTime.Now,
-                colRespuesta = new List<Respuesta>(),
-                colFile = new List<string>()
             };
             return publicacion;
         }

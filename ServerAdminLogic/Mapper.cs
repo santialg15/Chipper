@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.Collections;
+using Google.Protobuf.WellKnownTypes;
 using Logica;
 
 namespace ServerAdminLogic
@@ -11,14 +12,6 @@ namespace ServerAdminLogic
             foreach (var user in usersReply.Users)
             {
                 Usuario usuario = CrearUsuario(user);
-                //foreach (var seguido in user.ColSeguidos)
-                //{
-                //    usuario.ColSeguidos.Add(CrearUsuario(seguido));
-                //}
-                //foreach (var seguidor in user.ColSeguidores)
-                //{
-                //    usuario.ColSeguidores.Add(CrearUsuario(seguidor));
-                //}
                 usuarios.Add(usuario);
             }
             return usuarios;
@@ -40,9 +33,6 @@ namespace ServerAdminLogic
                 {
                     PNomUsu = seguido.PNomUsu,
                     PNomReal = seguido.PNomReal,
-                    //Pass = user.Pass,
-                    //estaLogueado = user.EstaLogueado,
-                    //Habilitado = user.Habilitado,
                 };
                 usuario.ColSeguidos.Add(usuarioSeguido);
             }
@@ -52,9 +42,6 @@ namespace ServerAdminLogic
                 {
                     PNomUsu = seguidor.PNomUsu,
                     PNomReal = seguidor.PNomReal,
-                    //Pass = user.Pass,
-                    //estaLogueado = user.EstaLogueado,
-                    //Habilitado = user.Habilitado,
                 };
                 usuario.ColSeguidores.Add(usuarioSeguidor);
             }
@@ -69,7 +56,6 @@ namespace ServerAdminLogic
             foreach (var chip in chips)
             {
                 Publicacion publicacion = CrearPublicacion(chip);
-                //publicacion.ColRespuesta.AddRange(CrearRespuestasDeChip(chip.ColRespuesta));
                 publicaciones.Add(publicacion);
             }
             return publicaciones;
@@ -114,6 +100,35 @@ namespace ServerAdminLogic
                 Habilitado = true,
             };
             return user;
+        }
+
+        public Chip CrearChip(Publicacion publicacion)
+        {
+            Chip chip = new Chip()
+            {
+                Id = publicacion.Id.ToString(),
+                UserName = publicacion.NombreUsuario,
+                PFch = Timestamp.FromDateTime(publicacion.PFch),
+                PContenido = publicacion.Contenido,
+            };
+            chip.ColRespuesta.AddRange(CrearAnswersOfChips(publicacion.ColRespuesta));
+            return chip;
+        }
+
+        public RepeatedField<Answer> CrearAnswersOfChips(List<Respuesta> respuestas)
+        {
+            RepeatedField<Answer> answers = new RepeatedField<Answer>();
+            foreach (var respuesta in respuestas)
+            {
+                Answer answer = new Answer()
+                {
+                    PNomUsu = respuesta.PNomUsu,
+                    PFch = Timestamp.FromDateTime(respuesta.PFch),
+                    PContenido = respuesta.PContenido
+                };
+                answers.Add(answer);
+            }
+            return answers;
         }
     }
 }

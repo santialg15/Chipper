@@ -17,14 +17,6 @@ namespace Servidor
             foreach (var usuario in usuarios)
             {
                 User user = CreateUser(usuario);
-                //foreach (var seguido in usuario.ColSeguidos)
-                //{
-                //    user.ColSeguidos.Add(CreateUser(seguido));
-                //}
-                //foreach (var seguidor in usuario.ColSeguidores)
-                //{
-                //    user.ColSeguidores.Add(CreateUser(seguidor));
-                //}
                 users.Add(user);
             }
             return users;
@@ -48,9 +40,6 @@ namespace Servidor
                 {
                     PNomUsu = seguido.PNomUsu,
                     PNomReal = seguido.PNomReal,
-                    //Pass = seguido.Pass,
-                    //EstaLogueado = seguido.estaLogueado,
-                    //Habilitado = seguido.Habilitado
                 };
                 user.ColSeguidos.Add(userSeguido);
             }
@@ -60,9 +49,6 @@ namespace Servidor
                 {
                     PNomUsu = seguidor.PNomUsu,
                     PNomReal = seguidor.PNomReal,
-                    //Pass = seguidor.Pass,
-                    //EstaLogueado = seguido.estaLogueado,
-                    //Habilitado = seguido.Habilitado
                 };
                 user.ColSeguidores.Add(userSeguidor);
             }
@@ -77,7 +63,6 @@ namespace Servidor
             foreach (var publicacion in publicaciones)
             {
                 Chip chip = CreateChip(publicacion);
-                //chip.ColRespuesta.AddRange(CreateAnswersOfChips(publicacion.ColRespuesta));
                 chips.Add(chip);
             }
             return chips;
@@ -122,5 +107,35 @@ namespace Servidor
             };
             return usuario;
         }
+
+        public Publicacion CreatePublicacion(Chip chip)
+        {
+            Publicacion publicacion = new Publicacion()
+            {
+                Id = Guid.Parse(chip.Id),
+                NombreUsuario = chip.UserName,
+                PFch = chip.PFch.ToDateTime(),
+                Contenido = chip.PContenido,
+            };
+            publicacion.ColRespuesta.AddRange(CreateRespuestas(chip.ColRespuesta));
+            return publicacion;
+        }
+
+        public List<Respuesta> CreateRespuestas(RepeatedField<Answer> answers)
+        {
+            List<Respuesta> respuestas = new List<Respuesta>();
+            foreach (var answer in answers)
+            {
+                Respuesta respuesta = new Respuesta()
+                {
+                    PNomUsu = answer.PNomUsu,
+                    PFch = answer.PFch.ToDateTime(),
+                    PContenido = answer.PContenido
+                };
+                respuestas.Add(respuesta);
+            }
+            return respuestas;
+        }
+
     }
 }

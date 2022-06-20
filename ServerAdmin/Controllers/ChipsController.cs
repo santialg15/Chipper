@@ -32,7 +32,7 @@ namespace ServerAdmin.Controllers
         public IActionResult Post([FromBody] PublicacionDTO publicacionDTO)
         {
             var publicacion = publicacionDTO.CrearPublicacion();
-            return Ok(_chipsLogic.Insert(publicacion));
+            return Content(_chipsLogic.Insert(publicacion).Result);
         }
 
         [HttpPut("{id}")]

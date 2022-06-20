@@ -20,7 +20,9 @@ namespace Logica
         public Publicacion()
         {
             Id = Guid.NewGuid();
+            pFch = DateTime.UtcNow;
             ColRespuesta = new List<Respuesta>();
+            colFile = new List<string>();
         }
 
         public Publicacion(string _contenido, int idPublicacion)

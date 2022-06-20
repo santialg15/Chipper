@@ -52,8 +52,16 @@ namespace ServerAdminLogic
             //return chipsRepository.GetAll();
         }
 
-        public Task<string>/*Publicacion*/ Insert(Publicacion chip)
+        public async Task<string> Insert(Publicacion publicacion)
         {
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var request = new PostChipRequest()
+            {
+                Chip = mapper.CrearChip(publicacion)
+            };
+            var reply = await client.PostChipAsync(request);
+            return reply.Response;
             //var usuarioDeChip = userRepository.GetById(chip.IdUsuario);
             //if (usuarioDeChip == null)
             //    throw new NullReferenceException("El usuario del chip ingresado no existe.");

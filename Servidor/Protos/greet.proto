@@ -17,6 +17,7 @@ service Greeter {
   //Chips
   rpc GetChips (GetChipsRequest) returns (GetChipsReply);
   rpc GetChip (GetChipRequest) returns (GetChipReply);
+  rpc PostChip (PostChipRequest) returns (PostChipReply);
 }
 
 //Post de usuario
@@ -88,6 +89,16 @@ message GetChipReply{
 	Chip chip = 1;
 }
 //Fin Get Chip
+
+//Post chip
+message PostChipRequest{
+	Chip chip = 1;
+}
+
+message PostChipReply{
+	string response = 1;
+}
+//Fin Post Chip
 
 //Inicio Modelos
 message User {
